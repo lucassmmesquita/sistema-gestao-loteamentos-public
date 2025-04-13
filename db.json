@@ -1,0 +1,1719 @@
+{
+  "clientes": [
+    {
+      "id": 3,
+      "nome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+      "cpfCnpj": "123.456.789-01",
+      "dataNascimento": "1975-05-15",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua Principal",
+        "numero": "123",
+        "complemento": "",
+        "bairro": "Centro",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-4321"
+        ],
+        "emails": [
+          "helena.santos@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-15T14:30:00"
+    },
+    {
+      "id": 4,
+      "nome": "RICARDO ALVES DA SILVA",
+      "cpfCnpj": "234.567.890-12",
+      "dataNascimento": "1980-07-22",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Avenida Central",
+        "numero": "456",
+        "complemento": "Apto 302",
+        "bairro": "Jardim",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-1234"
+        ],
+        "emails": [
+          "ricardo.silva@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-16T10:15:00"
+    },
+    {
+      "id": 5,
+      "nome": "RAIMUNDO JOSÉ RODRIGUES DE MORAES",
+      "cpfCnpj": "345.678.901-23",
+      "dataNascimento": "1968-03-10",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua das Flores",
+        "numero": "789",
+        "complemento": "",
+        "bairro": "Bom Jesus",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-5678"
+        ],
+        "emails": [
+          "raimundo.moraes@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-18T09:30:00"
+    },
+    {
+      "id": 6,
+      "nome": "EDMILSON FARRAPO NASCIMENTO",
+      "cpfCnpj": "456.789.012-34",
+      "dataNascimento": "1972-11-25",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua dos Pássaros",
+        "numero": "321",
+        "complemento": "",
+        "bairro": "Cohab",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-9012"
+        ],
+        "emails": [
+          "edmilson.nascimento@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-20T14:00:00"
+    },
+    {
+      "id": 7,
+      "nome": "ANTONIO MARCOS RODRIGUES GONÇALVES",
+      "cpfCnpj": "567.890.123-45",
+      "dataNascimento": "1985-09-05",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Avenida das Palmeiras",
+        "numero": "654",
+        "complemento": "",
+        "bairro": "Jardim América",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-3456"
+        ],
+        "emails": [
+          "antonio.goncalves@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-22T11:45:00"
+    },
+    {
+      "id": 8,
+      "nome": "FRANCISCO ARICLENES RODRIGUES DE SOUSA",
+      "cpfCnpj": "678.901.234-56",
+      "dataNascimento": "1970-06-15",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua das Mangueiras",
+        "numero": "987",
+        "complemento": "",
+        "bairro": "Bom Jesus",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-7890"
+        ],
+        "emails": [
+          "francisco.sousa@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-25T10:30:00"
+    },
+    {
+      "id": 9,
+      "nome": "ANTONIO PEDRO BARBOSA",
+      "cpfCnpj": "789.012.345-67",
+      "dataNascimento": "1978-12-03",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua dos Ipês",
+        "numero": "543",
+        "complemento": "",
+        "bairro": "Centro",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-0123"
+        ],
+        "emails": [
+          "antonio.barbosa@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-27T09:15:00"
+    },
+    {
+      "id": 10,
+      "nome": "FRANCISCO YAGO DA SILVA CASTRO",
+      "cpfCnpj": "890.123.456-78",
+      "dataNascimento": "1982-08-18",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Avenida dos Holandeses",
+        "numero": "210",
+        "complemento": "Bloco B, Apto 105",
+        "bairro": "Calhau",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-4567"
+        ],
+        "emails": [
+          "francisco.castro@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-10-30T14:45:00"
+    },
+    {
+      "id": 11,
+      "nome": "FRANCINEIDE LIMA DE CASTRO",
+      "cpfCnpj": "901.234.567-89",
+      "dataNascimento": "1975-04-30",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua do Sol",
+        "numero": "876",
+        "complemento": "",
+        "bairro": "Centro",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-8901"
+        ],
+        "emails": [
+          "francineide.castro@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-02T10:00:00"
+    },
+    {
+      "id": 12,
+      "nome": "FRANCISCO FLADIMIR PERES",
+      "cpfCnpj": "012.345.678-90",
+      "dataNascimento": "1973-09-12",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua da Paz",
+        "numero": "345",
+        "complemento": "",
+        "bairro": "Jardim América",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-2345"
+        ],
+        "emails": [
+          "francisco.peres@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-05T15:30:00"
+    },
+    {
+      "id": 13,
+      "nome": "LEONARDO DA SILVA GONÇALVES",
+      "cpfCnpj": "123.456.789-02",
+      "dataNascimento": "1988-02-25",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua da Alegria",
+        "numero": "678",
+        "complemento": "",
+        "bairro": "Cohab",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-6789"
+        ],
+        "emails": [
+          "leonardo.goncalves@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-08T13:15:00"
+    },
+    {
+      "id": 14,
+      "nome": "ANTONIO CARLOS CAMPOS RAMOS",
+      "cpfCnpj": "234.567.890-13",
+      "dataNascimento": "1965-07-08",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Avenida Litorânea",
+        "numero": "901",
+        "complemento": "",
+        "bairro": "Calhau",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-9012"
+        ],
+        "emails": [
+          "antonio.ramos@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-10T09:45:00"
+    },
+    {
+      "id": 15,
+      "nome": "EDNA MARIA GOMES PEREIRA",
+      "cpfCnpj": "345.678.901-24",
+      "dataNascimento": "1977-11-15",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua dos Girassóis",
+        "numero": "432",
+        "complemento": "",
+        "bairro": "Jardim",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-3456"
+        ],
+        "emails": [
+          "edna.pereira@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-12T14:00:00"
+    },
+    {
+      "id": 16,
+      "nome": "NEUMA MARIA DE MORAES BRITO ALVES",
+      "cpfCnpj": "456.789.012-35",
+      "dataNascimento": "1970-05-20",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua das Acácias",
+        "numero": "765",
+        "complemento": "",
+        "bairro": "Bom Jesus",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-7890"
+        ],
+        "emails": [
+          "neuma.alves@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-15T10:30:00"
+    },
+    {
+      "id": 17,
+      "nome": "FRANCISCO LUCIANO MARQUES DE PAULA",
+      "cpfCnpj": "567.890.123-46",
+      "dataNascimento": "1982-03-17",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua das Tulipas",
+        "numero": "123",
+        "complemento": "",
+        "bairro": "Cohab",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-0123"
+        ],
+        "emails": [
+          "francisco.paula@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-18T13:45:00"
+    },
+    {
+      "id": 18,
+      "nome": "UENDERSON RODRIGUES DE OLIVEIRA",
+      "cpfCnpj": "678.901.234-57",
+      "dataNascimento": "1990-10-05",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua das Orquídeas",
+        "numero": "456",
+        "complemento": "",
+        "bairro": "Jardim América",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-4567"
+        ],
+        "emails": [
+          "uenderson.oliveira@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-20T09:15:00"
+    },
+    {
+      "id": 19,
+      "nome": "MARIA ELIANE GOMES PEREIRA",
+      "cpfCnpj": "789.012.345-68",
+      "dataNascimento": "1975-12-10",
+      "endereco": {
+        "cep": "65000-000",
+        "logradouro": "Rua dos Lírios",
+        "numero": "789",
+        "complemento": "",
+        "bairro": "Bom Jesus",
+        "cidade": "São Luís",
+        "estado": "MA"
+      },
+      "contatos": {
+        "telefones": [
+          "(98) 98765-8901"
+        ],
+        "emails": [
+          "maria.pereira@email.com"
+        ]
+      },
+      "documentos": [],
+      "dataCadastro": "2023-11-22T14:30:00"
+    }
+  ],
+  "lotes": [
+    {
+      "id": 10,
+      "numero": "A-001",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 11,
+      "numero": "A-002",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 12,
+      "numero": "A-003",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 13,
+      "numero": "A-004",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 14,
+      "numero": "A-005",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 15,
+      "numero": "A-006",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 16,
+      "numero": "A-007",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 17,
+      "numero": "A-008",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 18,
+      "numero": "A-009",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 19,
+      "numero": "A-010",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 20,
+      "numero": "A-011",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 21,
+      "numero": "A-012",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 22,
+      "numero": "A-013",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 23,
+      "numero": "A-014",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 24,
+      "numero": "A-015",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 25,
+      "numero": "A-016",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 26,
+      "numero": "A-017",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    },
+    {
+      "id": 27,
+      "numero": "A-018",
+      "quadra": "A",
+      "loteamento": "JCA LOTEAMENTO BOM JESUS",
+      "area": 250,
+      "valorBase": 50000,
+      "status": "vendido"
+    }
+  ],
+  "contratos": [
+    {
+      "id": 10,
+      "clienteId": 3,
+      "loteId": 10,
+      "dataInicio": "2023-01-10",
+      "dataFim": "2028-01-10",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-01-05T10:30:00"
+    },
+    {
+      "id": 11,
+      "clienteId": 4,
+      "loteId": 11,
+      "dataInicio": "2023-01-15",
+      "dataFim": "2028-01-15",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 15,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-01-10T14:00:00"
+    },
+    {
+      "id": 12,
+      "clienteId": 5,
+      "loteId": 12,
+      "dataInicio": "2023-01-20",
+      "dataFim": "2028-01-20",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 20,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-01-15T09:15:00"
+    },
+    {
+      "id": 13,
+      "clienteId": 6,
+      "loteId": 13,
+      "dataInicio": "2023-02-05",
+      "dataFim": "2028-02-05",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 5,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-01-30T11:30:00"
+    },
+    {
+      "id": 14,
+      "clienteId": 7,
+      "loteId": 14,
+      "dataInicio": "2023-02-10",
+      "dataFim": "2028-02-10",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-02-05T15:00:00"
+    },
+    {
+      "id": 15,
+      "clienteId": 8,
+      "loteId": 15,
+      "dataInicio": "2023-02-15",
+      "dataFim": "2028-02-15",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 15,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-02-10T10:45:00"
+    },
+    {
+      "id": 16,
+      "clienteId": 9,
+      "loteId": 16,
+      "dataInicio": "2023-02-20",
+      "dataFim": "2028-02-20",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 20,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-02-15T13:20:00"
+    },
+    {
+      "id": 17,
+      "clienteId": 9,
+      "loteId": 17,
+      "dataInicio": "2023-03-05",
+      "dataFim": "2028-03-05",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 5,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-02-28T09:00:00"
+    },
+    {
+      "id": 18,
+      "clienteId": 10,
+      "loteId": 18,
+      "dataInicio": "2023-03-10",
+      "dataFim": "2028-03-10",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-03-05T14:30:00"
+    },
+    {
+      "id": 19,
+      "clienteId": 11,
+      "loteId": 19,
+      "dataInicio": "2023-03-15",
+      "dataFim": "2028-03-15",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 15,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-03-10T11:15:00"
+    },
+    {
+      "id": 20,
+      "clienteId": 12,
+      "loteId": 20,
+      "dataInicio": "2023-03-20",
+      "dataFim": "2028-03-20",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 20,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-03-15T15:45:00"
+    },
+    {
+      "id": 21,
+      "clienteId": 13,
+      "loteId": 21,
+      "dataInicio": "2023-04-05",
+      "dataFim": "2028-04-05",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 5,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-03-30T10:30:00"
+    },
+    {
+      "id": 22,
+      "clienteId": 14,
+      "loteId": 22,
+      "dataInicio": "2023-04-10",
+      "dataFim": "2028-04-10",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-04-05T13:00:00"
+    },
+    {
+      "id": 23,
+      "clienteId": 15,
+      "loteId": 23,
+      "dataInicio": "2023-04-15",
+      "dataFim": "2028-04-15",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 15,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-04-10T09:45:00"
+    },
+    {
+      "id": 24,
+      "clienteId": 16,
+      "loteId": 24,
+      "dataInicio": "2023-04-20",
+      "dataFim": "2028-04-20",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 20,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-04-15T14:15:00"
+    },
+    {
+      "id": 25,
+      "clienteId": 17,
+      "loteId": 25,
+      "dataInicio": "2023-05-05",
+      "dataFim": "2028-05-05",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 5,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-04-30T11:30:00"
+    },
+    {
+      "id": 26,
+      "clienteId": 18,
+      "loteId": 26,
+      "dataInicio": "2023-05-10",
+      "dataFim": "2028-05-10",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-05-05T15:00:00"
+    },
+    {
+      "id": 27,
+      "clienteId": 19,
+      "loteId": 27,
+      "dataInicio": "2023-05-15",
+      "dataFim": "2028-05-15",
+      "valorTotal": 60000,
+      "valorEntrada": 6000,
+      "numeroParcelas": 60,
+      "dataVencimento": 15,
+      "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
+      "status": "ativo",
+      "dataCriacao": "2023-05-10T10:45:00"
+    }
+  ],
+  "boletos": [
+    {
+      "id": 10,
+      "clienteId": 3,
+      "clienteNome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+      "contratoId": 10,
+      "valor": 900,
+      "dataVencimento": "2023-05-10",
+      "numeroParcela": 5,
+      "descricao": "Parcela 5 - Contrato 10 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777775",
+      "linhaDigitavel": "10492.57684 32987.777751 00000.000174 8 92380000090000",
+      "codigoBarras": "10498923800000900002576843298777775000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777775/pdf",
+      "dataGeracao": "2023-04-10T14:30:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2023-05-08T10:20:00.000Z",
+      "valorPago": 900,
+      "formaPagamento": "transferencia"
+    },
+    {
+      "id": 11,
+      "clienteId": 3,
+      "clienteNome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+      "contratoId": 10,
+      "valor": 900,
+      "dataVencimento": "2023-06-10",
+      "numeroParcela": 6,
+      "descricao": "Parcela 6 - Contrato 10 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777776",
+      "linhaDigitavel": "10492.57684 32987.777761 00000.000174 8 92660000090000",
+      "codigoBarras": "10498926600000900002576843298777776000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777776/pdf",
+      "dataGeracao": "2023-05-10T14:30:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2023-06-09T15:45:00.000Z",
+      "valorPago": 900,
+      "formaPagamento": "pix"
+    },
+    {
+      "id": 12,
+      "clienteId": 3,
+      "clienteNome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+      "contratoId": 10,
+      "valor": 900,
+      "dataVencimento": "2023-07-10",
+      "numeroParcela": 7,
+      "descricao": "Parcela 7 - Contrato 10 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777777",
+      "linhaDigitavel": "10492.57684 32987.777777 00000.000174 8 92940000090000",
+      "codigoBarras": "10498929400000900002576843298777777000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777777/pdf",
+      "dataGeracao": "2023-06-10T14:30:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2023-07-07T11:20:00.000Z",
+      "valorPago": 900,
+      "formaPagamento": "transferencia"
+    },
+    {
+      "id": 13,
+      "clienteId": 3,
+      "clienteNome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+      "contratoId": 10,
+      "valor": 900,
+      "dataVencimento": "2024-04-10",
+      "numeroParcela": 16,
+      "descricao": "Parcela 16 - Contrato 10 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777786",
+      "linhaDigitavel": "10492.57684 32987.777868 00000.000174 8 94570000090000",
+      "codigoBarras": "10498945700000900002576843298777786000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777786/pdf",
+      "dataGeracao": "2024-03-10T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 14,
+      "clienteId": 4,
+      "clienteNome": "RICARDO ALVES DA SILVA",
+      "contratoId": 11,
+      "valor": 900,
+      "dataVencimento": "2024-04-15",
+      "numeroParcela": 16,
+      "descricao": "Parcela 16 - Contrato 11 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777801",
+      "linhaDigitavel": "10492.57684 32987.778011 00000.000174 8 94600000090000",
+      "codigoBarras": "10498946000000900002576843298777801000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777801/pdf",
+      "dataGeracao": "2024-03-15T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 15,
+      "clienteId": 5,
+      "clienteNome": "RAIMUNDO JOSÉ RODRIGUES DE MORAES",
+      "contratoId": 12,
+      "valor": 900,
+      "dataVencimento": "2024-04-20",
+      "numeroParcela": 16,
+      "descricao": "Parcela 16 - Contrato 12 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777816",
+      "linhaDigitavel": "10492.57684 32987.778169 00000.000174 8 94650000090000",
+      "codigoBarras": "10498946500000900002576843298777816000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777816/pdf",
+      "dataGeracao": "2024-03-20T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 16,
+      "clienteId": 6,
+      "clienteNome": "EDMILSON FARRAPO NASCIMENTO",
+      "contratoId": 13,
+      "valor": 900,
+      "dataVencimento": "2024-05-05",
+      "numeroParcela": 16,
+      "descricao": "Parcela 16 - Contrato 13 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777831",
+      "linhaDigitavel": "10492.57684 32987.778312 00000.000174 8 94800000090000",
+      "codigoBarras": "10498948000000900002576843298777831000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777831/pdf",
+      "dataGeracao": "2024-04-05T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 17,
+      "clienteId": 7,
+      "clienteNome": "ANTONIO MARCOS RODRIGUES GONÇALVES",
+      "contratoId": 14,
+      "valor": 900,
+      "dataVencimento": "2023-12-10",
+      "numeroParcela": 11,
+      "descricao": "Parcela 11 - Contrato 14 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777846",
+      "linhaDigitavel": "10492.57684 32987.778466 00000.000174 8 93800000090000",
+      "codigoBarras": "10498938000000900002576843298777846000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777846/pdf",
+      "dataGeracao": "2023-11-10T14:30:00.000Z",
+      "status": "vencido"
+    },
+    {
+      "id": 18,
+      "clienteId": 8,
+      "clienteNome": "FRANCISCO ARICLENES RODRIGUES DE SOUSA",
+      "contratoId": 15,
+      "valor": 900,
+      "dataVencimento": "2023-11-15",
+      "numeroParcela": 10,
+      "descricao": "Parcela 10 - Contrato 15 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777861",
+      "linhaDigitavel": "10492.57684 32987.778617 00000.000174 8 93520000090000",
+      "codigoBarras": "10498935200000900002576843298777861000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777861/pdf",
+      "dataGeracao": "2023-10-15T14:30:00.000Z",
+      "status": "cancelado",
+      "dataCancelamento": "2023-11-10T09:15:00.000Z"
+    },
+    {
+      "id": 19,
+      "clienteId": 9,
+      "clienteNome": "ANTONIO PEDRO BARBOSA",
+      "contratoId": 16,
+      "valor": 900,
+      "dataVencimento": "2024-03-20",
+      "numeroParcela": 13,
+      "descricao": "Parcela 13 - Contrato 16 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777876",
+      "linhaDigitavel": "10492.57684 32987.778763 00000.000174 8 94450000090000",
+      "codigoBarras": "10498944500000900002576843298777876000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777876/pdf",
+      "dataGeracao": "2024-02-20T14:30:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2024-03-18T11:20:00.000Z",
+      "valorPago": 900,
+      "formaPagamento": "pix"
+    },
+    {
+      "id": 20,
+      "clienteId": 10,
+      "clienteNome": "FRANCISCO YAGO DA SILVA CASTRO",
+      "contratoId": 18,
+      "valor": 900,
+      "dataVencimento": "2024-04-10",
+      "numeroParcela": 14,
+      "descricao": "Parcela 14 - Contrato 18 - JCA LOTEAMENTO BOM JESUS",
+      "nossoNumero": "10492576843298777891",
+      "linhaDigitavel": "10492.57684 32987.778912 00000.000174 8 94570000090000",
+      "codigoBarras": "10498945700000900002576843298777891000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298777891/pdf",
+      "dataGeracao": "2024-03-10T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": "8ed3",
+      "clienteId": 9,
+      "clienteNome": "ANTONIO PEDRO BARBOSA",
+      "contratoId": 16,
+      "valor": 1000,
+      "dataVencimento": "2025-05-12",
+      "numeroParcela": 1,
+      "descricao": "Parcela 7 - Contrato 1",
+      "nossoNumero": "22999901737",
+      "linhaDigitavel": "10492.22999.90173.7.1612",
+      "codigoBarras": "1046.389755973531663e+40",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/22999901737/pdf",
+      "dataGeracao": "2025-04-12T18:48:47.127Z",
+      "status": "gerado"
+    },
+    {
+      "id": "fdf9",
+      "clienteId": 12,
+      "clienteNome": "FRANCISCO FLADIMIR PERES",
+      "contratoId": 20,
+      "valor": "324",
+      "dataVencimento": "2025-05-01",
+      "numeroParcela": 1,
+      "descricao": "Parcela 1 - Contrato 20",
+      "nossoNumero": "25720064796",
+      "linhaDigitavel": "10492.25720.06479.6.7175",
+      "codigoBarras": "1047.830677902359557e+40",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/25720064796/pdf",
+      "dataGeracao": "2025-04-13T01:38:49.435Z",
+      "status": "gerado"
+    },
+    {
+      "id": "db90",
+      "clienteId": 12,
+      "clienteNome": "FRANCISCO FLADIMIR PERES",
+      "contratoId": 20,
+      "valor": "324",
+      "dataVencimento": "2025-05-31",
+      "numeroParcela": 2,
+      "descricao": "Parcela 2 - Contrato 20",
+      "nossoNumero": "22416410167",
+      "linhaDigitavel": "10492.22416.41016.7.5616",
+      "codigoBarras": "1045.670883690416405e+40",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/22416410167/pdf",
+      "dataGeracao": "2025-04-13T01:38:49.966Z",
+      "status": "gerado"
+    },
+    {
+      "id": "c837",
+      "clienteId": 12,
+      "clienteNome": "FRANCISCO FLADIMIR PERES",
+      "contratoId": 20,
+      "valor": "324",
+      "dataVencimento": "2025-07-01",
+      "numeroParcela": 3,
+      "descricao": "Parcela 3 - Contrato 20",
+      "nossoNumero": "35363969567",
+      "linhaDigitavel": "10492.35363.96956.7.8420",
+      "codigoBarras": "1048.6866437560751e+40",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/35363969567/pdf",
+      "dataGeracao": "2025-04-13T01:38:50.481Z",
+      "status": "gerado"
+    },
+    {
+      "id": "b6fb",
+      "clienteId": 12,
+      "clienteNome": "FRANCISCO FLADIMIR PERES",
+      "contratoId": 20,
+      "valor": "324",
+      "dataVencimento": "2025-07-31",
+      "numeroParcela": 4,
+      "descricao": "Parcela 4 - Contrato 20",
+      "nossoNumero": "46070651899",
+      "linhaDigitavel": "10492.46070.65189.9.8603",
+      "codigoBarras": "1042.5013907214992453e+40",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/46070651899/pdf",
+      "dataGeracao": "2025-04-13T01:38:51.001Z",
+      "status": "gerado"
+    }
+  ],
+  "inadimplencia": {
+    "totalInadimplentes": 127,
+    "valorTotal": 543879.45,
+    "mediaAtraso": 37,
+    "distribuicaoPorFaixa": [
+      {
+        "name": "Até 30 dias",
+        "value": 62,
+        "fill": "#FFB547"
+      },
+      {
+        "name": "31-60 dias",
+        "value": 34,
+        "fill": "#FF9800"
+      },
+      {
+        "name": "61-90 dias",
+        "value": 18,
+        "fill": "#F57C00"
+      },
+      {
+        "name": "90+ dias",
+        "value": 13,
+        "fill": "#E65100"
+      }
+    ],
+    "evoluacaoMensal": [
+      {
+        "mes": "Jan",
+        "valor": 324567,
+        "qtdClientes": 87
+      },
+      {
+        "mes": "Fev",
+        "valor": 378912,
+        "qtdClientes": 95
+      },
+      {
+        "mes": "Mar",
+        "valor": 412879,
+        "qtdClientes": 108
+      },
+      {
+        "mes": "Abr",
+        "valor": 486234,
+        "qtdClientes": 119
+      },
+      {
+        "mes": "Mai",
+        "valor": 512098,
+        "qtdClientes": 123
+      },
+      {
+        "mes": "Jun",
+        "valor": 543879,
+        "qtdClientes": 127
+      }
+    ]
+  },
+  "reajustes": [],
+  "parametrosReajuste": {
+    "id": 1,
+    "indiceBase": "IGPM",
+    "percentualAdicional": 6,
+    "intervaloParcelas": 12,
+    "alertaAntecipadoDias": 30
+  },
+  "indicesEconomicos": {
+    "IGPM": 5.5,
+    "IPCA": 4.2,
+    "INPC": 3.8
+  },
+  "clientes-inadimplentes": [
+    {
+      "cliente": {
+        "id": 3,
+        "nome": "HELENA MARIA MACIEL PINEO DOS SANTOS",
+        "documento": "123.456.789-01",
+        "email": "helena.santos@email.com",
+        "telefone": "(98) 98765-4321"
+      },
+      "contrato": {
+        "id": 10,
+        "numero": "CONT-2023-0001"
+      },
+      "parcelas": [
+        {
+          "id": "p001",
+          "numero": 16,
+          "dataVencimento": "2024-04-10",
+          "valor": 900,
+          "valorAtualizado": 945.67,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 945.67,
+      "diasAtraso": 2,
+      "ultimaCobranca": "2024-04-08T10:15:00",
+      "status": "em_aberto"
+    },
+    {
+      "cliente": {
+        "id": 4,
+        "nome": "RICARDO ALVES DA SILVA",
+        "documento": "234.567.890-12",
+        "email": "ricardo.silva@email.com",
+        "telefone": "(98) 98765-1234"
+      },
+      "contrato": {
+        "id": 11,
+        "numero": "CONT-2023-0002"
+      },
+      "parcelas": [
+        {
+          "id": "p002",
+          "numero": 16,
+          "dataVencimento": "2024-04-15",
+          "valor": 900,
+          "valorAtualizado": 900,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 900,
+      "diasAtraso": 0,
+      "ultimaCobranca": "2024-04-05T14:30:00",
+      "status": "em_aberto"
+    },
+    {
+      "cliente": {
+        "id": 5,
+        "nome": "RAIMUNDO JOSÉ RODRIGUES DE MORAES",
+        "documento": "345.678.901-23",
+        "email": "raimundo.moraes@email.com",
+        "telefone": "(98) 98765-5678"
+      },
+      "contrato": {
+        "id": 12,
+        "numero": "CONT-2023-0003"
+      },
+      "parcelas": [
+        {
+          "id": "p003",
+          "numero": 16,
+          "dataVencimento": "2024-04-20",
+          "valor": 900,
+          "valorAtualizado": 900,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 900,
+      "diasAtraso": 0,
+      "ultimaCobranca": null,
+      "status": "em_aberto"
+    },
+    {
+      "cliente": {
+        "id": 6,
+        "nome": "EDMILSON FARRAPO NASCIMENTO",
+        "documento": "456.789.012-34",
+        "email": "edmilson.nascimento@email.com",
+        "telefone": "(98) 98765-9012"
+      },
+      "contrato": {
+        "id": 13,
+        "numero": "CONT-2023-0004"
+      },
+      "parcelas": [
+        {
+          "id": "p004",
+          "numero": 16,
+          "dataVencimento": "2024-05-05",
+          "valor": 900,
+          "valorAtualizado": 900,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 900,
+      "diasAtraso": 0,
+      "ultimaCobranca": null,
+      "status": "em_aberto"
+    },
+    {
+      "cliente": {
+        "id": 7,
+        "nome": "ANTONIO MARCOS RODRIGUES GONÇALVES",
+        "documento": "567.890.123-45",
+        "email": "antonio.goncalves@email.com",
+        "telefone": "(98) 98765-3456"
+      },
+      "contrato": {
+        "id": 14,
+        "numero": "CONT-2023-0005"
+      },
+      "parcelas": [
+        {
+          "id": "p005",
+          "numero": 11,
+          "dataVencimento": "2023-12-10",
+          "valor": 900,
+          "valorAtualizado": 1078.45,
+          "status": "atrasado"
+        },
+        {
+          "id": "p006",
+          "numero": 12,
+          "dataVencimento": "2024-01-10",
+          "valor": 900,
+          "valorAtualizado": 1045.87,
+          "status": "atrasado"
+        },
+        {
+          "id": "p007",
+          "numero": 13,
+          "dataVencimento": "2024-02-10",
+          "valor": 900,
+          "valorAtualizado": 1012.65,
+          "status": "atrasado"
+        },
+        {
+          "id": "p008",
+          "numero": 14,
+          "dataVencimento": "2024-03-10",
+          "valor": 900,
+          "valorAtualizado": 978.34,
+          "status": "atrasado"
+        }
+      ],
+      "valorEmAberto": 4115.31,
+      "diasAtraso": 123,
+      "ultimaCobranca": "2024-03-20T09:45:00",
+      "status": "atrasado"
+    },
+    {
+      "cliente": {
+        "id": 9,
+        "nome": "ANTONIO PEDRO BARBOSA",
+        "documento": "789.012.345-67",
+        "email": "antonio.barbosa@email.com",
+        "telefone": "(98) 98765-0123"
+      },
+      "contrato": {
+        "id": 16,
+        "numero": "CONT-2023-0007"
+      },
+      "parcelas": [
+        {
+          "id": "p009",
+          "numero": 14,
+          "dataVencimento": "2024-04-20",
+          "valor": 900,
+          "valorAtualizado": 900,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 900,
+      "diasAtraso": 0,
+      "ultimaCobranca": "2024-04-10T15:20:00",
+      "status": "parcial"
+    },
+    {
+      "cliente": {
+        "id": 10,
+        "nome": "FRANCISCO YAGO DA SILVA CASTRO",
+        "documento": "890.123.456-78",
+        "email": "francisco.castro@email.com",
+        "telefone": "(98) 98765-4567"
+      },
+      "contrato": {
+        "id": 18,
+        "numero": "CONT-2023-0009"
+      },
+      "parcelas": [
+        {
+          "id": "p010",
+          "numero": 14,
+          "dataVencimento": "2024-04-10",
+          "valor": 900,
+          "valorAtualizado": 923.45,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 923.45,
+      "diasAtraso": 2,
+      "ultimaCobranca": "2024-04-05T11:30:00",
+      "status": "em_aberto"
+    },
+    {
+      "cliente": {
+        "id": 11,
+        "nome": "FRANCINEIDE LIMA DE CASTRO",
+        "documento": "901.234.567-89",
+        "email": "francineide.castro@email.com",
+        "telefone": "(98) 98765-8901"
+      },
+      "contrato": {
+        "id": 19,
+        "numero": "CONT-2023-0010"
+      },
+      "parcelas": [
+        {
+          "id": "p011",
+          "numero": 13,
+          "dataVencimento": "2024-03-15",
+          "valor": 900,
+          "valorAtualizado": 967.88,
+          "status": "atrasado"
+        },
+        {
+          "id": "p012",
+          "numero": 14,
+          "dataVencimento": "2024-04-15",
+          "valor": 900,
+          "valorAtualizado": 900,
+          "status": "em_aberto"
+        }
+      ],
+      "valorEmAberto": 1867.88,
+      "diasAtraso": 28,
+      "ultimaCobranca": "2024-04-01T13:45:00",
+      "status": "atrasado"
+    },
+    {
+      "cliente": {
+        "id": 12,
+        "nome": "FRANCISCO FLADIMIR PERES",
+        "documento": "012.345.678-90",
+        "email": "francisco.peres@email.com",
+        "telefone": "(98) 98765-2345"
+      },
+      "contrato": {
+        "id": 20,
+        "numero": "CONT-2023-0011"
+      },
+      "parcelas": [
+        {
+          "id": "p013",
+          "numero": 12,
+          "dataVencimento": "2024-02-20",
+          "valor": 900,
+          "valorAtualizado": 989.65,
+          "status": "atrasado"
+        },
+        {
+          "id": "p014",
+          "numero": 13,
+          "dataVencimento": "2024-03-20",
+          "valor": 900,
+          "valorAtualizado": 956.34,
+          "status": "atrasado"
+        }
+      ],
+      "valorEmAberto": 1945.99,
+      "diasAtraso": 52,
+      "ultimaCobranca": "2024-03-30T10:15:00",
+      "status": "atrasado"
+    },
+    {
+      "cliente": {
+        "id": 15,
+        "nome": "EDNA MARIA GOMES PEREIRA",
+        "documento": "345.678.901-24",
+        "email": "edna.pereira@email.com",
+        "telefone": "(98) 98765-3456"
+      },
+      "contrato": {
+        "id": 23,
+        "numero": "CONT-2023-0014"
+      },
+      "parcelas": [
+        {
+          "id": "p015",
+          "numero": 13,
+          "dataVencimento": "2024-03-15",
+          "valor": 900,
+          "valorAtualizado": 965.78,
+          "status": "atrasado"
+        }
+      ],
+      "valorEmAberto": 965.78,
+      "diasAtraso": 28,
+      "ultimaCobranca": "2024-04-05T16:30:00",
+      "status": "atrasado"
+    }
+  ],
+  "interacoes": [
+    {
+      "id": "i001",
+      "clienteId": 7,
+      "tipo": "telefone",
+      "data": "2024-03-20T09:45:00",
+      "observacao": "Cliente informou que está com dificuldades financeiras e prometeu fazer um pagamento parcial até o final do mês. Ficou de retornar com uma proposta de acordo para parcelamento do débito.",
+      "usuario": "Maria Oliveira",
+      "parcelaId": "p005"
+    },
+    {
+      "id": "i002",
+      "clienteId": 7,
+      "tipo": "email",
+      "data": "2024-03-15T14:30:00",
+      "observacao": "Enviado e-mail com demonstrativo de débito e opções de parcelamento. Sem resposta até o momento.",
+      "usuario": "Carlos Silva",
+      "parcelaId": "p005"
+    },
+    {
+      "id": "i003",
+      "clienteId": 7,
+      "tipo": "whatsapp",
+      "data": "2024-03-10T11:20:00",
+      "observacao": "Mensagem enviada por WhatsApp com informações sobre as parcelas em atraso. Cliente visualizou mas não respondeu.",
+      "usuario": "Carlos Silva",
+      "parcelaId": null
+    },
+    {
+      "id": "i004",
+      "clienteId": 11,
+      "tipo": "email",
+      "data": "2024-04-01T13:45:00",
+      "observacao": "Enviado e-mail de cobrança da parcela de março e aviso de vencimento da parcela de abril.",
+      "usuario": "Maria Oliveira",
+      "parcelaId": "p011"
+    },
+    {
+      "id": "i005",
+      "clienteId": 12,
+      "tipo": "telefone",
+      "data": "2024-03-30T10:15:00",
+      "observacao": "Cliente não atendeu. Deixada mensagem na caixa postal.",
+      "usuario": "João Santos",
+      "parcelaId": "p013"
+    },
+    {
+      "id": "i006",
+      "clienteId": 12,
+      "tipo": "presencial",
+      "data": "2024-03-25T09:30:00",
+      "observacao": "Cliente compareceu ao escritório e informou que está desempregado. Solicitou prazo adicional para pagamento.",
+      "usuario": "Amanda Sousa",
+      "parcelaId": null
+    }
+  ],
+  "comunicacoes": [
+    {
+      "id": "c001",
+      "clienteId": 7,
+      "tipo": "email",
+      "data": "2024-03-15T14:30:00",
+      "mensagem": "Prezado Sr. Antonio Marcos, identificamos parcelas em atraso em seu contrato. Entre em contato para regularizar sua situação e evitar novos encargos.",
+      "status": "enviado",
+      "parcela": {
+        "id": "p005",
+        "numero": 11
+      },
+      "anexos": []
+    },
+    {
+      "id": "c002",
+      "clienteId": 7,
+      "tipo": "whatsapp",
+      "data": "2024-03-10T11:20:00",
+      "mensagem": "Olá Sr. Antonio Marcos. Identificamos parcelas em atraso no seu contrato. Por favor, entre em contato para regularização.",
+      "status": "enviado",
+      "parcela": null,
+      "anexos": []
+    },
+    {
+      "id": "c003",
+      "clienteId": 11,
+      "tipo": "email",
+      "data": "2024-04-01T13:45:00",
+      "mensagem": "Prezada Sra. Francineide, lembramos que a parcela de março está em atraso e a parcela de abril vencerá em breve. Entre em contato para regularizar sua situação.",
+      "status": "enviado",
+      "parcela": {
+        "id": "p011",
+        "numero": 13
+      },
+      "anexos": [
+        {
+          "nome": "boleto_marco.pdf",
+          "tipo": "application/pdf"
+        },
+        {
+          "nome": "boleto_abril.pdf",
+          "tipo": "application/pdf"
+        }
+      ]
+    },
+    {
+      "id": "c004",
+      "clienteId": 10,
+      "tipo": "sms",
+      "data": "2024-04-05T11:30:00",
+      "mensagem": "Lembrete: Sua parcela vence em 5 dias. Evite juros pagando em dia.",
+      "status": "enviado",
+      "parcela": {
+        "id": "p010",
+        "numero": 14
+      },
+      "anexos": []
+    },
+    {
+      "id": "c005",
+      "clienteId": 15,
+      "tipo": "email",
+      "data": "2024-04-05T16:30:00",
+      "mensagem": "Prezada Sra. Edna, sua parcela encontra-se em atraso há 20 dias. Entre em contato para regularizar sua situação e evitar inclusão nos órgãos de proteção ao crédito.",
+      "status": "enviado",
+      "parcela": {
+        "id": "p015",
+        "numero": 13
+      },
+      "anexos": [
+        {
+          "nome": "boleto_atualizado.pdf",
+          "tipo": "application/pdf"
+        }
+      ]
+    }
+  ],
+  "modelos-mensagem": [
+    {
+      "id": "m001",
+      "nome": "Lembrete de Vencimento",
+      "tipo": "email",
+      "conteudo": "Prezado(a) {nome},\n\nGostaríamos de lembrá-lo(a) que a parcela {parcela} do seu contrato {contrato} vencerá em {diasVencimento} dias, no dia {vencimento}, no valor de {valor}.\n\nPor favor, efetue o pagamento em dia para evitar juros e multas.\n\nEm caso de dúvidas, estamos à disposição.\n\nAtenciosamente,\nEquipe de Cobrança"
+    },
+    {
+      "id": "m002",
+      "nome": "Primeira Cobrança",
+      "tipo": "email",
+      "conteudo": "Prezado(a) {nome},\n\nInformamos que a parcela {parcela} do seu contrato {contrato}, com vencimento em {vencimento}, no valor de {valor}, encontra-se em atraso há {diasAtraso} dias.\n\nPor favor, regularize sua situação o mais breve possível para evitar maiores encargos e possíveis restrições cadastrais.\n\nCaso já tenha efetuado o pagamento, por favor, desconsidere este aviso.\n\nAtenciosamente,\nEquipe de Cobrança"
+    },
+    {
+      "id": "m003",
+      "nome": "Segunda Cobrança",
+      "tipo": "email",
+      "conteudo": "Prezado(a) {nome},\n\nReiteramos que a parcela {parcela} do seu contrato {contrato}, com vencimento em {vencimento}, no valor de {valor}, permanece em aberto há {diasAtraso} dias.\n\nSolicitamos a regularização imediata para evitar a inclusão de seu nome nos órgãos de proteção ao crédito, o que ocorrerá em 5 dias úteis caso o débito não seja quitado.\n\nEntre em contato conosco para negociação.\n\nAtenciosamente,\nSetor de Cobrança"
+    },
+    {
+      "id": "m004",
+      "nome": "Cobrança Final",
+      "tipo": "email",
+      "conteudo": "Prezado(a) {nome},\n\nNotificamos que a parcela {parcela} do seu contrato {contrato}, com vencimento em {vencimento}, no valor atualizado de {valorAtualizado}, permanece em aberto há {diasAtraso} dias.\n\nInformamos que seu nome será incluído nos órgãos de proteção ao crédito em 48 horas, e seu caso será encaminhado ao setor jurídico para as providências cabíveis.\n\nAinda é possível evitar essas medidas entrando em contato imediatamente para negociação.\n\nAtenciosamente,\nSetor Jurídico"
+    },
+    {
+      "id": "m005",
+      "nome": "Lembrete de Vencimento",
+      "tipo": "sms",
+      "conteudo": "Lembrete: Parcela {parcela} do contrato {contrato} vence em {diasVencimento} dias. Valor: {valor}. Evite juros pagando em dia."
+    },
+    {
+      "id": "m006",
+      "nome": "Cobrança Simples",
+      "tipo": "sms",
+      "conteudo": "Parcela {parcela} em atraso há {diasAtraso} dias. Valor: {valorAtualizado}. Entre em contato: (98) 3xxx-xxxx."
+    },
+    {
+      "id": "m007",
+      "nome": "Lembrete de Vencimento",
+      "tipo": "whatsapp",
+      "conteudo": "Olá {nome}! Gostaríamos de lembrá-lo(a) que a parcela {parcela} do seu contrato {contrato} vencerá em {diasVencimento} dias, no valor de {valor}. Evite juros pagando em dia. Precisa de ajuda? Estamos à disposição!"
+    },
+    {
+      "id": "m008",
+      "nome": "Cobrança com Link",
+      "tipo": "whatsapp",
+      "conteudo": "Olá {nome}! A parcela {parcela} do seu contrato encontra-se em atraso há {diasAtraso} dias. Valor atualizado: {valorAtualizado}. Para sua comodidade, você pode pagar pelo link: {link}\n\nPrecisa de um novo boleto ou deseja negociar? Responda esta mensagem."
+    }
+  ],
+  "configuracoes-gatilhos": {
+    "executarAutomaticamente": true,
+    "horarioExecucao": "03:00",
+    "diasExecucao": [
+      "1",
+      "15"
+    ],
+    "repetirCobrancas": true,
+    "intervaloRepeticao": 7,
+    "limitarRepeticoes": true,
+    "limiteRepeticoes": 3,
+    "gerarLog": true,
+    "gatilhos": [
+      {
+        "dias": 7,
+        "tipo": "email",
+        "ativo": true,
+        "mensagem": "Prezado cliente, identificamos que você possui uma parcela com vencimento em 7 dias. Por favor, efetue o pagamento em dia para evitar juros e multas."
+      },
+      {
+        "dias": 15,
+        "tipo": "sms",
+        "ativo": true,
+        "mensagem": "Sua parcela está em atraso há 15 dias. Entre em contato conosco para regularização."
+      },
+      {
+        "dias": 30,
+        "tipo": "whatsapp",
+        "ativo": true,
+        "mensagem": "Importante: Parcela em atraso há 30 dias. Acesse o link para regularizar sua situação e evitar negativação do seu CPF."
+      }
+    ]
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "clientes": [
+    {
+      "id": "1",
+      "nome": "João Silva",
+      "cpfCnpj": "123.456.789-00",
+      "dataNascimento": "1985-06-15",
+      "endereco": {
+        "cep": "01001-000",
+        "logradouro": "Praça da Sé",
+        "numero": "100",
+        "complemento": "Apto 45",
+        "bairro": "Sé",
+        "cidade": "São Paulo",
+        "estado": "SP"
+      },
+      "contatos": {
+        "telefones": [
+          "(11) 98765-4321",
+          "(11) 3456-7890"
+        ],
+        "emails": [
+          "joao.silva@email.com"
+        ]
+      },
+      "documentos": [
+        {
+          "tipo": "RG",
+          "nomeArquivo": "rg_joao.pdf",
+          "dataUpload": "2023-10-15T14:30:00"
+        }
+      ],
+      "dataCadastro": "2023-10-15T14:30:00"
+    },
+    {
+      "nome": "Maria Oliveira",
+      "cpfCnpj": "987.654.321-00",
+      "dataNascimento": "1990-03-25",
+      "endereco": {
+        "cep": "04538-132",
+        "logradouro": "Avenida Brigadeiro Faria Lima",
+        "numero": "3477",
+        "complemento": "Torre Norte, 10º andar",
+        "bairro": "Itaim Bibi",
+        "cidade": "São Paulo",
+        "estado": "SP"
+      },
+      "contatos": {
+        "telefones": [
+          "(11) 91234-5678"
+        ],
+        "emails": [
+          "maria.oliveira@email.com",
+          "maria@empresa.com"
+        ]
+      },
+      "documentos": [
+        {
+          "tipo": "RG",
+          "nomeArquivo": "rg_maria.pdf",
+          "dataUpload": "2023-10-16T10:15:00"
+        },
+        {
+          "tipo": "CPF",
+          "nomeArquivo": "cpf_maria.pdf",
+          "dataUpload": "2023-10-16T10:16:00"
+        }
+      ],
+      "id": "2"
+    }
+  ],
+  "lotes": [
+    {
+      "id": "1",
+      "numero": "A-001",
+      "quadra": "A",
+      "loteamento": "Jardim das Flores",
+      "area": 250.5,
+      "valorBase": 150000,
+      "status": "disponivel"
+    },
+    {
+      "id": "2",
+      "numero": "A-002",
+      "quadra": "A",
+      "loteamento": "Jardim das Flores",
+      "area": 280.75,
+      "valorBase": 170000,
+      "status": "disponivel"
+    },
+    {
+      "id": "3",
+      "numero": "B-001",
+      "quadra": "B",
+      "loteamento": "Jardim das Flores",
+      "area": 300,
+      "valorBase": 200000,
+      "status": "reservado"
+    }
+  ],
+  "contratos": [
+    {
+      "id": "1",
+      "clienteId": 1,
+      "loteId": 3,
+      "dataInicio": "2023-11-01",
+      "dataFim": "2028-11-01",
+      "valorTotal": 220000,
+      "valorEntrada": 22000,
+      "numeroParcelas": 60,
+      "dataVencimento": 10,
+      "clausulas": "Este contrato estabelece as condições para a compra do lote...",
+      "status": "ativo",
+      "dataCriacao": "2023-10-28T09:30:00"
+    }
+  ],
+  "boletos": [
+    {
+      "id": 1,
+      "clienteId": 1,
+      "clienteNome": "João Silva",
+      "contratoId": 1,
+      "valor": 3666.67,
+      "dataVencimento": "2024-05-10",
+      "numeroParcela": 1,
+      "descricao": "Parcela 1 - Contrato 1",
+      "nossoNumero": "10492576843298761234",
+      "linhaDigitavel": "10492.57684 32987.612340 00000.000174 8 92380000366667",
+      "codigoBarras": "10498923800003666672576843298761234000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761234/pdf",
+      "dataGeracao": "2024-04-10T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 2,
+      "clienteId": 1,
+      "clienteNome": "João Silva",
+      "contratoId": 1,
+      "valor": 3666.67,
+      "dataVencimento": "2024-06-10",
+      "numeroParcela": 2,
+      "descricao": "Parcela 2 - Contrato 1",
+      "nossoNumero": "10492576843298761235",
+      "linhaDigitavel": "10492.57684 32987.612350 00000.000174 8 92660000366667",
+      "codigoBarras": "10498926600003666672576843298761235000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761235/pdf",
+      "dataGeracao": "2024-04-10T14:30:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 3,
+      "clienteId": 2,
+      "clienteNome": "Maria Oliveira",
+      "contratoId": 2,
+      "valor": 2833.33,
+      "dataVencimento": "2024-04-15",
+      "numeroParcela": 1,
+      "descricao": "Parcela 1 - Contrato 2",
+      "nossoNumero": "10492576843298761236",
+      "linhaDigitavel": "10492.57684 32987.612366 00000.000174 8 91950000283333",
+      "codigoBarras": "10498919500002833332576843298761236000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761236/pdf",
+      "dataGeracao": "2024-03-15T10:45:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2024-04-14T16:20:00.000Z",
+      "valorPago": 2833.33,
+      "formaPagamento": "pix"
+    },
+    {
+      "id": 4,
+      "clienteId": 2,
+      "clienteNome": "Maria Oliveira",
+      "contratoId": 2,
+      "valor": 2833.33,
+      "dataVencimento": "2024-05-15",
+      "numeroParcela": 2,
+      "descricao": "Parcela 2 - Contrato 2",
+      "nossoNumero": "10492576843298761237",
+      "linhaDigitavel": "10492.57684 32987.612377 00000.000174 8 92250000283333",
+      "codigoBarras": "10498922500002833332576843298761237000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761237/pdf",
+      "dataGeracao": "2024-03-15T10:45:00.000Z",
+      "status": "gerado"
+    },
+    {
+      "id": 5,
+      "clienteId": 2,
+      "clienteNome": "Maria Oliveira",
+      "contratoId": 2,
+      "valor": 2833.33,
+      "dataVencimento": "2024-03-15",
+      "numeroParcela": 3,
+      "descricao": "Parcela 3 - Contrato 2",
+      "nossoNumero": "10492576843298761238",
+      "linhaDigitavel": "10492.57684 32987.612388 00000.000174 8 91650000283333",
+      "codigoBarras": "10498916500002833332576843298761238000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761238/pdf",
+      "dataGeracao": "2024-03-15T10:45:00.000Z",
+      "status": "vencido"
+    },
+    {
+      "id": 6,
+      "clienteId": 1,
+      "clienteNome": "João Silva",
+      "contratoId": 1,
+      "valor": 3666.67,
+      "dataVencimento": "2024-03-10",
+      "numeroParcela": 3,
+      "descricao": "Parcela 3 - Contrato 1",
+      "nossoNumero": "10492576843298761239",
+      "linhaDigitavel": "10492.57684 32987.612399 00000.000174 8 91580000366667",
+      "codigoBarras": "10498915800003666672576843298761239000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761239/pdf",
+      "dataGeracao": "2024-02-10T14:30:00.000Z",
+      "status": "cancelado",
+      "dataCancelamento": "2024-03-05T09:15:00.000Z"
+    },
+    {
+      "id": 7,
+      "clienteId": 1,
+      "clienteNome": "João Silva",
+      "contratoId": 1,
+      "valor": 3666.67,
+      "dataVencimento": "2024-04-10",
+      "numeroParcela": 4,
+      "descricao": "Parcela 4 - Contrato 1",
+      "nossoNumero": "10492576843298761240",
+      "linhaDigitavel": "10492.57684 32987.612401 00000.000174 8 91870000366667",
+      "codigoBarras": "10498918700003666672576843298761240000000017",
+      "pdfUrl": "https://api.caixa.gov.br/boletos/10492576843298761240/pdf",
+      "dataGeracao": "2024-03-10T14:30:00.000Z",
+      "status": "pago",
+      "dataPagamento": "2024-04-08T10:20:00.000Z",
+      "valorPago": 3666.67,
+      "formaPagamento": "transferencia"
+    }
+  ]
+
+}
+

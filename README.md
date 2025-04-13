@@ -1,70 +1,187 @@
-# Getting Started with Create React App
+# Sistema de Gestão de Loteamentos
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Um sistema completo para gerenciamento de loteamentos, incluindo cadastro de clientes, contratos e gestão de boletos bancários. Esta aplicação foi desenvolvida com React e tecnologias modernas para fornecer uma solução integrada para empresas do setor imobiliário que trabalham com loteamentos.
 
-## Available Scripts
+## 📋 Funcionalidades
 
-In the project directory, you can run:
+O sistema está dividido em dois módulos principais:
 
-### `npm start`
+### 🧩 Módulo 1: Cadastro de Clientes e Contratos
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Cadastro de Clientes:**
+  - Formulário completo para cadastro de informações pessoais
+  - Upload e gerenciamento de documentos
+  - Validação de CPF/CNPJ e outros dados
+  - Interface responsiva com feedbacks visuais
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Cadastro de Contratos:**
+  - Criação de contratos de venda de lotes
+  - Seleção de cliente e lote
+  - Definição de valores, parcelas e datas
+  - Geração de pré-visualização do contrato
 
-### `npm test`
+- **Dashboard:**
+  - Visualização de indicadores e estatísticas
+  - Acompanhamento de vendas e contratos
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 🧩 Módulo 2: Geração e Baixa de Boletos
 
-### `npm run build`
+- **Integração com API de Boletos:**
+  - Geração de boletos via API simulada da Caixa Econômica
+  - Armazenamento de dados e PDF do boleto
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **Gerência de Arquivos de Remessa/Retorno:**
+  - Geração de arquivos CNAB 240
+  - Processamento de arquivos de retorno
+  - Atualização automática do status dos boletos
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Registro de Pagamentos:**
+  - Interface para registrar pagamentos manualmente
+  - Importação de pagamentos via planilha (CSV/XLSX)
+  - Validação e processamento em lote
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Emissão de Boletos:**
+  - Geração individual ou em lote
+  - Configurações flexíveis de parcelas
+  - Exportação em diversos formatos
 
-### `npm run eject`
+## 🚀 Tecnologias Utilizadas
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Frontend:**
+  - React.js com Hooks
+  - Material UI para componentes de interface
+  - React Router para navegação
+  - Context API para gerenciamento de estado
+  - React Hook Form para formulários
+  - Yup para validação de dados
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Persistência:**
+  - JSON Server (para ambiente de desenvolvimento)
+  - Axios para requisições HTTP
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Processamento de Dados:**
+  - SheetJS/XLSX para manipulação de planilhas
+  - jsPDF para geração de PDF
+  - Biblioteca de formatação de datas (date-fns)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **Estilização:**
+  - Material UI (componentes e sistema de design)
+  - CSS-in-JS com Emotion
 
-## Learn More
+## 📦 Estrutura do Projeto
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+sistema-gestao-loteamentos/
+├── public/                   # Arquivos públicos
+├── src/                      # Código fonte
+│   ├── assets/               # Imagens e recursos estáticos
+│   ├── components/           # Componentes React reutilizáveis
+│   │   ├── boletos/          # Componentes do módulo de boletos
+│   │   ├── clientes/         # Componentes do módulo de clientes
+│   │   ├── common/           # Componentes comuns
+│   │   └── contratos/        # Componentes do módulo de contratos
+│   ├── contexts/             # Contextos para gerenciamento de estado
+│   ├── hooks/                # Hooks personalizados
+│   ├── pages/                # Páginas da aplicação
+│   ├── services/             # Serviços de API e utilidades
+│   └── utils/                # Funções utilitárias
+├── db.json                   # Banco de dados mock para desenvolvimento
+├── package.json              # Dependências e scripts
+└── README.md                 # Este arquivo
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🛠️ Como Executar o Projeto
 
-### Code Splitting
+### Pré-requisitos
+- Node.js (v14.x ou superior)
+- npm ou yarn
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Passos para Instalação
 
-### Analyzing the Bundle Size
+1. Clone este repositório:
+```bash
+git clone https://github.com/seu-usuario/sistema-gestao-loteamentos.git
+cd sistema-gestao-loteamentos
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+2. Instale as dependências:
+```bash
+npm install
+# ou
+yarn install
+```
 
-### Making a Progressive Web App
+3. Inicie o servidor JSON para simular a API:
+```bash
+npm run server
+# ou
+yarn server
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+4. Em outro terminal, inicie a aplicação React:
+```bash
+npm start
+# ou
+yarn start
+```
 
-### Advanced Configuration
+5. Acesse a aplicação em seu navegador:
+```
+http://localhost:3000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 🔧 Scripts Disponíveis
 
-### Deployment
+- `npm start` - Inicia o servidor de desenvolvimento React
+- `npm run server` - Inicia o JSON Server para simular a API
+- `npm run build` - Compila a aplicação para produção
+- `npm test` - Executa os testes
+- `npm run eject` - Ejeta a configuração do Create React App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 📱 Responsividade
 
-### `npm run build` fails to minify
+O sistema é totalmente responsivo e adaptado para:
+- Desktops (1024px e acima)
+- Tablets (768px a 1023px)
+- Smartphones (até 767px)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🔍 Funcionalidades Avançadas
+
+### 🔒 Validação de Dados
+- Validação em tempo real de CPF/CNPJ
+- Validação de endereço e contatos
+- Validação de valores e datas nos contratos
+
+### 📊 Integrações
+- API da Caixa Econômica para boletos (simulada)
+- Busca de endereço por CEP
+- Exportação e importação de dados
+
+### 🎯 Usabilidade
+- Breadcrumbs para fácil navegação
+- Feedback visual e notificações
+- Interface intuitiva com wizards para processos complexos
+
+## 📚 Documentação Adicional
+
+Para mais informações sobre a estrutura e padrões utilizados no projeto, consulte:
+
+- [Material UI Documentation](https://mui.com/getting-started/usage/)
+- [React Hook Form Documentation](https://react-hook-form.com/get-started)
+- [JSON Server Documentation](https://github.com/typicode/json-server)
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. Faça commit das suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para mais detalhes.
+
+## 📧 Contato
+
+Para perguntas ou sugestões, por favor, entre em contato através do e-mail: exemplo@email.com
