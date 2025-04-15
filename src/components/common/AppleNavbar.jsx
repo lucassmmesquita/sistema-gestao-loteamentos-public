@@ -8,11 +8,7 @@ import {
   Menu,
   MenuItem,
   Container,
-  Avatar,
-  Button,
   Tooltip,
-  Drawer,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -22,9 +18,11 @@ import {
   Slide,
   useMediaQuery,
   Switch,
-  Collapse
+  Collapse,
+  Drawer,
+  List
 } from '@mui/material';
-import { styled, useTheme, alpha } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../../ThemeProvider';
 import {
@@ -46,7 +44,9 @@ import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   AutoGraph as AutoGraphIcon, 
-  Calculate as CalculateIcon 
+  Calculate as CalculateIcon, 
+  AccountCircle as AccountCircleIcon,
+  ExitToApp as ExitToAppIcon
 } from '@mui/icons-material';
 
 // Custom styled components
@@ -64,6 +64,7 @@ const NavbarContainer = styled(AppBar)(({ theme, transparentOnTop, isTop }) => (
         ? 'rgba(66, 66, 69, 0.5)' 
         : 'rgba(210, 210, 215, 0.5)'}`,
   transition: 'all 0.3s ease',
+  zIndex: theme.zIndex.drawer + 1 // Garante que fique acima do drawer
 }));
 
 const Logo = styled(Typography)(({ theme }) => ({
@@ -71,28 +72,6 @@ const Logo = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   letterSpacing: '-0.025em',
   transition: 'color 0.3s ease',
-}));
-
-const NavButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.text.primary,
-  margin: '0 8px',
-  fontWeight: 500,
-  fontSize: '0.875rem',
-  padding: '6px 10px',
-  borderRadius: 12,
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
-    transform: 'translateY(-2px)',
-  },
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(1, 1),
-  justifyContent: 'flex-end',
-  minHeight: 64,
 }));
 
 const StyledListItem = styled(ListItem)(({ theme }) => ({
@@ -124,6 +103,12 @@ const ThemeToggle = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
+const UserSection = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+}));
+
 function HideOnScroll(props) {
   const { children, window, threshold = 100 } = props;
   const trigger = useScrollTrigger({
@@ -138,20 +123,30 @@ function HideOnScroll(props) {
   );
 }
 
-const AppleNavbar = ({ transparentOnTop = false, drawerWidth = 240 }) => {
+const AppleNavbar = ({ 
+  transparentOnTop = false, 
+  drawerWidth = 240, 
+  open, 
+  setOpen, 
+  handleDrawerToggle,
+  CustomDrawerHeader
+}) => {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const { mode, toggleMode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [open, setOpen] = useState(!isMobile);
   const [scrolled, setScrolled] = useState(false);
   const [subMenus, setSubMenus] = useState({
     boletos: false,
     reajustes: false,
     inadimplencia: false
   });
+  
+  // Estado para o menu de usuário
+  const [userMenuAnchorEl, setUserMenuAnchorEl] = useState(null);
+  const isUserMenuOpen = Boolean(userMenuAnchorEl);
   
   // Listen for scroll events
   useEffect(() => {
@@ -187,11 +182,6 @@ const AppleNavbar = ({ transparentOnTop = false, drawerWidth = 240 }) => {
     { text: 'Configurações', icon: <SettingsIcon />, path: '/inadimplencia/configuracoes' }
   ];
   
-  // Toggle drawer
-  const handleDrawerToggle = () => {
-    setOpen(!open);
-  };
-  
   // Toggle submenu
   const handleToggleSubmenu = (menu) => {
     setSubMenus({
@@ -216,6 +206,32 @@ const AppleNavbar = ({ transparentOnTop = false, drawerWidth = 240 }) => {
     return location.pathname.startsWith(path);
   };
   
+  // Abrir menu de usuário
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchorEl(event.currentTarget);
+  };
+  
+  // Fechar menu de usuário
+  const handleUserMenuClose = () => {
+    setUserMenuAnchorEl(null);
+  };
+  
+  // Logout
+  const handleLogout = () => {
+    handleUserMenuClose();
+    // Implementar lógica de logout aqui
+    console.log('Usuário deslogado');
+    // navigate('/login');
+  };
+  
+  // Acessar perfil
+  const handleProfile = () => {
+    handleUserMenuClose();
+    // Implementar lógica de perfil aqui
+    console.log('Acessando perfil');
+    // navigate('/perfil');
+  };
+  
   // Open relevant submenu based on current path
   useEffect(() => {
     if (location.pathname.includes('/boletos')) {
@@ -238,39 +254,88 @@ const AppleNavbar = ({ transparentOnTop = false, drawerWidth = 240 }) => {
           isTop={!scrolled && transparentOnTop}
         >
           <Container maxWidth="xl">
-            <Toolbar disableGutters>
+            <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
+              {/* Botão Menu (esquerda) */}
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
                 edge="start"
                 onClick={handleDrawerToggle}
-                sx={{ mr: 2, display: { md: open ? 'none' : 'flex' } }}
+                sx={{ 
+                  color: theme.palette.text.primary
+                }}
               >
                 <MenuIcon />
               </IconButton>
               
-              <Logo
-                variant="h6"
-                noWrap
-                component={Link}
-                to="/"
-                sx={{
-                  display: { xs: 'flex' },
-                  flexGrow: 1,
-                  textDecoration: 'none',
-                  color: theme.palette.text.primary,
-                }}
-              >
-                Sistema de Gestão
-              </Logo>
+              {/* Logo Centralizada */}
+              <Box sx={{ 
+                display: 'flex', 
+                flexGrow: 1, 
+                justifyContent: 'center' 
+              }}>
+                <Logo
+                  variant="h6"
+                  noWrap
+                  component={Link}
+                  to="/"
+                  sx={{
+                    textDecoration: 'none',
+                    color: theme.palette.text.primary,
+                  }}
+                >
+                  Sistema de Gestão de Loteamentos
+                </Logo>
+              </Box>
               
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Tooltip title={mode === 'dark' ? 'Light Mode' : 'Dark Mode'}>
-                  <IconButton onClick={toggleMode} color="inherit">
+              {/* Usuário e Tema (direita) */}
+              <UserSection>
+                <Tooltip title={mode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}>
+                  <IconButton 
+                    onClick={toggleMode} 
+                    sx={{ color: theme.palette.text.primary }}
+                  >
                     {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
                   </IconButton>
                 </Tooltip>
-              </Box>
+                
+                <Tooltip title="Perfil">
+                  <IconButton
+                    onClick={handleUserMenuOpen}
+                    size="medium"
+                    sx={{ color: theme.palette.text.primary }}
+                    aria-controls={isUserMenuOpen ? 'user-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={isUserMenuOpen ? 'true' : undefined}
+                  >
+                    <AccountCircleIcon />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="user-menu"
+                  anchorEl={userMenuAnchorEl}
+                  open={isUserMenuOpen}
+                  onClose={handleUserMenuClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'user-button',
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <MenuItem onClick={handleProfile}>
+                    <ListItemIcon>
+                      <AccountCircleIcon fontSize="small" />
+                    </ListItemIcon>
+                    Perfil
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <ExitToAppIcon fontSize="small" />
+                    </ListItemIcon>
+                    Sair
+                  </MenuItem>
+                </Menu>
+              </UserSection>
             </Toolbar>
           </Container>
         </NavbarContainer>
@@ -295,22 +360,8 @@ const AppleNavbar = ({ transparentOnTop = false, drawerWidth = 240 }) => {
         open={open}
         onClose={handleDrawerToggle}
       >
-        <DrawerHeader>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              flexGrow: 1, 
-              fontWeight: 600, 
-              ml: 2,
-              color: theme.palette.primary.main
-            }}
-          >
-            Gestão de Loteamentos
-          </Typography>
-          <IconButton onClick={handleDrawerToggle}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </DrawerHeader>
+        {/* Usa o componente separado para o cabeçalho do drawer */}
+        {CustomDrawerHeader && <CustomDrawerHeader />}
         
         <Divider />
         

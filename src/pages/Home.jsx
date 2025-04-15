@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Container, Typography, useMediaQuery } from '@mui/material';
 import { styled, useTheme, alpha } from '@mui/material/styles';
 import FileUpload from '../components/common/FileUpload';
-import {
-  Person as PersonIcon,
-  Description as DescriptionIcon,
+import { 
+  Person as PersonIcon, 
+  Description as DescriptionIcon, 
   Dashboard as DashboardIcon,
   Landscape as LandscapeIcon,
   Receipt as ReceiptIcon,
@@ -14,8 +14,10 @@ import {
   AutoGraph as AutoGraphIcon,
   Calculate as CalculateIcon,
   NotificationsActive as NotificationsIcon,
-  Settings as SettingsIcon
+  Settings,
+  Calculate 
 } from '@mui/icons-material';
+
 import {
   AppleSection,
   AppleSectionContent,
@@ -30,8 +32,61 @@ import {
   AppleFeatureLink
 } from '../components/common/AppleComponents';
 
+// Styled components for this page
+const HeroSection = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  minHeight: '500px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  padding: theme.spacing(6, 0),
+  textAlign: 'center',
+  backgroundColor: theme.palette.mode === 'dark' ? '#000' : '#fff',
+  overflow: 'hidden',
+}));
+
+const GradientBackground = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: theme.palette.mode === 'dark'
+    ? 'radial-gradient(circle at center, #1d1d1f 0%, #000 70%)'
+    : 'radial-gradient(circle at center, #fff 0%, #f5f5f7 70%)',
+  zIndex: 0,
+}));
+
+const FeatureCard = styled(AppleCard)(({ theme }) => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  transition: 'all 0.3s ease',
+  backdropFilter: 'blur(10px)',
+  backgroundColor: theme.palette.mode === 'dark'
+    ? alpha(theme.palette.background.paper, 0.8)
+    : alpha('#fff', 0.8),
+  '&:hover': {
+    transform: 'translateY(-8px)',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+  },
+}));
+
+const IconContainer = styled(Box)(({ theme, colorKey = 'primary' }) => ({
+  width: 60,
+  height: 60,
+  borderRadius: 16,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: alpha(theme.palette[colorKey].main, 0.1),
+  color: theme.palette[colorKey].main,
+  marginBottom: theme.spacing(2),
+}));
+
 const Home = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
   
   const clienteContratoCards = [
     {
@@ -114,22 +169,19 @@ const Home = () => {
   ];
   
   return (
-    <Container maxWidth="lg">
-      <AppleSection>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Sistema de Gestão de Loteamentos
-        </Typography>
-        <Typography variant="subtitle1" color="textSecondary" paragraph align="center">
-          Gerencie clientes, contratos, lotes e boletos bancários de forma integrada e eficiente
-        </Typography>
-      </AppleSection>
-      
-      <AppleTitle variant="h5" component="h2" gutterBottom>
+    <Container maxWidth="xl" sx={{ px: 1, mt: 2 }}>
+      {/* Cadastros e Contratos */}
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom
+        sx={{ fontWeight: 600, mb: 3 }}
+      >
         Cadastros e Contratos
-      </AppleTitle>
-      <Grid container spacing={4} sx={{ mb: 6 }}>
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
         {clienteContratoCards.map((item, index) => (
-          <Grid item xs={12} md={6} lg={3} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <AppleCard 
               sx={{ 
                 height: '100%', 
@@ -142,7 +194,7 @@ const Home = () => {
                 }
               }}
             >
-              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 3 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -170,12 +222,18 @@ const Home = () => {
       
       <Box sx={{ mb: 4 }} component="hr" />
       
-      <AppleTitle variant="h5" component="h2" gutterBottom>
+      {/* Gestão de Boletos */}
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom
+        sx={{ fontWeight: 600, mb: 3 }}
+      >
         Gestão de Boletos
-      </AppleTitle>
-      <Grid container spacing={4} sx={{ mb: 6 }}>
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
         {boletosCards.map((item, index) => (
-          <Grid item xs={12} md={6} lg={3} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <AppleCard 
               sx={{ 
                 height: '100%', 
@@ -188,7 +246,7 @@ const Home = () => {
                 }
               }}
             >
-              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 3 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -217,10 +275,16 @@ const Home = () => {
       
       <Box sx={{ mb: 4 }} component="hr" />
       
-      <AppleTitle variant="h5" component="h2" gutterBottom>
+      {/* Reajuste Automático de Contratos */}
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom
+        sx={{ fontWeight: 600, mb: 3 }}
+      >
         Reajuste Automático de Contratos
-      </AppleTitle>
-      <Grid container spacing={4}>
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 6 }}>
         {reajustesCards.map((item, index) => (
           <Grid item xs={12} md={6} key={index}>
             <AppleCard 
@@ -235,7 +299,7 @@ const Home = () => {
                 }
               }}
             >
-              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 3 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -261,12 +325,6 @@ const Home = () => {
           </Grid>
         ))}
       </Grid>
-      
-      <Box sx={{ mt: 6, textAlign: 'center' }}>
-        <Typography variant="body2" color="textSecondary">
-          © {new Date().getFullYear()} Sistema de Gestão de Loteamentos - Todos os direitos reservados
-        </Typography>
-      </Box>
     </Container>
   );
 };
