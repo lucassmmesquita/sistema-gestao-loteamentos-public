@@ -1,31 +1,27 @@
 import React from 'react';
-import { Container, Typography, Box, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Typography, Box, useTheme, useMediaQuery } from '@mui/material';
 import BoletoList from '../../components/boletos/BoletoList';
 
 const GerenciarBoletos = () => {
-  const navigate = useNavigate();
-  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Gerenciar Boletos
-        </Typography>
-        
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/boletos/emitir')}
-        >
-          Emitir Boleto
-        </Button>
-      </Box>
-      
+    <Box>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 600,
+          fontSize: { xs: '1.75rem', md: '2.125rem' },
+          mb: 3
+        }}
+      >
+        Gerenciamento de Boletos
+      </Typography>
       <BoletoList />
-    </Container>
+    </Box>
   );
 };
 

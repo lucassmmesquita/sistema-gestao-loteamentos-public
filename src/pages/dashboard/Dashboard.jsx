@@ -1,30 +1,70 @@
 import React, { useEffect, useState } from 'react';
 import { 
-  Container, 
   Grid, 
-  Paper, 
   Typography, 
-  Box, 
-  Card, 
+  Box,
+  Paper,
+  Card,
   CardContent,
+  useMediaQuery,
   Divider
 } from '@mui/material';
+import { styled, useTheme, alpha } from '@mui/material/styles';
 import {
   AccountCircle as ClienteIcon,
   Description as ContratoIcon,
   Landscape as LoteIcon,
-  AttachMoney as MoneyIcon
+  AttachMoney as MoneyIcon,
+  TrendingUp as TrendingUpIcon,
+  TrendingDown as TrendingDownIcon
 } from '@mui/icons-material';
+
 import useClientes from '../../hooks/useClientes';
 import useContratos from '../../hooks/useContratos';
 import Loading from '../../components/common/Loading';
 import { formatCurrency } from '../../utils/formatters';
+import { AppleDashboardCard, ApplePaper, AppleTitle, AppleSubtitle } from '../../components/common/AppleComponents';
+
+// Styled components
+const StatisticWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(2, 0),
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  '&:last-child': {
+    borderBottom: 'none',
+  }
+}));
+
+const StatisticLabel = styled(Typography)(({ theme }) => ({
+  fontWeight: 500,
+  color: theme.palette.text.secondary,
+}));
+
+const StatisticValue = styled(Typography)(({ theme }) => ({
+  fontWeight: 600,
+}));
+
+const DashboardSectionTitle = styled(Typography)(({ theme }) => ({
+  fontSize: '1.25rem',
+  fontWeight: 600,
+  marginBottom: theme.spacing(3),
+  color: theme.palette.text.primary,
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+}));
 
 const Dashboard = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  
   const { clientes, loading: clientesLoading } = useClientes();
   const { contratos, lotes, loading: contratosLoading } = useContratos();
   
-  // Estados para as estatísticas
+  // States for statistics
   const [stats, setStats] = useState({
     totalClientes: 0,
     totalContratos: 0,
@@ -36,15 +76,18 @@ const Dashboard = () => {
     valorMedioContratos: 0
   });
   
-  // Calcula as estatísticas quando os dados são carregados
+  // Animation state
+  const [animate, setAnimate] = useState(false);
+  
+  // Calculate statistics when data is loaded
   useEffect(() => {
     if (clientes && contratos && lotes) {
-      // Estatísticas dos lotes
+      // Lot statistics
       const disponiveis = lotes.filter(l => l.status === 'disponivel').length;
       const reservados = lotes.filter(l => l.status === 'reservado').length;
       const vendidos = lotes.filter(l => l.status === 'vendido').length;
       
-      // Estatísticas financeiras
+      // Financial statistics
       const valorTotal = contratos.reduce((sum, contrato) => sum + (contrato.valorTotal || 0), 0);
       const valorMedio = contratos.length > 0 ? valorTotal / contratos.length : 0;
       
@@ -61,256 +104,273 @@ const Dashboard = () => {
     }
   }, [clientes, contratos, lotes]);
   
+  // Animate on mount
+  useEffect(() => {
+    // Allow time for stats to be calculated
+    setTimeout(() => {
+      setAnimate(true);
+    }, 300);
+  }, []);
+  
   return (
-    <Container maxWidth="lg">
+    <Box
+      sx={{
+        opacity: animate ? 1 : 0,
+        transform: animate ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 0.5s ease',
+      }}
+    >
       <Loading open={clientesLoading || contratosLoading} />
       
-      <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard
-      </Typography>
+      <AppleTitle sx={{ mb: 4 }}>Dashboard</AppleTitle>
       
-      {/* Cards principais */}
+      {/* Main Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Card de Clientes */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: 140,
-              borderTop: '4px solid #1976d2'
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <ClienteIcon sx={{ color: 'primary.main', mr: 1 }} />
-              <Typography variant="h6" color="primary">
-                Clientes
-              </Typography>
-            </Box>
-            <Typography variant="h3" component="div">
-              {stats.totalClientes}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Total de clientes cadastrados
-            </Typography>
-          </Paper>
+        {/* Clients Card */}
+        <Grid item xs={12} sm={6} md={3} 
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.5s ease forwards' : 'none',
+            animationDelay: '0.1s',
+            opacity: 0,
+            '@keyframes fadeInUp': {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            }
+          }}
+        >
+          <AppleDashboardCard
+            title="Clientes"
+            value={stats.totalClientes}
+            icon={<ClienteIcon fontSize="large" />}
+            colorClass="primary"
+          />
         </Grid>
         
-        {/* Card de Contratos */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: 140,
-              borderTop: '4px solid #dc004e'
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <ContratoIcon sx={{ color: 'secondary.main', mr: 1 }} />
-              <Typography variant="h6" color="secondary">
-                Contratos
-              </Typography>
-            </Box>
-            <Typography variant="h3" component="div">
-              {stats.totalContratos}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Total de contratos ativos
-            </Typography>
-          </Paper>
+        {/* Contracts Card */}
+        <Grid item xs={12} sm={6} md={3}
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.5s ease forwards' : 'none',
+            animationDelay: '0.2s',
+            opacity: 0
+          }}
+        >
+          <AppleDashboardCard
+            title="Contratos"
+            value={stats.totalContratos}
+            icon={<ContratoIcon fontSize="large" />}
+            colorClass="secondary"
+          />
         </Grid>
         
-        {/* Card de Lotes */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: 140,
-              borderTop: '4px solid #4caf50'
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <LoteIcon sx={{ color: '#4caf50', mr: 1 }} />
-              <Typography variant="h6" style={{ color: '#4caf50' }}>
-                Lotes
-              </Typography>
-            </Box>
-            <Typography variant="h3" component="div">
-              {stats.totalLotes}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Total de lotes cadastrados
-            </Typography>
-          </Paper>
+        {/* Lots Card */}
+        <Grid item xs={12} sm={6} md={3}
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.5s ease forwards' : 'none',
+            animationDelay: '0.3s',
+            opacity: 0
+          }}
+        >
+          <AppleDashboardCard
+            title="Lotes"
+            value={stats.totalLotes}
+            icon={<LoteIcon fontSize="large" />}
+            colorClass="success"
+          />
         </Grid>
         
-        {/* Card de Valores */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: 140,
-              borderTop: '4px solid #f57c00'
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <MoneyIcon sx={{ color: '#f57c00', mr: 1 }} />
-              <Typography variant="h6" style={{ color: '#f57c00' }}>
-                Vendas
-              </Typography>
-            </Box>
-            <Typography variant="h6" component="div" fontWeight="bold">
-              {formatCurrency(stats.valorTotalContratos)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Valor total em contratos
-            </Typography>
-          </Paper>
+        {/* Sales Value Card */}
+        <Grid item xs={12} sm={6} md={3}
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.5s ease forwards' : 'none',
+            animationDelay: '0.4s',
+            opacity: 0
+          }}
+        >
+          <AppleDashboardCard
+            title="Vendas"
+            value={formatCurrency(stats.valorTotalContratos)}
+            icon={<MoneyIcon fontSize="large" />}
+            colorClass="warning"
+          />
         </Grid>
       </Grid>
       
-      {/* Detalhamento de Lotes */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Situação dos Lotes
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Paper 
-                    elevation={0} 
-                    sx={{ 
-                      p: 2, 
-                      textAlign: 'center',
-                      bgcolor: '#e3f2fd',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography variant="h4" component="div">
-                      {stats.lotesDisponiveis}
-                    </Typography>
-                    <Typography variant="body2">
-                      Disponíveis
-                    </Typography>
-                  </Paper>
-                </Grid>
-                <Grid item xs={4}>
-                  <Paper 
-                    elevation={0} 
-                    sx={{ 
-                      p: 2, 
-                      textAlign: 'center',
-                      bgcolor: '#fff9c4',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography variant="h4" component="div">
-                      {stats.lotesReservados}
-                    </Typography>
-                    <Typography variant="body2">
-                      Reservados
-                    </Typography>
-                  </Paper>
-                </Grid>
-                <Grid item xs={4}>
-                  <Paper 
-                    elevation={0} 
-                    sx={{ 
-                      p: 2, 
-                      textAlign: 'center',
-                      bgcolor: '#e8f5e9',
-                      borderRadius: 2
-                    }}
-                  >
-                    <Typography variant="h4" component="div">
-                      {stats.lotesVendidos}
-                    </Typography>
-                    <Typography variant="body2">
-                      Vendidos
-                    </Typography>
-                  </Paper>
-                </Grid>
+      {/* Detailed Sections */}
+      <Grid container spacing={4}>
+        {/* Lot Status Section */}
+        <Grid item xs={12} md={6}
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.6s ease forwards' : 'none',
+            animationDelay: '0.5s',
+            opacity: 0
+          }}
+        >
+          <ApplePaper>
+            <DashboardSectionTitle>
+              <LoteIcon sx={{ color: theme.palette.success.main }} />
+              Situação dos Lotes
+            </DashboardSectionTitle>
+            <Divider sx={{ mb: 3 }} />
+            
+            <Grid container spacing={3}>
+              <Grid item xs={4}>
+                <Card
+                  sx={{
+                    bgcolor: alpha(theme.palette.info.main, 0.1),
+                    textAlign: 'center',
+                    p: 2,
+                    borderRadius: 3,
+                    transition: 'transform 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)'
+                    }
+                  }}
+                >
+                  <Typography variant="h4" component="div" fontWeight={700} sx={{ mb: 1 }}>
+                    {stats.lotesDisponiveis}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Disponíveis
+                  </Typography>
+                </Card>
               </Grid>
-            </CardContent>
-          </Card>
+              <Grid item xs={4}>
+                <Card
+                  sx={{
+                    bgcolor: alpha(theme.palette.warning.main, 0.1),
+                    textAlign: 'center',
+                    p: 2,
+                    borderRadius: 3,
+                    transition: 'transform 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)'
+                    }
+                  }}
+                >
+                  <Typography variant="h4" component="div" fontWeight={700} sx={{ mb: 1 }}>
+                    {stats.lotesReservados}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Reservados
+                  </Typography>
+                </Card>
+              </Grid>
+              <Grid item xs={4}>
+                <Card
+                  sx={{
+                    bgcolor: alpha(theme.palette.success.main, 0.1),
+                    textAlign: 'center',
+                    p: 2,
+                    borderRadius: 3,
+                    transition: 'transform 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)'
+                    }
+                  }}
+                >
+                  <Typography variant="h4" component="div" fontWeight={700} sx={{ mb: 1 }}>
+                    {stats.lotesVendidos}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Vendidos
+                  </Typography>
+                </Card>
+              </Grid>
+            </Grid>
+          </ApplePaper>
         </Grid>
         
-        {/* Estatísticas de Contratos */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Estatísticas de Vendas
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
+        {/* Sales Statistics Section */}
+        <Grid item xs={12} md={6}
+          sx={{ 
+            animation: animate ? 'fadeInUp 0.6s ease forwards' : 'none',
+            animationDelay: '0.6s',
+            opacity: 0
+          }}
+        >
+          <ApplePaper>
+            <DashboardSectionTitle>
+              <MoneyIcon sx={{ color: theme.palette.warning.main }} />
+              Estatísticas de Vendas
+            </DashboardSectionTitle>
+            <Divider sx={{ mb: 3 }} />
+            
+            <Box>
+              <StatisticWrapper>
+                <StatisticLabel variant="body1">Valor Médio dos Contratos:</StatisticLabel>
+                <StatisticValue variant="body1">
+                  {formatCurrency(stats.valorMedioContratos)}
+                </StatisticValue>
+              </StatisticWrapper>
               
-              <Box sx={{ mb: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body1">Valor Médio dos Contratos:</Typography>
-                  <Typography variant="body1" fontWeight="bold">
-                    {formatCurrency(stats.valorMedioContratos)}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body1">Contratos por Cliente:</Typography>
-                  <Typography variant="body1" fontWeight="bold">
-                    {stats.totalClientes ? (stats.totalContratos / stats.totalClientes).toFixed(2) : '0.00'}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1">Taxa de Ocupação:</Typography>
-                  <Typography variant="body1" fontWeight="bold">
+              <StatisticWrapper>
+                <StatisticLabel variant="body1">Contratos por Cliente:</StatisticLabel>
+                <StatisticValue variant="body1">
+                  {stats.totalClientes ? (stats.totalContratos / stats.totalClientes).toFixed(2) : '0.00'}
+                </StatisticValue>
+              </StatisticWrapper>
+              
+              <StatisticWrapper>
+                <StatisticLabel variant="body1">Taxa de Ocupação:</StatisticLabel>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <StatisticValue variant="body1" sx={{ mr: 1 }}>
                     {stats.totalLotes 
                       ? (((stats.lotesReservados + stats.lotesVendidos) / stats.totalLotes) * 100).toFixed(2) 
                       : '0.00'}%
-                  </Typography>
+                  </StatisticValue>
+                  <TrendingUpIcon sx={{ color: theme.palette.success.main }} />
                 </Box>
-              </Box>
-            </CardContent>
-          </Card>
+              </StatisticWrapper>
+              
+              <StatisticWrapper>
+                <StatisticLabel variant="body1">Valor Médio por Lote:</StatisticLabel>
+                <StatisticValue variant="body1">
+                  {formatCurrency(stats.valorTotalContratos / Math.max(1, (stats.lotesReservados + stats.lotesVendidos)))}
+                </StatisticValue>
+              </StatisticWrapper>
+            </Box>
+          </ApplePaper>
         </Grid>
       </Grid>
       
-      {/* Resumo Geral */}
-      <Paper sx={{ p: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Resumo Geral
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        
-        <Typography variant="body1" paragraph>
-          O sistema atualmente gerencia <strong>{stats.totalClientes}</strong> clientes, 
-          <strong> {stats.totalContratos}</strong> contratos ativos e 
-          <strong> {stats.totalLotes}</strong> lotes.
-        </Typography>
-        
-        <Typography variant="body1" paragraph>
-          Do total de lotes, <strong>{stats.lotesDisponiveis}</strong> estão disponíveis para venda, 
-          <strong> {stats.lotesReservados}</strong> estão reservados e 
-          <strong> {stats.lotesVendidos}</strong> foram vendidos.
-        </Typography>
-        
-        <Typography variant="body1">
-          O valor total dos contratos é de <strong>{formatCurrency(stats.valorTotalContratos)}</strong>, 
-          com um valor médio de <strong>{formatCurrency(stats.valorMedioContratos)}</strong> por contrato.
-        </Typography>
-      </Paper>
-    </Container>
+      {/* Summary Section */}
+      <Box
+        sx={{ 
+          mt: 4,
+          animation: animate ? 'fadeInUp 0.6s ease forwards' : 'none',
+          animationDelay: '0.7s',
+          opacity: 0
+        }}
+      >
+        <ApplePaper>
+          <DashboardSectionTitle>
+            <ContratoIcon sx={{ color: theme.palette.secondary.main }} />
+            Resumo Geral
+          </DashboardSectionTitle>
+          <Divider sx={{ mb: 3 }} />
+          
+          <Typography variant="body1" paragraph>
+            O sistema atualmente gerencia <strong>{stats.totalClientes}</strong> clientes, 
+            <strong> {stats.totalContratos}</strong> contratos ativos e 
+            <strong> {stats.totalLotes}</strong> lotes.
+          </Typography>
+          
+          <Typography variant="body1" paragraph>
+            Do total de lotes, <strong>{stats.lotesDisponiveis}</strong> estão disponíveis para venda, 
+            <strong> {stats.lotesReservados}</strong> estão reservados e 
+            <strong> {stats.lotesVendidos}</strong> foram vendidos.
+          </Typography>
+          
+          <Typography variant="body1">
+            O valor total dos contratos é de <strong>{formatCurrency(stats.valorTotalContratos)}</strong>, 
+            com um valor médio de <strong>{formatCurrency(stats.valorMedioContratos)}</strong> por contrato.
+          </Typography>
+        </ApplePaper>
+      </Box>
+    </Box>
   );
 };
 

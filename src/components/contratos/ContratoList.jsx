@@ -23,10 +23,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Card,
-  CardContent,
-  CardActions,
-  Grid
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -48,6 +46,10 @@ import ContratoPreview from './ContratoPreview';
 
 const ContratoList = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  
   const { contratos, lotes, loading, error, loadContratos, deleteContrato, gerarPreviaContrato } = useContratos();
   const { clientes, loadClientes } = useClientes();
   
@@ -58,7 +60,9 @@ const ContratoList = () => {
   const [filteredContratos, setFilteredContratos] = useState([]);
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
-    contratoId: null
+    contratoId: null,
+    clienteNome: '',
+    loteInfo: ''
   });
   const [previewDialog, setPreviewDialog] = useState({
     open: false,
@@ -135,23 +139,28 @@ const ContratoList = () => {
   };
   
   const handleDeleteClick = (contrato) => {
+    const cliente = clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
+    const lote = lotes.find(l => l.id === contrato.loteId) || { loteamento: 'Loteamento não encontrado', quadra: '-', numero: '-' };
+    
     setDeleteDialog({
       open: true,
-      contratoId: contrato.id
+      contratoId: contrato.id,
+      clienteNome: cliente.nome,
+      loteInfo: `${lote.loteamento} - Quadra ${lote.quadra}, Lote ${lote.numero}`
     });
   };
   
   const handleConfirmDelete = async () => {
     try {
       await deleteContrato(deleteDialog.contratoId);
-      setDeleteDialog({ open: false, contratoId: null });
+      setDeleteDialog({ open: false, contratoId: null, clienteNome: '', loteInfo: '' });
     } catch (error) {
       console.error('Erro ao excluir contrato:', error);
     }
   };
   
   const handleCancelDelete = () => {
-    setDeleteDialog({ open: false, contratoId: null });
+    setDeleteDialog({ open: false, contratoId: null, clienteNome: '', loteInfo: '' });
   };
   
   const handlePreviewContrato = async (contrato) => {
@@ -199,20 +208,45 @@ const ContratoList = () => {
     };
   };
   
+  // Definir colunas a serem exibidas com base no tamanho da tela
+  const getVisibleColumns = () => {
+    if (isMobile) {
+      return ['cliente', 'lote', 'acoes'];
+    } else if (isTablet) {
+      return ['cliente', 'lote', 'valor', 'parcelas', 'acoes'];
+    }
+    return ['cliente', 'lote', 'valor', 'periodo', 'parcelas', 'status', 'acoes'];
+  };
+  
+  const visibleColumns = getVisibleColumns();
+  
   // Renderiza a tabela de contratos
   return (
     <>
       <Loading open={loading || loading2} />
       
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper 
+        sx={{ 
+          width: '100%', 
+          mb: 2, 
+          borderRadius: 2, 
+          overflow: 'hidden',
+          boxShadow: 2
+        }}
+      >
         <Toolbar
           sx={{
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 }
+            p: 2,
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'stretch' : 'center',
+            gap: isMobile ? 2 : 0,
+            borderBottom: '1px solid',
+            borderColor: 'divider'
           }}
         >
           <Typography
-            sx={{ flex: '1 1 100%' }}
+            sx={{ flex: isMobile ? 'none' : '1 1 100%', fontWeight: 600 }}
             variant="h6"
             id="tableTitle"
             component="div"
@@ -220,55 +254,166 @@ const ContratoList = () => {
             Contratos
           </Typography>
           
-          <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Buscar contrato..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            sx={{ mr: 2, width: { xs: '100%', sm: '300px' } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              endAdornment: searchTerm && (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    aria-label="clear search"
-                    onClick={handleClearSearch}
-                    edge="end"
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-          
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleAddContrato}
-          >
-            Novo Contrato
-          </Button>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            width: isMobile ? '100%' : 'auto',
+            flexDirection: isMobile ? 'column' : 'row'
+          }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Buscar contrato..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{ 
+                width: isMobile ? '100%' : '300px',
+                '& .MuiOutlinedInput-root': { borderRadius: 2 }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTerm && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      aria-label="clear search"
+                      onClick={handleClearSearch}
+                      edge="end"
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+            
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleAddContrato}
+              sx={{
+                textTransform: 'none',
+                borderRadius: 2,
+                fontWeight: 500,
+                px: 2,
+                py: 1,
+                height: isMobile ? 'auto' : 40,
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  transition: 'transform 0.2s ease'
+                }
+              }}
+            >
+              Novo Contrato
+            </Button>
+          </Box>
         </Toolbar>
         
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+        <TableContainer sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+          <Table 
+            aria-labelledby="tableTitle"
+            size="medium"
+            sx={{ 
+              minWidth: isMobile ? 300 : 750,
+              tableLayout: 'fixed'
+            }}
+          >
             <TableHead>
-              <TableRow>
-                <TableCell>Cliente</TableCell>
-                <TableCell>Lote</TableCell>
-                <TableCell>Valor</TableCell>
-                <TableCell>Período</TableCell>
-                <TableCell>Parcelas</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Ações</TableCell>
+              <TableRow sx={{ 
+                backgroundColor: theme => theme.palette.mode === 'light' 
+                  ? 'rgba(0, 0, 0, 0.02)' 
+                  : 'rgba(255, 255, 255, 0.05)' 
+              }}>
+                {visibleColumns.includes('cliente') && (
+                  <TableCell 
+                    sx={{ 
+                      width: isMobile ? '40%' : '20%', 
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Cliente
+                  </TableCell>
+                )}
+                {visibleColumns.includes('lote') && (
+                  <TableCell 
+                    sx={{ 
+                      width: isMobile ? '40%' : '20%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Lote
+                  </TableCell>
+                )}
+                {visibleColumns.includes('valor') && (
+                  <TableCell 
+                    sx={{ 
+                      width: '15%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Valor
+                  </TableCell>
+                )}
+                {visibleColumns.includes('periodo') && (
+                  <TableCell 
+                    sx={{ 
+                      width: '15%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Período
+                  </TableCell>
+                )}
+                {visibleColumns.includes('parcelas') && (
+                  <TableCell 
+                    sx={{ 
+                      width: isTablet ? '20%' : '10%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Parcelas
+                  </TableCell>
+                )}
+                {visibleColumns.includes('status') && (
+                  <TableCell 
+                    sx={{ 
+                      width: '10%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Status
+                  </TableCell>
+                )}
+                {visibleColumns.includes('acoes') && (
+                  <TableCell 
+                    align="right"
+                    sx={{ 
+                      width: isMobile ? '20%' : '10%',
+                      fontWeight: 600,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    Ações
+                  </TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -282,106 +427,253 @@ const ContratoList = () => {
                     <TableRow
                       hover
                       key={contrato.id}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      sx={{ 
+                        '&:last-child td, &:last-child th': { border: 0 },
+                        '&:hover': { 
+                          backgroundColor: theme => theme.palette.mode === 'light' 
+                            ? 'rgba(0, 0, 0, 0.04)' 
+                            : 'rgba(255, 255, 255, 0.08)' 
+                        }
+                      }}
                     >
-                      <TableCell component="th" scope="row">
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                          <Box>
-                            <Typography variant="body1">{cliente.nome}</Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {cliente.cpfCnpj}
-                            </Typography>
+                      {visibleColumns.includes('cliente') && (
+                        <TableCell 
+                          component="th" 
+                          scope="row"
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            <Box>
+                              <Typography 
+                                variant="body1"
+                                sx={{ 
+                                  fontWeight: 500,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {cliente.nome}
+                              </Typography>
+                              <Typography 
+                                variant="caption" 
+                                color="textSecondary"
+                                sx={{ 
+                                  display: 'block',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {cliente.cpfCnpj}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <LandscapeIcon sx={{ mr: 1, color: 'secondary.main' }} />
-                          <Box>
-                            <Typography variant="body2">
-                              {`${lote.loteamento}`}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {`Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
-                            </Typography>
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('lote') && (
+                        <TableCell
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <LandscapeIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                            <Box>
+                              <Typography 
+                                variant="body2"
+                                sx={{ 
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {lote.loteamento}
+                              </Typography>
+                              <Typography 
+                                variant="caption" 
+                                color="textSecondary"
+                                sx={{ 
+                                  display: 'block',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {`Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" fontWeight="bold">
-                          {formatCurrency(contrato.valorTotal)}
-                        </Typography>
-                        <Typography variant="caption" color="textSecondary">
-                          Entrada: {formatCurrency(contrato.valorEntrada)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
-                          <Box>
-                            <Typography variant="body2">
-                              {formatDate(contrato.dataInicio)} a
-                            </Typography>
-                            <Typography variant="body2">
-                              {formatDate(contrato.dataFim)}
-                            </Typography>
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('valor') && (
+                        <TableCell
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Typography 
+                            variant="body2" 
+                            fontWeight="bold"
+                            sx={{ 
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            {formatCurrency(contrato.valorTotal)}
+                          </Typography>
+                          <Typography 
+                            variant="caption" 
+                            color="textSecondary"
+                            sx={{ 
+                              display: 'block',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            Entrada: {formatCurrency(contrato.valorEntrada)}
+                          </Typography>
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('periodo') && (
+                        <TableCell
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
+                            <Box>
+                              <Typography variant="body2">
+                                {formatDate(contrato.dataInicio)}
+                              </Typography>
+                              <Typography variant="body2">
+                                {formatDate(contrato.dataFim)}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2">
-                          {contrato.numeroParcelas}x de
-                        </Typography>
-                        <Typography variant="body2" fontWeight="bold">
-                          {formatCurrency((contrato.valorTotal - contrato.valorEntrada) / contrato.numeroParcelas)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={contrato.status || 'Ativo'} 
-                          color={
-                            contrato.status === 'cancelado' ? 'error' : 
-                            contrato.status === 'concluído' ? 'success' : 
-                            'primary'
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <Tooltip title="Visualizar">
-                          <IconButton 
-                            aria-label="visualizar" 
-                            onClick={() => handlePreviewContrato(contrato)}
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Editar">
-                          <IconButton 
-                            aria-label="editar" 
-                            onClick={() => handleEditContrato(contrato.id)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Excluir">
-                          <IconButton 
-                            aria-label="excluir" 
-                            onClick={() => handleDeleteClick(contrato)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('parcelas') && (
+                        <TableCell
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Typography variant="body2">
+                            {contrato.numeroParcelas}x de
+                          </Typography>
+                          <Typography variant="body2" fontWeight="bold">
+                            {formatCurrency((contrato.valorTotal - contrato.valorEntrada) / contrato.numeroParcelas)}
+                          </Typography>
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('status') && (
+                        <TableCell
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Chip 
+                            label={contrato.status || 'Ativo'} 
+                            color={
+                              contrato.status === 'cancelado' ? 'error' : 
+                              contrato.status === 'concluído' ? 'success' : 
+                              'primary'
+                            }
+                            size="small"
+                            sx={{ 
+                              fontWeight: 500,
+                              borderRadius: 4
+                            }}
+                          />
+                        </TableCell>
+                      )}
+                      
+                      {visibleColumns.includes('acoes') && (
+                        <TableCell 
+                          align="right"
+                          sx={{ 
+                            borderBottom: '1px solid',
+                            borderColor: 'divider'
+                          }}
+                        >
+                          <Tooltip title="Visualizar">
+                            <IconButton 
+                              aria-label="visualizar" 
+                              onClick={() => handlePreviewContrato(contrato)}
+                              sx={{ 
+                                '&:hover': { 
+                                  transform: 'translateY(-2px)',
+                                  transition: 'transform 0.2s ease' 
+                                } 
+                              }}
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Editar">
+                            <IconButton 
+                              aria-label="editar" 
+                              onClick={() => handleEditContrato(contrato.id)}
+                              sx={{ 
+                                '&:hover': { 
+                                  transform: 'translateY(-2px)',
+                                  transition: 'transform 0.2s ease' 
+                                } 
+                              }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Excluir">
+                            <IconButton 
+                              aria-label="excluir" 
+                              onClick={() => handleDeleteClick(contrato)}
+                              sx={{ 
+                                '&:hover': { 
+                                  transform: 'translateY(-2px)',
+                                  transition: 'transform 0.2s ease' 
+                                } 
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })}
                 
               {filteredContratos.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <Typography variant="body1" sx={{ py: 2 }}>
+                  <TableCell 
+                    colSpan={visibleColumns.length} 
+                    align="center"
+                    sx={{ 
+                      py: 4,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    <Typography variant="body1">
                       {searchTerm 
                         ? 'Nenhum contrato encontrado para esta busca.' 
                         : 'Nenhum contrato cadastrado.'}
@@ -401,8 +693,12 @@ const ContratoList = () => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Itens por página:"
+          labelRowsPerPage={isMobile ? "Itens:" : "Itens por página:"}
           labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+          sx={{ 
+            borderTop: '1px solid',
+            borderColor: 'divider'
+          }}
         />
       </Paper>
       
@@ -412,20 +708,54 @@ const ContratoList = () => {
         onClose={handleCancelDelete}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            maxWidth: isMobile ? '95%' : '500px'
+          }
+        }}
       >
-        <DialogTitle id="alert-dialog-title">
+        <DialogTitle 
+          id="alert-dialog-title"
+          sx={{ 
+            fontWeight: 600,
+            pb: 1
+          }}
+        >
           Excluir Contrato
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Tem certeza que deseja excluir este contrato? Esta ação não pode ser desfeita e o lote será liberado para novas vendas.
+            Tem certeza que deseja excluir o contrato do cliente "{deleteDialog.clienteNome}" referente ao lote "{deleteDialog.loteInfo}"? Esta ação não pode ser desfeita e o lote será liberado para novas vendas.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelDelete} color="primary">
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button 
+            onClick={handleCancelDelete} 
+            color="primary"
+            sx={{
+              textTransform: 'none',
+              borderRadius: 2,
+              fontWeight: 500
+            }}
+          >
             Cancelar
           </Button>
-          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+          <Button 
+            onClick={handleConfirmDelete} 
+            color="error" 
+            variant="contained"
+            autoFocus
+            sx={{
+              textTransform: 'none',
+              borderRadius: 2,
+              fontWeight: 500,
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                transition: 'transform 0.2s ease'
+              }
+            }}
+          >
             Excluir
           </Button>
         </DialogActions>
@@ -437,13 +767,26 @@ const ContratoList = () => {
         onClose={handleClosePreview}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2
+          }
+        }}
       >
-        <DialogTitle>Visualização do Contrato</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 600 }}>Visualização do Contrato</DialogTitle>
         <DialogContent>
           <ContratoPreview conteudo={previewDialog.conteudo} />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosePreview} color="primary">
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button 
+            onClick={handleClosePreview} 
+            color="primary"
+            sx={{
+              textTransform: 'none',
+              borderRadius: 2,
+              fontWeight: 500
+            }}
+          >
             Fechar
           </Button>
         </DialogActions>

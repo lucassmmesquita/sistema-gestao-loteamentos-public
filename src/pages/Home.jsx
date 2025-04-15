@@ -1,29 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardActions, 
-  Button,
-  Paper,
-  Divider
-} from '@mui/material';
-import { 
-  Person as PersonIcon, 
-  Description as DescriptionIcon, 
+import { Box, Grid, Container, Typography, useMediaQuery } from '@mui/material';
+import { styled, useTheme, alpha } from '@mui/material/styles';
+import FileUpload from '../components/common/FileUpload';
+import {
+  Person as PersonIcon,
+  Description as DescriptionIcon,
   Dashboard as DashboardIcon,
   Landscape as LandscapeIcon,
   Receipt as ReceiptIcon,
   LocalAtm as MoneyIcon,
   FileUpload as UploadIcon,
-  InsertDriveFile as FileIcon,
   AutoGraph as AutoGraphIcon,
-  Calculate as CalculateIcon
+  Calculate as CalculateIcon,
+  NotificationsActive as NotificationsIcon,
+  Settings as SettingsIcon
 } from '@mui/icons-material';
+import {
+  AppleSection,
+  AppleSectionContent,
+  AppleTitle,
+  AppleSubtitle,
+  AppleText,
+  AppleCard,
+  AppleCardContent,
+  AppleCardActions,
+  AppleCardMedia,
+  AppleButton,
+  AppleFeatureLink
+} from '../components/common/AppleComponents';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -84,7 +89,7 @@ const Home = () => {
     {
       title: 'Importação de Pagamentos',
       description: 'Importe dados de pagamentos a partir de planilhas ou arquivos de retorno.',
-      icon: <FileIcon sx={{ fontSize: 60, color: 'secondary.main' }} />,
+      icon: <FileUpload sx={{ fontSize: 60, color: 'secondary.main' }} />,
       action: () => navigate('/boletos/arquivos'),
       buttonText: 'Importar Pagamentos'
     }
@@ -110,22 +115,22 @@ const Home = () => {
   
   return (
     <Container maxWidth="lg">
-      <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
+      <AppleSection>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Sistema de Gestão de Loteamentos
         </Typography>
         <Typography variant="subtitle1" color="textSecondary" paragraph align="center">
           Gerencie clientes, contratos, lotes e boletos bancários de forma integrada e eficiente
         </Typography>
-      </Paper>
+      </AppleSection>
       
-      <Typography variant="h5" component="h2" gutterBottom>
+      <AppleTitle variant="h5" component="h2" gutterBottom>
         Cadastros e Contratos
-      </Typography>
+      </AppleTitle>
       <Grid container spacing={4} sx={{ mb: 6 }}>
         {clienteContratoCards.map((item, index) => (
           <Grid item xs={12} md={6} lg={3} key={index}>
-            <Card 
+            <AppleCard 
               sx={{ 
                 height: '100%', 
                 display: 'flex', 
@@ -137,7 +142,7 @@ const Home = () => {
                 }
               }}
             >
-              <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -147,31 +152,31 @@ const Home = () => {
                 <Typography variant="body2" color="textSecondary">
                   {item.description}
                 </Typography>
-              </CardContent>
-              <CardActions sx={{ p: 2, justifyContent: 'center' }}>
-                <Button 
+              </AppleCardContent>
+              <AppleCardActions sx={{ p: 2, justifyContent: 'center' }}>
+                <AppleButton 
                   size="large" 
                   variant="contained" 
                   onClick={item.action}
                   fullWidth
                 >
                   {item.buttonText}
-                </Button>
-              </CardActions>
-            </Card>
+                </AppleButton>
+              </AppleCardActions>
+            </AppleCard>
           </Grid>
         ))}
       </Grid>
       
-      <Divider sx={{ mb: 4 }} />
+      <Box sx={{ mb: 4 }} component="hr" />
       
-      <Typography variant="h5" component="h2" gutterBottom>
+      <AppleTitle variant="h5" component="h2" gutterBottom>
         Gestão de Boletos
-      </Typography>
+      </AppleTitle>
       <Grid container spacing={4} sx={{ mb: 6 }}>
         {boletosCards.map((item, index) => (
           <Grid item xs={12} md={6} lg={3} key={index}>
-            <Card 
+            <AppleCard 
               sx={{ 
                 height: '100%', 
                 display: 'flex', 
@@ -183,7 +188,7 @@ const Home = () => {
                 }
               }}
             >
-              <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -193,9 +198,9 @@ const Home = () => {
                 <Typography variant="body2" color="textSecondary">
                   {item.description}
                 </Typography>
-              </CardContent>
-              <CardActions sx={{ p: 2, justifyContent: 'center' }}>
-                <Button 
+              </AppleCardContent>
+              <AppleCardActions sx={{ p: 2, justifyContent: 'center' }}>
+                <AppleButton 
                   size="large" 
                   variant="contained" 
                   onClick={item.action}
@@ -203,22 +208,22 @@ const Home = () => {
                   color="secondary"
                 >
                   {item.buttonText}
-                </Button>
-              </CardActions>
-            </Card>
+                </AppleButton>
+              </AppleCardActions>
+            </AppleCard>
           </Grid>
         ))}
       </Grid>
       
-      <Divider sx={{ mb: 4 }} />
+      <Box sx={{ mb: 4 }} component="hr" />
       
-      <Typography variant="h5" component="h2" gutterBottom>
+      <AppleTitle variant="h5" component="h2" gutterBottom>
         Reajuste Automático de Contratos
-      </Typography>
+      </AppleTitle>
       <Grid container spacing={4}>
         {reajustesCards.map((item, index) => (
           <Grid item xs={12} md={6} key={index}>
-            <Card 
+            <AppleCard 
               sx={{ 
                 height: '100%', 
                 display: 'flex', 
@@ -230,7 +235,7 @@ const Home = () => {
                 }
               }}
             >
-              <CardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 4 }}>
                 <Box sx={{ mb: 2 }}>
                   {item.icon}
                 </Box>
@@ -240,9 +245,9 @@ const Home = () => {
                 <Typography variant="body2" color="textSecondary">
                   {item.description}
                 </Typography>
-              </CardContent>
-              <CardActions sx={{ p: 2, justifyContent: 'center' }}>
-                <Button 
+              </AppleCardContent>
+              <AppleCardActions sx={{ p: 2, justifyContent: 'center' }}>
+                <AppleButton 
                   size="large" 
                   variant="contained" 
                   onClick={item.action}
@@ -250,9 +255,9 @@ const Home = () => {
                   color="info"
                 >
                   {item.buttonText}
-                </Button>
-              </CardActions>
-            </Card>
+                </AppleButton>
+              </AppleCardActions>
+            </AppleCard>
           </Grid>
         ))}
       </Grid>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Tabs, Tab } from '@mui/material';
+import { Typography, Box, Tabs, Tab, useTheme, useMediaQuery } from '@mui/material';
 import ArquivoRemessa from '../../components/boletos/ArquivoRemessa';
 import ArquivoRetorno from '../../components/boletos/ArquivoRetorno';
 import ImportarPagamentos from '../../components/boletos/ImportarPagamentos';
 
 const GerenciadorArquivos = () => {
   const [tabValue, setTabValue] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   // Manipulador para mudança de tab
   const handleTabChange = (event, newValue) => {
@@ -13,8 +15,17 @@ const GerenciadorArquivos = () => {
   };
   
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
+    <Box>
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 600,
+          fontSize: { xs: '1.75rem', md: '2.125rem' },
+          mb: 3
+        }}
+      >
         Gerenciador de Arquivos
       </Typography>
       
@@ -37,7 +48,7 @@ const GerenciadorArquivos = () => {
       {tabValue === 2 && (
         <ImportarPagamentos />
       )}
-    </Container>
+    </Box>
   );
 };
 
