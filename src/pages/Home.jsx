@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Grid, Container, Typography, useMediaQuery } from '@mui/material';
@@ -15,7 +16,11 @@ import {
   Calculate as CalculateIcon,
   NotificationsActive as NotificationsIcon,
   Settings,
-  Calculate 
+  Calculate,
+  FileCopy as FileCopyIcon,
+  Cancel as CancelIcon,
+  CheckCircle as CheckCircleIcon,
+  CloudUpload as CloudUploadIcon
 } from '@mui/icons-material';
 
 import {
@@ -168,6 +173,38 @@ const Home = () => {
     }
   ];
   
+  // Novos cards para Documentos Contratuais
+  const documentosCards = [
+    {
+      title: 'Aditivos Contratuais',
+      description: 'Gerencie renegociações, antecipações e outros aditivos aos contratos existentes.',
+      icon: <FileCopyIcon sx={{ fontSize: 60, color: 'info.main' }} />,
+      action: () => navigate('/contratos'),
+      buttonText: 'Gerenciar Aditivos'
+    },
+    {
+      title: 'Distratos',
+      description: 'Registro e gerenciamento de rescisões contratuais com cálculo automático de valores.',
+      icon: <CancelIcon sx={{ fontSize: 60, color: 'error.main' }} />,
+      action: () => navigate('/contratos'),
+      buttonText: 'Gerenciar Distratos'
+    },
+    {
+      title: 'Quitações',
+      description: 'Emita e gerencie minutas de quitação para contratos finalizados.',
+      icon: <CheckCircleIcon sx={{ fontSize: 60, color: 'success.main' }} />,
+      action: () => navigate('/contratos'),
+      buttonText: 'Gerenciar Quitações'
+    },
+    {
+      title: 'Importar Contratos',
+      description: 'Use IA para extrair dados de contratos em PDF e importe-os para o sistema.',
+      icon: <CloudUploadIcon sx={{ fontSize: 60, color: 'secondary.main' }} />,
+      action: () => navigate('/contratos/importar'),
+      buttonText: 'Importar Contratos'
+    }
+  ];
+
   return (
     <Container maxWidth="xl" sx={{ px: 1, mt: 2 }}>
       {/* Cadastros e Contratos */}
@@ -211,6 +248,59 @@ const Home = () => {
                   variant="contained" 
                   onClick={item.action}
                   fullWidth
+                >
+                  {item.buttonText}
+                </AppleButton>
+              </AppleCardActions>
+            </AppleCard>
+          </Grid>
+        ))}
+      </Grid>
+      
+      <Box sx={{ mb: 4 }} component="hr" />
+
+      {/* Documentos Contratuais */}
+      <Typography 
+        variant="h5" 
+        component="h2" 
+        gutterBottom
+        sx={{ fontWeight: 600, mb: 3 }}
+      >
+        Documentos Contratuais
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {documentosCards.map((item, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <AppleCard 
+              sx={{ 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column',
+                transition: '0.3s',
+                '&:hover': {
+                  transform: 'translateY(-5px)',
+                  boxShadow: 6
+                }
+              }}
+            >
+              <AppleCardContent sx={{ flexGrow: 1, textAlign: 'center', py: 3 }}>
+                <Box sx={{ mb: 2 }}>
+                  {item.icon}
+                </Box>
+                <Typography variant="h6" component="h3" gutterBottom>
+                  {item.title}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {item.description}
+                </Typography>
+              </AppleCardContent>
+              <AppleCardActions sx={{ p: 2, justifyContent: 'center' }}>
+                <AppleButton 
+                  size="large" 
+                  variant="contained" 
+                  onClick={item.action}
+                  fullWidth
+                  color="info"
                 >
                   {item.buttonText}
                 </AppleButton>

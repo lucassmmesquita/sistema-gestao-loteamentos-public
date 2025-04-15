@@ -1,3 +1,4 @@
+// src/App.jsx (atualização)
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -15,6 +16,12 @@ import EditarCliente from './pages/clientes/EditarCliente';
 import ListaContratos from './pages/contratos/ListaContratos';
 import CadastroContrato from './pages/contratos/CadastroContrato';
 import EditarContrato from './pages/contratos/EditarContrato';
+import VincularContratosPage from './pages/contratos/VincularContratosPage';
+import ImportarContratosPage from './pages/contratos/ImportarContratosPage';
+import DocumentosPage from './pages/documentos/DocumentosPage';
+import AditivoPage from './pages/documentos/AditivoPage';
+import DistratoPage from './pages/documentos/DistratoPage';
+import QuitacaoPage from './pages/documentos/QuitacaoPage';
 import GerenciarBoletos from './pages/boletos/GerenciarBoletos';
 import BoletosDetails from './pages/boletos/BoletosDetails';
 import EmitirBoletos from './pages/boletos/EmitirBoletos';
@@ -23,16 +30,7 @@ import NotFound from './pages/NotFound';
 import { ClienteProvider } from './contexts/ClienteContext';
 import { ContratoProvider } from './contexts/ContratoContext';
 import { BoletoProvider } from './contexts/BoletoContext';
-
-import { ReajusteProvider } from './contexts/ReajusteContext';
-import ReajustesPage from './pages/reajustes/ReajustesPage';
-import ConfiguracaoReajustesPage from './pages/reajustes/ConfiguracaoReajustesPage';
-
-// Module 4: Inadimplência
-import { InadimplenciaProvider } from './contexts/InadimplenciaContext';
-import InadimplenciaPage from './pages/inadimplencia/InadimplenciaPage';
-import DetalheClienteInadimplente from './pages/inadimplencia/DetalheClienteInadimplente';
-import ConfiguracaoGatilhos from './pages/inadimplencia/ConfiguracaoGatilhos';
+import { DocumentosContratuaisProvider } from './contexts/DocumentosContratuaisContext';
 
 function App() {
   return (
@@ -49,55 +47,45 @@ function App() {
           <ClienteProvider>
             <ContratoProvider>
               <BoletoProvider>
-                <ReajusteProvider>
-                  <InadimplenciaProvider>
-                    <Routes>
-                      <Route path="/" element={<Layout />}>
-                        <Route index element={<Home />} />
-                        <Route path="dashboard" element={<Dashboard />} />
-                        
-                        {/* Client Routes */}
-                        <Route path="clientes">
-                          <Route index element={<ListaClientes />} />
-                          <Route path="cadastro" element={<CadastroCliente />} />
-                          <Route path="editar/:id" element={<EditarCliente />} />
-                        </Route>
-                        
-                        {/* Contract Routes */}
-                        <Route path="contratos">
-                          <Route index element={<ListaContratos />} />
-                          <Route path="cadastro" element={<CadastroContrato />} />
-                          <Route path="editar/:id" element={<EditarContrato />} />
-                        </Route>
-                        
-                        {/* Bills Routes */}
-                        <Route path="boletos">
-                          <Route index element={<GerenciarBoletos />} />
-                          <Route path=":id" element={<BoletosDetails />} />
-                          <Route path="emitir" element={<EmitirBoletos />} />
-                          <Route path="arquivos" element={<GerenciadorArquivos />} />
-                        </Route>
-
-                        {/* Adjustments Routes */}
-                        <Route path="reajustes">
-                          <Route index element={<ReajustesPage />} />
-                          <Route path="configuracao" element={<ConfiguracaoReajustesPage />} />
-                        </Route>
-                        
-                        {/* Delinquency Management Routes */}
-                        <Route path="inadimplencia">
-                          <Route index element={<InadimplenciaPage />} />
-                          <Route path="cliente/:clienteId" element={<DetalheClienteInadimplente />} />
-                          <Route path="configuracoes" element={<ConfiguracaoGatilhos />} />
-                          <Route path="relatorios" element={<InadimplenciaPage />} /> {/* Redirects to main page for now */}
-                        </Route>
-                        
-                        {/* 404 Route */}
-                        <Route path="*" element={<NotFound />} />
+                <DocumentosContratuaisProvider>
+                  <Routes>
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Home />} />
+                      <Route path="dashboard" element={<Dashboard />} />
+                      
+                      {/* Rotas de Clientes */}
+                      <Route path="clientes">
+                        <Route index element={<ListaClientes />} />
+                        <Route path="cadastro" element={<CadastroCliente />} />
+                        <Route path="editar/:id" element={<EditarCliente />} />
                       </Route>
-                    </Routes>
-                  </InadimplenciaProvider>
-                </ReajusteProvider>
+                      
+                      {/* Rotas de Contratos */}
+                      <Route path="contratos">
+                        <Route index element={<ListaContratos />} />
+                        <Route path="cadastro" element={<CadastroContrato />} />
+                        <Route path="editar/:id" element={<EditarContrato />} />
+                        <Route path="vincular" element={<VincularContratosPage />} />
+                        <Route path="importar" element={<ImportarContratosPage />} />
+                        <Route path=":contratoId/documentos" element={<DocumentosPage />} />
+                        <Route path=":contratoId/aditivos/:aditivoId" element={<AditivoPage />} />
+                        <Route path=":contratoId/distratos/:distratoId" element={<DistratoPage />} />
+                        <Route path=":contratoId/quitacao/:quitacaoId" element={<QuitacaoPage />} />
+                      </Route>
+                      
+                      {/* Rotas de Boletos */}
+                      <Route path="boletos">
+                        <Route index element={<GerenciarBoletos />} />
+                        <Route path=":id" element={<BoletosDetails />} />
+                        <Route path="emitir" element={<EmitirBoletos />} />
+                        <Route path="arquivos" element={<GerenciadorArquivos />} />
+                      </Route>
+                      
+                      {/* Rota 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                  </Routes>
+                </DocumentosContratuaisProvider>
               </BoletoProvider>
             </ContratoProvider>
           </ClienteProvider>

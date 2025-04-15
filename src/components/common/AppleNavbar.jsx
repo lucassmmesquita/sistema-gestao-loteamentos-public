@@ -1,3 +1,4 @@
+// src/components/common/AppleNavbar.jsx
 import React, { useState, useEffect } from 'react';
 import {
   AppBar,
@@ -22,7 +23,7 @@ import {
   Drawer,
   List
 } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled, useTheme, alpha } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../../ThemeProvider';
 import {
@@ -46,7 +47,11 @@ import {
   AutoGraph as AutoGraphIcon, 
   Calculate as CalculateIcon, 
   AccountCircle as AccountCircleIcon,
-  ExitToApp as ExitToAppIcon
+  ExitToApp as ExitToAppIcon,
+  Add as AddIcon,
+  Link as LinkIcon,
+  ImportExport as ImportExportIcon,
+  FileCopy as FileCopyIcon
 } from '@mui/icons-material';
 
 // Custom styled components
@@ -141,7 +146,8 @@ const AppleNavbar = ({
   const [subMenus, setSubMenus] = useState({
     boletos: false,
     reajustes: false,
-    inadimplencia: false
+    inadimplencia: false,
+    contratos: false
   });
   
   // Estado para o menu de usuário
@@ -162,8 +168,14 @@ const AppleNavbar = ({
   const mainMenuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Clientes', icon: <PeopleIcon />, path: '/clientes' },
-    { text: 'Contratos', icon: <DescriptionIcon />, path: '/contratos' },
+    { text: 'Clientes', icon: <PeopleIcon />, path: '/clientes' }
+  ];
+  
+  const contratosSubMenuItems = [
+    { text: 'Listar Contratos', icon: <DescriptionIcon />, path: '/contratos' },
+    { text: 'Novo Contrato', icon: <AddIcon />, path: '/contratos/cadastro' },
+    { text: 'Vincular Contratos', icon: <LinkIcon />, path: '/contratos/vincular' },
+    { text: 'Importar PDF', icon: <ImportExportIcon />, path: '/contratos/importar' },
   ];
   
   const boletosSubMenuItems = [
@@ -242,6 +254,9 @@ const AppleNavbar = ({
     }
     if (location.pathname.includes('/inadimplencia')) {
       setSubMenus(prev => ({ ...prev, inadimplencia: true }));
+    }
+    if (location.pathname.includes('/contratos')) {
+      setSubMenus(prev => ({ ...prev, contratos: true }));
     }
   }, [location.pathname]);
   
@@ -393,6 +408,65 @@ const AppleNavbar = ({
               </StyledListItemButton>
             </StyledListItem>
           ))}
+          
+          {/* Contratos submenu */}
+          <StyledListItem disablePadding>
+            <StyledListItemButton
+              selected={isActive('/contratos')}
+              onClick={() => handleToggleSubmenu('contratos')}
+            >
+              <ListItemIcon 
+                sx={{ 
+                  color: isActive('/contratos') 
+                    ? theme.palette.primary.main 
+                    : theme.palette.text.secondary,
+                  minWidth: 40
+                }}
+              >
+                <DescriptionIcon />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Contratos" 
+                primaryTypographyProps={{ 
+                  fontWeight: isActive('/contratos') ? 600 : 500,
+                  fontSize: '0.95rem'
+                }}
+              />
+              {subMenus.contratos ? <ExpandLess /> : <ExpandMore />}
+            </StyledListItemButton>
+          </StyledListItem>
+          
+          <Collapse in={subMenus.contratos} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding sx={{ pl: 2 }}>
+              {contratosSubMenuItems.map((item) => (
+                <StyledListItem key={item.text} disablePadding>
+                  <StyledListItemButton
+                    selected={location.pathname === item.path}
+                    onClick={() => handleNavigate(item.path)}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemIcon 
+                      sx={{ 
+                        color: location.pathname === item.path 
+                          ? theme.palette.primary.main 
+                          : theme.palette.text.secondary,
+                        minWidth: 40
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ 
+                        fontWeight: location.pathname === item.path ? 600 : 500,
+                        fontSize: '0.9rem'
+                      }}
+                    />
+                  </StyledListItemButton>
+                </StyledListItem>
+              ))}
+            </List>
+          </Collapse>
           
           {/* Boletos submenu */}
           <StyledListItem disablePadding>
