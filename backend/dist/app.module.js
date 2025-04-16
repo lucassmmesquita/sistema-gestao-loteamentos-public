@@ -12,6 +12,11 @@ const config_1 = require("@nestjs/config");
 const prisma_module_1 = require("./prisma/prisma.module");
 const clientes_module_1 = require("./modules/clientes/clientes.module");
 const contratos_module_1 = require("./modules/contratos/contratos.module");
+const boletos_module_1 = require("./modules/boletos/boletos.module");
+const lotes_module_1 = require("./modules/lotes/lotes.module");
+const inadimplencia_module_1 = require("./modules/inadimplencia/inadimplencia.module");
+const reajustes_module_1 = require("./modules/reajustes/reajustes.module");
+const documentos_module_1 = require("./modules/documentos/documentos.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -24,6 +29,11 @@ exports.AppModule = AppModule = __decorate([
             prisma_module_1.PrismaModule,
             clientes_module_1.ClientesModule,
             contratos_module_1.ContratosModule,
+            boletos_module_1.BoletosModule,
+            lotes_module_1.LotesModule,
+            inadimplencia_module_1.InadimplenciaModule,
+            reajustes_module_1.ReajustesModule,
+            documentos_module_1.DocumentosModule,
         ],
     })
 ], AppModule);

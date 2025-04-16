@@ -1,0 +1,148 @@
+import { BoletosService } from './boletos.service';
+import { CreateBoletoDto } from './dto/create-boleto.dto';
+export declare class BoletosController {
+    private readonly boletosService;
+    constructor(boletosService: BoletosService);
+    gerarBoleto(createBoletoDto: CreateBoletoDto): Promise<{
+        id: number;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
+        valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
+        status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
+    }>;
+    findAll(query: any): Promise<({
+        cliente: {
+            id: number;
+            nome: string;
+            cpfCnpj: string;
+        };
+        contrato: {
+            id: number;
+            valorTotal: import("@prisma/client/runtime/library").Decimal;
+            numeroParcelas: number;
+        };
+    } & {
+        id: number;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
+        valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
+        status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
+    })[]>;
+    findOne(id: number): Promise<{
+        cliente: {
+            id: number;
+            nome: string;
+            cpfCnpj: string;
+            dataNascimento: Date | null;
+            dataCadastro: Date;
+        };
+        contrato: {
+            id: number;
+            clienteId: number;
+            dataVencimento: number;
+            status: string;
+            loteId: number;
+            dataInicio: Date;
+            dataFim: Date;
+            valorTotal: import("@prisma/client/runtime/library").Decimal;
+            valorEntrada: import("@prisma/client/runtime/library").Decimal;
+            numeroParcelas: number;
+            clausulas: string;
+            dataCriacao: Date;
+            parcelasPagas: number;
+            ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
+        };
+    } & {
+        id: number;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
+        valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
+        status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
+    }>;
+    cancelarBoleto(id: number): Promise<{
+        id: number;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
+        valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
+        status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
+    }>;
+    registrarPagamento(id: number, dadosPagamento: any): Promise<{
+        id: number;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
+        valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
+        status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
+    }>;
+    registrarPagamentosEmLote(pagamentos: any[]): void;
+    atualizarStatusPorArquivoRetorno(registros: any[]): void;
+}

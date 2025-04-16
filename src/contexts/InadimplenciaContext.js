@@ -1,6 +1,7 @@
+// src/contexts/InadimplenciaContext.js
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { inadimplenciaService } from '../services/inadimplenciaService';
-import { comunicacaoService } from '../services/comunicacaoService';
+import { inadimplenciaService, comunicacaoService } from '../services/inadimplenciaService';
 
 // Criação do contexto
 export const InadimplenciaContext = createContext();
@@ -49,10 +50,32 @@ export const InadimplenciaProvider = ({ children }) => {
     }
   }, [filtros]);
   
+  // Função para carregar gatilhos configurados
+  const carregarGatilhos = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await inadimplenciaService.obterGatilhos();
+      if (response.data && response.data.gatilhos) {
+        setGatilhos(response.data.gatilhos);
+      }
+    } catch (err) {
+      console.error('Erro ao carregar gatilhos:', err);
+      // Não mostramos erro para não interferir com a experiência do usuário
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  
   // Carregar clientes inadimplentes quando filtros mudarem
   useEffect(() => {
     carregarClientesInadimplentes();
   }, [carregarClientesInadimplentes]);
+  
+  // Carregar gatilhos ao iniciar
+  useEffect(() => {
+    carregarGatilhos();
+  }, [carregarGatilhos]);
   
   // Função para atualizar filtros
   const atualizarFiltros = (novosFiltros) => {
@@ -74,14 +97,21 @@ export const InadimplenciaProvider = ({ children }) => {
   };
   
   // Função para atualizar gatilhos
-  const atualizarGatilhos = (novosGatilhos) => {
-    setGatilhos(novosGatilhos);
-    // Salvar gatilhos na API
-    inadimplenciaService.salvarGatilhos(novosGatilhos)
-      .catch(err => {
-        console.error('Erro ao salvar gatilhos:', err);
-        setError('Erro ao salvar gatilhos. Por favor, tente novamente.');
-      });
+  const atualizarGatilhos = async (novosGatilhos) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await inadimplenciaService.salvarGatilhos(novosGatilhos);
+      setGatilhos(novosGatilhos);
+      return true;
+    } catch (err) {
+      console.error('Erro ao salvar gatilhos:', err);
+      setError('Erro ao salvar gatilhos. Por favor, tente novamente.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Função para enviar comunicação manual

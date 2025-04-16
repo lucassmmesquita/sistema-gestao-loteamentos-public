@@ -1,15 +1,11 @@
+// src/hooks/useReajuste.js
+
 import { useState, useCallback, useEffect } from 'react';
 import { useReajusteContext } from '../contexts/ReajusteContext';
 import { 
   fetchHistoricoReajustes,
   fetchIndicesEconomicos
 } from '../services/reajusteService';
-import { 
-  calcularHistoricoReajustes, 
-  temReajusteIminente, 
-  calcularDataProximoReajuste,
-  formatarDescricaoReajuste
-} from '../utils/calculoReajuste';
 import { useSnackbar } from 'notistack';
 import { format, addMonths, isBefore, parseISO } from 'date-fns';
 
@@ -60,64 +56,13 @@ const useReajuste = (contratoId) => {
     }
   }, [enqueueSnackbar]);
   
-  // Calcular próximo reajuste
-  const calcularProximoReajuste = useCallback((contrato) => {
-    if (!contrato || !parametrosReajuste || !indicesEconomicos) {
-      return null;
+  // Efeitos
+  useEffect(() => {
+    if (contratoId) {
+      carregarHistoricoReajustes();
+      carregarIndicesEconomicos();
     }
-    
-    // Calcula a data do próximo reajuste
-    const dataProximoReajuste = calcularDataProximoReajuste(contrato, parametrosReajuste);
-    
-    if (!dataProximoReajuste) {
-      return null;
-    }
-    
-    // Calcula a parcela correspondente ao próximo reajuste
-    const proximaParcelaReajuste = Math.ceil((contrato.parcelasPagas + 1) / parametrosReajuste.intervaloParcelas) * parametrosReajuste.intervaloParcelas;
-    
-    // Se já passou a data, mas o reajuste não foi aplicado, marca como atrasado
-    const hoje = new Date();
-    const isAtrasado = isBefore(dataProximoReajuste, hoje);
-    
-    // Verifica se o reajuste está iminente (dentro do período de alerta)
-    const isIminente = temReajusteIminente(contrato, parametrosReajuste);
-    
-    return {
-      contratoId: contrato.id,
-      dataReferencia: format(dataProximoReajuste, 'yyyy-MM-dd'),
-      parcelaReferencia: proximaParcelaReajuste,
-      isAtrasado,
-      isIminente,
-      status: 'pendente'
-    };
-  }, [parametrosReajuste, indicesEconomicos]);
-  
-  // Simular próximos reajustes
-  const simularProximosReajustes = useCallback(async (contrato, qtdReajustes = 5) => {
-    if (!contrato || !parametrosReajuste || !indicesEconomicos) {
-      return [];
-    }
-    
-    setSimulating(true);
-    
-    try {
-      // Calcula o histórico de reajustes previstos
-      const reajustesPrevistos = calcularHistoricoReajustes(
-        contrato,
-        parametrosReajuste,
-        indicesEconomicos
-      ).slice(0, qtdReajustes); // Limita a quantidade de reajustes retornados
-      
-      return reajustesPrevistos;
-    } catch (err) {
-      console.error('Erro ao simular próximos reajustes:', err);
-      enqueueSnackbar('Erro ao simular próximos reajustes', { variant: 'error' });
-      return [];
-    } finally {
-      setSimulating(false);
-    }
-  }, [parametrosReajuste, indicesEconomicos, enqueueSnackbar]);
+  }, [contratoId, carregarHistoricoReajustes, carregarIndicesEconomicos]);
   
   // Aplicar reajuste
   const aplicarReajuste = useCallback(async () => {
@@ -144,7 +89,7 @@ const useReajuste = (contratoId) => {
     }
   }, [contratoId, executarReajuste, carregarHistoricoReajustes, enqueueSnackbar]);
   
-  // Simular um reajuste específico
+  // Simular reajuste
   const simularReajuste = useCallback(async (parametrosOverride = {}) => {
     if (!contratoId) return null;
     
@@ -162,54 +107,6 @@ const useReajuste = (contratoId) => {
     }
   }, [contratoId, executarSimulacao, enqueueSnackbar]);
   
-  // Verifica se o contrato pode ser reajustado
-  const podeSerReajustado = useCallback((contrato) => {
-    if (!contrato || !parametrosReajuste) {
-      return false;
-    }
-    
-    // Calcula a próxima parcela que deve ser reajustada
-    const parcelasPagas = contrato.parcelasPagas || 0;
-    const proximaParcelaReajuste = Math.ceil((parcelasPagas + 1) / parametrosReajuste.intervaloParcelas) * parametrosReajuste.intervaloParcelas;
-    
-    // Se a próxima parcela for maior que o total, não há mais reajustes
-    if (proximaParcelaReajuste > contrato.totalParcelas) {
-      return false;
-    }
-    
-    return true;
-  }, [parametrosReajuste]);
-  
-  // Formatar descrição do próximo reajuste
-  const getDescricaoProximoReajuste = useCallback((contrato) => {
-    if (!contrato || !proximoReajuste) {
-      return 'Não há reajustes previstos para este contrato.';
-    }
-    
-    const dataProximoReajuste = parseISO(proximoReajuste.dataReferencia);
-    
-    // Se o reajuste estiver atrasado
-    if (proximoReajuste.isAtrasado) {
-      return `Reajuste ATRASADO! Deveria ter sido aplicado na parcela ${proximoReajuste.parcelaReferencia} em ${format(dataProximoReajuste, 'dd/MM/yyyy')}.`;
-    }
-    
-    // Se o reajuste estiver iminente
-    if (proximoReajuste.isIminente) {
-      return `Reajuste IMINENTE! Será aplicado na parcela ${proximoReajuste.parcelaReferencia} em ${format(dataProximoReajuste, 'dd/MM/yyyy')}.`;
-    }
-    
-    // Reajuste normal
-    return `Próximo reajuste previsto para a parcela ${proximoReajuste.parcelaReferencia} em ${format(dataProximoReajuste, 'dd/MM/yyyy')}.`;
-  }, [proximoReajuste]);
-  
-  // Efeitos
-  useEffect(() => {
-    if (contratoId) {
-      carregarHistoricoReajustes();
-      carregarIndicesEconomicos();
-    }
-  }, [contratoId, carregarHistoricoReajustes, carregarIndicesEconomicos]);
-  
   return {
     historicoReajustes,
     proximoReajuste,
@@ -218,12 +115,9 @@ const useReajuste = (contratoId) => {
     simulating,
     error,
     carregarHistoricoReajustes,
-    calcularProximoReajuste,
-    simularProximosReajustes,
+    carregarIndicesEconomicos,
     aplicarReajuste,
-    simularReajuste,
-    podeSerReajustado,
-    getDescricaoProximoReajuste
+    simularReajuste
   };
 };
 

@@ -1,3 +1,5 @@
+// src/contexts/ReajusteContext.js
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { fetchReajustes, fetchParametrosReajuste, aplicarReajuste, 
          simularReajuste, salvarParametrosReajuste } from '../services/reajusteService';
