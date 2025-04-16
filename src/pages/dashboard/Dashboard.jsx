@@ -37,6 +37,26 @@ const StatisticWrapper = styled(Box)(({ theme }) => ({
   }
 }));
 
+const formatarValor = (valor) => {
+  // Garantir que o valor seja um número
+  const valorNumerico = typeof valor === 'string' ? parseFloat(valor) : Number(valor);
+  
+  // Verificar se é um número válido
+  if (isNaN(valorNumerico)) {
+    return 'R$ 0,00';
+  }
+  
+  // Limitar a números dentro de um intervalo razoável para evitar overflow
+  const valorLimitado = Math.min(valorNumerico, 1e15); // Limita a 1 quadrilhão
+  
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(valorLimitado);
+};
+
 const StatisticLabel = styled(Typography)(({ theme }) => ({
   fontWeight: 500,
   color: theme.palette.text.secondary,

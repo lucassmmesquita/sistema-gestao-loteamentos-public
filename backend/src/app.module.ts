@@ -8,6 +8,7 @@ import { LotesModule } from './modules/lotes/lotes.module';
 import { InadimplenciaModule } from './modules/inadimplencia/inadimplencia.module';
 import { ReajustesModule } from './modules/reajustes/reajustes.module';
 import { DocumentosModule } from './modules/documentos/documentos.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DocumentosModule } from './modules/documentos/documentos.module';
     InadimplenciaModule,
     ReajustesModule,
     DocumentosModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
