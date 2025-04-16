@@ -1,0 +1,328 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id                Int                @id @default(autoincrement())
+  nome              String
+  cpfCnpj           String             @unique
+  dataNascimento    DateTime?
+  endereco          Endereco?
+  contatos          Contato?
+  documentos        Documento[]
+  dataCadastro      DateTime           @default(now())
+  contratos         Contrato[]
+  boletos           Boleto[]
+  interacoes        Interacao[]
+  comunicacoes      Comunicacao[]
+  clientesInadimplentes ClienteInadimplente[]
+
+  @@map("clientes")
+  @@index([cpfCnpj])
+}
+
+model Endereco {
+  id           Int     @id @default(autoincrement())
+  clienteId    Int     @unique
+  cep          String
+  logradouro   String
+  numero       String
+  complemento  String?
+  bairro       String
+  cidade       String
+  estado       String
+  cliente      Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("enderecos")
+  @@index([clienteId])
+  @@index([cep])
+}
+
+model Contato {
+  id        Int      @id @default(autoincrement())
+  clienteId Int      @unique
+  telefones String[]
+  emails    String[]
+  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("contatos")
+  @@index([clienteId])
+}
+
+model Documento {
+  id          Int      @id @default(autoincrement())
+  clienteId   Int
+  tipo        String
+  nome        String
+  arquivo     String
+  dataUpload  DateTime @default(now())
+  cliente     Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("documentos")
+  @@index([clienteId])
+}
+
+model Lote {
+  id          Int       @id @default(autoincrement())
+  numero      String
+  quadra      String
+  loteamento  String
+  area        Float
+  valorBase   Decimal   @db.Decimal(10, 2)
+  status      String    @default("disponivel")
+  contratos   Contrato[]
+
+  @@map("lotes")
+  @@index([status])
+  @@index([quadra, numero])
+}
+
+model Contrato {
+  id              Int       @id @default(autoincrement())
+  clienteId       Int
+  loteId          Int
+  dataInicio      DateTime
+  dataFim         DateTime
+  valorTotal      Decimal   @db.Decimal(10, 2)
+  valorEntrada    Decimal   @db.Decimal(10, 2)
+  numeroParcelas  Int
+  dataVencimento  Int
+  clausulas       String    @db.Text
+  status          String    @default("ativo")
+  dataCriacao     DateTime  @default(now())
+  parcelasPagas   Int       @default(0)
+  ultimoReajuste  Json?
+  
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  lote            Lote      @relation(fields: [loteId], references: [id])
+  boletos         Boleto[]
+  reajustes       Reajuste[]
+  aditivos        Aditivo[]
+  distratos       Distrato[]
+  quitacoes       Quitacao[]
+
+  @@map("contratos")
+  @@index([clienteId])
+  @@index([loteId])
+  @@index([status])
+}
+
+model Boleto {
+  id              Int       @id @default(autoincrement())
+  clienteId       Int
+  clienteNome     String
+  contratoId      Int
+  valor           Decimal   @db.Decimal(10, 2)
+  dataVencimento  DateTime
+  numeroParcela   Int
+  descricao       String
+  nossoNumero     String    @unique
+  linhaDigitavel  String
+  codigoBarras    String
+  pdfUrl          String
+  dataGeracao     DateTime  @default(now())
+  status          String    @default("gerado")
+  dataPagamento   DateTime?
+  valorPago       Decimal?  @db.Decimal(10, 2)
+  formaPagamento  String?
+  dataCancelamento DateTime?
+  comprovante     String?
+  
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+
+  @@map("boletos")
+  @@index([clienteId])
+  @@index([contratoId])
+  @@index([status])
+  @@index([dataVencimento])
+  @@index([nossoNumero])
+}
+
+model Reajuste {
+  id                  Int       @id @default(autoincrement())
+  contratoId          Int
+  parcelaReferencia   Int
+  valorOriginal       Decimal   @db.Decimal(10, 2)
+  valorReajustado     Decimal   @db.Decimal(10, 2)
+  indiceAplicado      Decimal   @db.Decimal(6, 2)
+  indiceBase          String
+  percentualAdicional Decimal   @db.Decimal(6, 2)
+  reajusteTotal       Decimal   @db.Decimal(6, 2)
+  dataReferencia      DateTime
+  dataAplicacao       DateTime?
+  status              String    @default("pendente")
+  aplicado            Boolean   @default(false)
+  
+  contrato            Contrato  @relation(fields: [contratoId], references: [id])
+
+  @@map("reajustes")
+  @@index([contratoId])
+  @@index([status])
+  @@index([dataReferencia])
+}
+
+model ParametrosReajuste {
+  id                   Int     @id @default(autoincrement())
+  indiceBase           String
+  percentualAdicional  Decimal @db.Decimal(6, 2)
+  intervaloParcelas    Int
+  alertaAntecipadoDias Int
+
+  @@map("parametros_reajuste")
+}
+
+model IndicesEconomicos {
+  id    Int     @id @default(autoincrement())
+  IGPM  Decimal @db.Decimal(6, 2)
+  IPCA  Decimal @db.Decimal(6, 2)
+  INPC  Decimal @db.Decimal(6, 2)
+  data  DateTime @default(now())
+
+  @@map("indices_economicos")
+  @@index([data])
+}
+
+model ClienteInadimplente {
+  id              Int       @id @default(autoincrement())
+  clienteId       Int
+  contratoId      Int
+  valorEmAberto   Decimal   @db.Decimal(10, 2)
+  diasAtraso      Int
+  ultimaCobranca  DateTime?
+  status          String
+  
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  parcelas        ParcelaInadimplente[]
+
+  @@map("clientes_inadimplentes")
+  @@index([clienteId])
+  @@index([status])
+  @@index([diasAtraso])
+}
+
+model ParcelaInadimplente {
+  id                Int       @id @default(autoincrement())
+  clienteInadimplente_id Int
+  numero            Int
+  dataVencimento    DateTime
+  valor             Decimal   @db.Decimal(10, 2)
+  valorAtualizado   Decimal   @db.Decimal(10, 2)
+  status            String
+  
+  clienteInadimplente ClienteInadimplente @relation(fields: [clienteInadimplente_id], references: [id], onDelete: Cascade)
+
+  @@map("parcelas_inadimplentes")
+  @@index([clienteInadimplente_id])
+  @@index([status])
+}
+
+model Interacao {
+  id             String    @id @default(uuid())
+  clienteId      Int
+  tipo           String
+  data           DateTime
+  observacao     String    @db.Text
+  usuario        String
+  parcelaId      String?
+  
+  cliente        Cliente   @relation(fields: [clienteId], references: [id])
+
+  @@map("interacoes")
+  @@index([clienteId])
+  @@index([data])
+}
+
+model Comunicacao {
+  id             String    @id @default(uuid())
+  clienteId      Int
+  tipo           String
+  data           DateTime
+  mensagem       String    @db.Text
+  status         String
+  parcelaInfo    Json?
+  anexos         Json?
+  
+  cliente        Cliente   @relation(fields: [clienteId], references: [id])
+
+  @@map("comunicacoes")
+  @@index([clienteId])
+  @@index([data])
+  @@index([tipo])
+}
+
+model ModeloMensagem {
+  id       String @id @default(uuid())
+  nome     String
+  tipo     String
+  conteudo String @db.Text
+
+  @@map("modelos_mensagem")
+  @@index([tipo])
+}
+
+model ConfiguracaoGatilhos {
+  id                     Int      @id @default(autoincrement())
+  executarAutomaticamente Boolean  @default(true)
+  horarioExecucao         String
+  diasExecucao            String[]
+  repetirCobrancas        Boolean  @default(true)
+  intervaloRepeticao      Int      @default(7)
+  limitarRepeticoes       Boolean  @default(true)
+  limiteRepeticoes        Int      @default(3)
+  gerarLog                Boolean  @default(true)
+  gatilhos                Json
+
+  @@map("configuracao_gatilhos")
+}
+
+model Aditivo {
+  id           Int       @id @default(autoincrement())
+  contratoId   Int
+  tipo         String
+  dataAssinatura DateTime
+  motivoAditivo String   @db.Text
+  novoValor    Decimal?  @db.Decimal(10, 2)
+  novaDataFim  DateTime?
+  documentoUrl String?
+  status       String    @default("ativo")
+  
+  contrato     Contrato  @relation(fields: [contratoId], references: [id])
+
+  @@map("aditivos")
+  @@index([contratoId])
+}
+
+model Distrato {
+  id              Int       @id @default(autoincrement())
+  contratoId      Int
+  dataDistrato    DateTime
+  motivoDistrato  String    @db.Text
+  valorDevolucao  Decimal?  @db.Decimal(10, 2)
+  documentoUrl    String?
+  
+  contrato        Contrato  @relation(fields: [contratoId], references: [id])
+
+  @@map("distratos")
+  @@index([contratoId])
+}
+
+model Quitacao {
+  id             Int       @id @default(autoincrement())
+  contratoId     Int
+  dataQuitacao   DateTime
+  valorQuitacao  Decimal   @db.Decimal(10, 2)
+  documentoUrl   String?
+  
+  contrato       Contrato  @relation(fields: [contratoId], references: [id])
+
+  @@map("quitacoes")
+  @@index([contratoId])
+}
