@@ -1,7 +1,6 @@
 // src/pages/inadimplencia/ConfiguracaoInadimplenciaPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Typography,
   Box,
   Paper,
@@ -17,21 +16,24 @@ import {
   Snackbar,
   Alert,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Save as SaveIcon,
-  Refresh as RefreshIcon,
   Settings as SettingsIcon,
-  NotificationsActive as NotificationsIcon
+  NotificationsActive as NotificationsIcon,
+  ArrowBack
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
-
+import { useNavigate } from 'react-router-dom';
 import { useInadimplenciaContext } from '../../contexts/InadimplenciaContext';
 import Loading from '../../components/common/Loading';
 
 const ConfiguracaoInadimplenciaPage = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { gatilhos, loading, atualizarGatilhos } = useInadimplenciaContext();
   
   const [formData, setFormData] = useState({
@@ -124,24 +126,51 @@ const ConfiguracaoInadimplenciaPage = () => {
   };
   
   return (
-    <Container maxWidth="lg">
+    <Box>
       <Loading open={loading} />
       
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        flexDirection: isMobile ? 'column' : 'row',
+        mb: 4,
+        gap: isMobile ? 2 : 0
+      }}>
         <Typography 
           variant="h4" 
           component="h1" 
-          gutterBottom
-          sx={{ fontWeight: 600 }}
+          sx={{ 
+            fontWeight: 600,
+            fontSize: { xs: '1.75rem', md: '2.125rem' }
+          }}
         >
           Configuração de Cobranças
         </Typography>
-        <Typography variant="subtitle1" color="textSecondary">
-          Configure os parâmetros para cobrança de clientes inadimplentes
-        </Typography>
+        
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          onClick={() => navigate('/inadimplencia')}
+          sx={{ 
+            borderRadius: 2, 
+            textTransform: 'none',
+            fontWeight: 500 
+          }}
+        >
+          Voltar
+        </Button>
       </Box>
       
-      <Paper sx={{ p: 4, mb: 4 }}>
+      <Typography 
+        variant="subtitle1" 
+        color="textSecondary"
+        sx={{ mb: 4 }}
+      >
+        Configure os parâmetros para cobrança de clientes inadimplentes
+      </Typography>
+      
+      <Paper sx={{ p: 4, mb: 4, borderRadius: 2, boxShadow: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <SettingsIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
           <Typography variant="h6">Configurações Gerais</Typography>
@@ -233,7 +262,7 @@ const ConfiguracaoInadimplenciaPage = () => {
         </Grid>
       </Paper>
       
-      <Paper sx={{ p: 4 }}>
+      <Paper sx={{ p: 4, borderRadius: 2, boxShadow: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
           <NotificationsIcon sx={{ mr: 2, color: theme.palette.secondary.main }} />
           <Typography variant="h6">Gatilhos de Cobrança</Typography>
@@ -302,6 +331,15 @@ const ConfiguracaoInadimplenciaPage = () => {
             color="primary"
             startIcon={<SaveIcon />}
             onClick={handleSave}
+            sx={{ 
+              borderRadius: 2, 
+              textTransform: 'none',
+              fontWeight: 500,
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                transition: 'transform 0.2s ease'
+              }
+            }}
           >
             Salvar Configurações
           </Button>
@@ -321,7 +359,7 @@ const ConfiguracaoInadimplenciaPage = () => {
           {notification.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </Box>
   );
 };
 
