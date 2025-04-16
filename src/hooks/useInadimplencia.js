@@ -1,8 +1,8 @@
+// src/hooks/useInadimplencia.js
+
 import { useState, useEffect, useCallback } from 'react';
 import { useInadimplenciaContext } from '../contexts/InadimplenciaContext';
 import { inadimplenciaService } from '../services/inadimplenciaService';
-import { comunicacaoService } from '../services/comunicacaoService';
-import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -14,8 +14,8 @@ import { ptBR } from 'date-fns/locale';
 export const useInadimplencia = (clienteId = null) => {
   const {
     clientesInadimplentes,
-    loading,
-    error,
+    loading: contextLoading,
+    error: contextError,
     filtros,
     gatilhos,
     atualizarFiltros,
@@ -57,7 +57,7 @@ export const useInadimplencia = (clienteId = null) => {
       setHistoricoInteracoes(interacoesResponse.data);
       
       // Carregar histórico de comunicações
-      const comunicacoesResponse = await comunicacaoService.obterHistoricoComunicacoes(id);
+      const comunicacoesResponse = await inadimplenciaService.obterHistoricoComunicacoes(id);
       setHistoricoComunicacoes(comunicacoesResponse.data);
     } catch (err) {
       console.error('Erro ao carregar detalhes do cliente:', err);
@@ -119,96 +119,95 @@ export const useInadimplencia = (clienteId = null) => {
       return { sucesso: true, mensagem: 'Arquivo PDF gerado com sucesso.' };
     } catch (err) {
       console.error('Erro ao exportar para PDF:', err);
-      return { sucesso: false, mensagem: 'Erro ao gerar arquivo PDF.' };
-    }
-  }, [filtros]);
+  // src/hooks/useInadimplencia.js (continuação)
+  return { sucesso: false, mensagem: 'Erro ao gerar arquivo PDF.' };
+}
+}, [filtros]);
+
+// Função para formatar valor monetário
+const formatarValor = useCallback((valor) => {
+return new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL'
+}).format(valor);
+}, []);
+
+// Função para calcular dias de atraso
+const calcularDiasAtraso = useCallback((dataVencimento) => {
+const hoje = new Date();
+const vencimento = new Date(dataVencimento);
+const diffTime = Math.abs(hoje - vencimento);
+const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+return diffDays;
+}, []);
+
+// Função para verificar se um gatilho deve ser acionado
+const verificarGatilhoAutomatico = useCallback((diasAtraso) => {
+return gatilhos.find(gatilho => gatilho.ativo && gatilho.dias === diasAtraso);
+}, [gatilhos]);
+
+// Função para executar gatilhos automáticos para todos os clientes
+const executarGatilhosAutomaticos = useCallback(async () => {
+try {
+  setLoadingDetalhes(true);
   
-  // Função para formatar valor monetário
-  const formatarValor = useCallback((valor) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(valor);
-  }, []);
-  
-  // Função para calcular dias de atraso
-  const calcularDiasAtraso = useCallback((dataVencimento) => {
-    const hoje = new Date();
-    const vencimento = new Date(dataVencimento);
-    const diffTime = Math.abs(hoje - vencimento);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  }, []);
-  
-  // Função para verificar se um gatilho deve ser acionado
-  const verificarGatilhoAutomatico = useCallback((diasAtraso) => {
-    return gatilhos.find(gatilho => gatilho.ativo && gatilho.dias === diasAtraso);
-  }, [gatilhos]);
-  
-  // Função para executar gatilhos automáticos para todos os clientes
-  const executarGatilhosAutomaticos = useCallback(async () => {
-    try {
-      setLoadingDetalhes(true);
+  // Para cada cliente inadimplente
+  for (const cliente of clientesInadimplentes) {
+    // Para cada parcela em atraso
+    for (const parcela of cliente.parcelas) {
+      const diasAtraso = calcularDiasAtraso(parcela.dataVencimento);
+      const gatilho = verificarGatilhoAutomatico(diasAtraso);
       
-      // Para cada cliente inadimplente
-      for (const cliente of clientesInadimplentes) {
-        // Para cada parcela em atraso
-        for (const parcela of cliente.parcelas) {
-          const diasAtraso = calcularDiasAtraso(parcela.dataVencimento);
-          const gatilho = verificarGatilhoAutomatico(diasAtraso);
-          
-          // Se encontrar um gatilho para o número de dias de atraso
-          if (gatilho) {
-            await comunicacaoService.enviarCobrancaAutomatica(
-              cliente.id,
-              parcela.id,
-              gatilho
-            );
-          }
-        }
+      // Se encontrar um gatilho para o número de dias de atraso
+      if (gatilho) {
+        await enviarComunicacaoManual(
+          cliente.id,
+          gatilho.tipo,
+          gatilho.mensagem
+        );
       }
-      
-      // Recarregar dados após execução dos gatilhos
-      await carregarClientesInadimplentes();
-      
-      return { sucesso: true, mensagem: 'Gatilhos automáticos executados com sucesso.' };
-    } catch (err) {
-      console.error('Erro ao executar gatilhos automáticos:', err);
-      return { sucesso: false, mensagem: 'Erro ao executar gatilhos automáticos.' };
-    } finally {
-      setLoadingDetalhes(false);
     }
-  }, [clientesInadimplentes, calcularDiasAtraso, verificarGatilhoAutomatico, carregarClientesInadimplentes]);
+  }
   
-  return {
-    // Estados
-    clientesInadimplentes,
-    clienteAtual,
-    historicoInteracoes,
-    historicoComunicacoes,
-    loading,
-    loadingDetalhes,
-    error,
-    errorDetalhes,
-    filtros,
-    gatilhos,
-    
-    // Funções do contexto
-    atualizarFiltros,
-    limparFiltros,
-    atualizarGatilhos,
-    enviarComunicacaoManual,
-    registrarInteracao,
-    gerarNovoBoleto,
-    carregarClientesInadimplentes,
-    
-    // Funções adicionais
-    carregarDetalhesCliente,
-    exportarParaExcel,
-    exportarParaPDF,
-    formatarValor,
-    calcularDiasAtraso,
-    verificarGatilhoAutomatico,
-    executarGatilhosAutomaticos
-  };
+  // Recarregar dados após execução dos gatilhos
+  await carregarClientesInadimplentes();
+  
+  return { sucesso: true, mensagem: 'Gatilhos automáticos executados com sucesso.' };
+} catch (err) {
+  console.error('Erro ao executar gatilhos automáticos:', err);
+  return { sucesso: false, mensagem: 'Erro ao executar gatilhos automáticos.' };
+} finally {
+  setLoadingDetalhes(false);
+}
+}, [clientesInadimplentes, calcularDiasAtraso, verificarGatilhoAutomatico, enviarComunicacaoManual, carregarClientesInadimplentes]);
+
+return {
+// Estados
+clientesInadimplentes,
+clienteAtual,
+historicoInteracoes,
+historicoComunicacoes,
+loading: contextLoading || loadingDetalhes,
+error: contextError || errorDetalhes,
+filtros,
+gatilhos,
+
+// Funções do contexto
+atualizarFiltros,
+limparFiltros,
+atualizarGatilhos,
+enviarComunicacaoManual,
+registrarInteracao,
+gerarNovoBoleto,
+carregarClientesInadimplentes,
+
+// Funções adicionais
+carregarDetalhesCliente,
+exportarParaExcel,
+exportarParaPDF,
+formatarValor,
+calcularDiasAtraso,
+verificarGatilhoAutomatico,
+executarGatilhosAutomaticos
+};
 };
