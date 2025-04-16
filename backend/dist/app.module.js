@@ -17,6 +17,7 @@ const lotes_module_1 = require("./modules/lotes/lotes.module");
 const inadimplencia_module_1 = require("./modules/inadimplencia/inadimplencia.module");
 const reajustes_module_1 = require("./modules/reajustes/reajustes.module");
 const documentos_module_1 = require("./modules/documentos/documentos.module");
+const dashboard_module_1 = require("./modules/dashboard/dashboard.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,6 +35,7 @@ exports.AppModule = AppModule = __decorate([
             inadimplencia_module_1.InadimplenciaModule,
             reajustes_module_1.ReajustesModule,
             documentos_module_1.DocumentosModule,
+            dashboard_module_1.DashboardModule,
         ],
     })
 ], AppModule);

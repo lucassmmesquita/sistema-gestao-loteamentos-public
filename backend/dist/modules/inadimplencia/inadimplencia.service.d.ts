@@ -6,44 +6,21 @@ import { ConfiguracaoGatilhosDto } from './dto/gatilho.dto';
 export declare class InadimplenciaService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    listarClientesInadimplentes(query: QueryInadimplenciaDto): Promise<({
-        cliente: {
-            id: number;
-            nome: string;
-            cpfCnpj: string;
-            contatos: {
-                id: number;
-                clienteId: number;
-                telefones: string[];
-                emails: string[];
-            };
-        };
-        parcelas: {
-            id: number;
-            status: string;
-            clienteInadimplente_id: number;
-            numero: number;
-            dataVencimento: Date;
-            valor: import("@prisma/client/runtime/library").Decimal;
-            valorAtualizado: import("@prisma/client/runtime/library").Decimal;
-        }[];
-    } & {
+    listarClientesInadimplentes(query: QueryInadimplenciaDto): Promise<any[]>;
+    obterClienteInadimplente(id: number): Promise<{
         id: number;
         clienteId: number;
         contratoId: number;
-        valorEmAberto: import("@prisma/client/runtime/library").Decimal;
+        valorEmAberto: number;
         diasAtraso: number;
-        ultimaCobranca: Date | null;
         status: string;
-    })[]>;
-    obterClienteInadimplente(id: number): Promise<{
         cliente: {
             endereco: {
                 id: number;
                 clienteId: number;
-                numero: string;
                 cep: string;
                 logradouro: string;
+                numero: string;
                 complemento: string | null;
                 bairro: string;
                 cidade: string;
@@ -62,23 +39,30 @@ export declare class InadimplenciaService {
             dataNascimento: Date | null;
             dataCadastro: Date;
         };
+        contrato: {
+            id: number;
+            clienteId: number;
+            dataVencimento: number;
+            status: string;
+            loteId: number;
+            dataInicio: Date;
+            dataFim: Date;
+            valorTotal: import("@prisma/client/runtime/library").Decimal;
+            valorEntrada: import("@prisma/client/runtime/library").Decimal;
+            numeroParcelas: number;
+            clausulas: string;
+            dataCriacao: Date;
+            parcelasPagas: number;
+            ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
+        };
         parcelas: {
             id: number;
-            status: string;
-            clienteInadimplente_id: number;
             numero: number;
             dataVencimento: Date;
-            valor: import("@prisma/client/runtime/library").Decimal;
-            valorAtualizado: import("@prisma/client/runtime/library").Decimal;
+            valor: number;
+            valorAtualizado: number;
+            status: string;
         }[];
-    } & {
-        id: number;
-        clienteId: number;
-        contratoId: number;
-        valorEmAberto: import("@prisma/client/runtime/library").Decimal;
-        diasAtraso: number;
-        ultimaCobranca: Date | null;
-        status: string;
     }>;
     registrarInteracao(clienteId: number, createInteracaoDto: CreateInteracaoDto): Promise<{
         id: string;
@@ -100,22 +84,26 @@ export declare class InadimplenciaService {
     }[]>;
     gerarNovoBoleto(clienteId: number, parcelaId: string): Promise<{
         id: number;
-        dataVencimento: Date;
+        clienteId: number;
+        clienteNome: string;
+        contratoId: number;
         valor: import("@prisma/client/runtime/library").Decimal;
+        dataVencimento: Date;
+        numeroParcela: number;
+        descricao: string;
+        nossoNumero: string;
+        linhaDigitavel: string;
+        codigoBarras: string;
+        pdfUrl: string;
+        dataGeracao: Date;
         status: string;
+        dataPagamento: Date | null;
+        valorPago: import("@prisma/client/runtime/library").Decimal | null;
+        formaPagamento: string | null;
+        dataCancelamento: Date | null;
+        comprovante: string | null;
     }>;
     obterGatilhos(): Promise<{
-        id: number;
-        executarAutomaticamente: boolean;
-        horarioExecucao: string;
-        diasExecucao: string[];
-        repetirCobrancas: boolean;
-        intervaloRepeticao: number;
-        limitarRepeticoes: boolean;
-        limiteRepeticoes: number;
-        gerarLog: boolean;
-        gatilhos: import("@prisma/client/runtime/library").JsonValue;
-    } | {
         executarAutomaticamente: boolean;
         horarioExecucao: string;
         diasExecucao: string[];
@@ -130,6 +118,17 @@ export declare class InadimplenciaService {
             ativo: boolean;
             mensagem: string;
         }[];
+    } | {
+        gatilhos: any;
+        id: number;
+        executarAutomaticamente: boolean;
+        horarioExecucao: string;
+        diasExecucao: string[];
+        repetirCobrancas: boolean;
+        intervaloRepeticao: number;
+        limitarRepeticoes: boolean;
+        limiteRepeticoes: number;
+        gerarLog: boolean;
     }>;
     salvarGatilhos(configuracaoGatilhosDto: ConfiguracaoGatilhosDto): Promise<{
         id: number;
@@ -174,7 +173,7 @@ export declare class InadimplenciaService {
         anexos: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     exportarDados(formato: string, query: QueryInadimplenciaDto): Promise<{
-        data: string;
+        data: Buffer<ArrayBuffer>;
         tipo: string;
         nome: string;
     }>;
