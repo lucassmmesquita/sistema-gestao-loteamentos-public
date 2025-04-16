@@ -64,7 +64,7 @@ const AppFooter = ({ drawerWidth = 240, open = true }) => {
       <FooterContent maxWidth="xl">
         {/* Copyright e Versão */}
         <FooterText>
-          &copy; {currentYear} Sistema de Gestão de Loteamentos
+          &copy; {currentYear} 5DX DataLab | Sistema de Gestão de Loteamentos
         </FooterText>
 
         {/* Versão */}
@@ -75,7 +75,7 @@ const AppFooter = ({ drawerWidth = 240, open = true }) => {
         {/* Suporte */}
         <FooterText>
           <FooterLink href="mailto:suporte@sistemaloteamentos.com.br">
-            Suporte Técnico
+            5DX DataLab - Suporte Técnico
           </FooterLink>
         </FooterText>
       </FooterContent>

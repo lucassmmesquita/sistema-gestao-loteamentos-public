@@ -592,7 +592,6 @@
   ],
   "contratos": [
     {
-      "id": 10,
       "clienteId": 3,
       "loteId": 10,
       "dataInicio": "2023-01-10",
@@ -602,11 +601,9 @@
       "numeroParcelas": 60,
       "dataVencimento": 10,
       "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
-      "status": "ativo",
-      "dataCriacao": "2023-01-05T10:30:00"
+      "id": 10
     },
     {
-      "id": 11,
       "clienteId": 4,
       "loteId": 11,
       "dataInicio": "2023-01-15",
@@ -616,8 +613,7 @@
       "numeroParcelas": 60,
       "dataVencimento": 15,
       "clausulas": "Contrato de compra e venda de lote no JCA LOTEAMENTO BOM JESUS.",
-      "status": "ativo",
-      "dataCriacao": "2023-01-10T14:00:00"
+      "id": 11
     },
     {
       "id": 12,

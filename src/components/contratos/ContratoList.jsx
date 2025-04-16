@@ -303,6 +303,8 @@ const ContratoList = () => {
                 px: 2,
                 py: 1,
                 height: isMobile ? 'auto' : 40,
+                whiteSpace: 'nowrap', // Impede quebra de linha
+                minWidth: isMobile ? '100%' : 'auto',
                 '&:hover': {
                   transform: 'translateY(-2px)',
                   transition: 'transform 0.2s ease'
@@ -438,15 +440,16 @@ const ContratoList = () => {
                     >
                       {visibleColumns.includes('cliente') && (
                         <TableCell 
-                          component="th" 
-                          scope="row"
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        component="th" 
+                        scope="row"
+                        sx={{ 
+                          borderBottom: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          <Tooltip title={cliente.nome}>
                             <Box>
                               <Typography 
                                 variant="body1"
@@ -454,7 +457,8 @@ const ContratoList = () => {
                                   fontWeight: 500,
                                   whiteSpace: 'nowrap',
                                   overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
+                                  textOverflow: 'ellipsis',
+                                  maxWidth: isMobile ? '120px' : '180px' // Limita largura
                                 }}
                               >
                                 {cliente.nome}
@@ -472,8 +476,9 @@ const ContratoList = () => {
                                 {cliente.cpfCnpj}
                               </Typography>
                             </Box>
-                          </Box>
-                        </TableCell>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
                       )}
                       
                       {visibleColumns.includes('lote') && (

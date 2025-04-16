@@ -1,13 +1,15 @@
 // src/pages/contratos/ImportarContratosPage.jsx
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
-import Breadcrumb from '../../components/common/Breadcrumb';
+// Removendo a importação do Breadcrumb
+// import Breadcrumb from '../../components/common/Breadcrumb';
 import ImportarContratos from '../../components/documentos/ImportarContratos';
 
 const ImportarContratosPage = () => {
   return (
     <Container maxWidth="lg">
-      <Breadcrumb />
+      {/* Removendo a linha do Breadcrumb abaixo */}
+      {/* <Breadcrumb /> */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Importar Contratos em PDF

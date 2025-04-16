@@ -1,4 +1,4 @@
-// src/pages/contratos/EditarContrato.jsx
+// src/pages/contratos/EditarContrato.jsx - Atualizando para passar o contratoId para o ContratoTreeView
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Container, Alert, Button, Box, Tabs, Tab } from '@mui/material';
@@ -72,7 +72,7 @@ const EditarContrato = () => {
           {tabValue === 0 ? (
             <ContratoForm contrato={currentContrato} />
           ) : (
-            <ContratoTreeView contratoId={id} />
+            <ContratoTreeView contratoId={parseInt(id)} />
           )}
         </>
       )}

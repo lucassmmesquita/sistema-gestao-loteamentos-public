@@ -264,6 +264,8 @@ const ClienteList = () => {
                 px: 2,
                 py: 1,
                 height: isMobile ? 'auto' : 40,
+                whiteSpace: 'nowrap', // Impede quebra de linha
+                minWidth: isMobile ? '100%' : 'auto',
                 '&:hover': {
                   transform: 'translateY(-2px)',
                   transition: 'transform 0.2s ease'

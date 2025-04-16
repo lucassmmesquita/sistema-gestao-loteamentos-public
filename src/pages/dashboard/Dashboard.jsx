@@ -189,7 +189,7 @@ const Dashboard = () => {
           <AppleDashboardCard
             title="Vendas"
             value={formatCurrency(stats.valorTotalContratos)}
-            icon={<MoneyIcon fontSize="large" />}
+            icon={<MoneyIcon fontSize="medium" />}
             colorClass="warning"
           />
         </Grid>

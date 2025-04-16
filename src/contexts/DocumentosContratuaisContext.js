@@ -197,6 +197,116 @@ export const DocumentosContratuaisProvider = ({ children }) => {
     }
   }, []);
 
+  // NOVAS FUNÇÕES PARA GERENCIAMENTO DE DOCUMENTOS
+
+  // Carregar documentos por contrato
+  const loadDocumentosByContrato = useCallback(async (contratoId) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await api.get(`/documentos?contratoId=${contratoId}`);
+      return response.data;
+    } catch (err) {
+      setError('Erro ao carregar documentos: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao carregar documentos:', err);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Salvar novo documento
+  const saveDocumento = useCallback(async (documento) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      let savedDocumento;
+      
+      if (documento.id) {
+        // Atualiza documento existente
+        savedDocumento = await api.put(`/documentos/${documento.id}`, documento);
+      } else {
+        // Cria novo documento
+        savedDocumento = await api.post('/documentos', documento);
+      }
+      
+      return savedDocumento.data;
+    } catch (err) {
+      setError('Erro ao salvar documento: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao salvar documento:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Excluir documento
+  const deleteDocumento = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await api.delete(`/documentos/${id}`);
+      return true;
+    } catch (err) {
+      setError('Erro ao excluir documento: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao excluir documento:', err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Upload de documento para o servidor
+  const uploadDocumento = useCallback(async (file, tipo, contratoId) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Em um sistema real, aqui usaria FormData para fazer upload do arquivo
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('tipo', tipo);
+      formData.append('contratoId', contratoId);
+      
+      const response = await api.post('/documentos/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      return response.data;
+    } catch (err) {
+      setError('Erro ao fazer upload do documento: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao fazer upload do documento:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Download de documento do servidor
+  const downloadDocumento = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await api.get(`/documentos/${id}/download`, {
+        responseType: 'blob'
+      });
+      
+      return response.data;
+    } catch (err) {
+      setError('Erro ao fazer download do documento: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao fazer download do documento:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const value = {
     aditivos,
     distratos,
@@ -217,7 +327,13 @@ export const DocumentosContratuaisProvider = ({ children }) => {
     deleteQuitacao,
     setCurrentAditivo,
     setCurrentDistrato,
-    setCurrentQuitacao
+    setCurrentQuitacao,
+    // Novos valores para gerenciamento de documentos
+    loadDocumentosByContrato,
+    saveDocumento,
+    deleteDocumento,
+    uploadDocumento,
+    downloadDocumento
   };
 
   return (
