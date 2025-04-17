@@ -326,3 +326,19 @@ model Quitacao {
   @@map("quitacoes")
   @@index([contratoId])
 }
+
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  name       String
+  role       String   @default("operator")
+  permissions Json?    // Armazenar permissões como JSON
+  status     Boolean  @default(true)
+  lastLogin  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}

@@ -1,21 +1,14 @@
 // src/components/auth/PrivateRoute.jsx
 
 import React from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { CircularProgress, Box } from '@mui/material';
+import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import { CircularProgress, Box } from '@mui/material';
 
-/**
- * Componente para proteger rotas, verificando autenticação e permissões
- * @param {Object} props - Propriedades do componente
- * @param {Array} props.permissions - Lista de permissões necessárias
- * @returns {JSX.Element} Componente renderizado
- */
-const PrivateRoute = ({ permissions = [] }) => {
-  const { user, loading, isAuthenticated, hasAnyPermission } = useAuth();
+const PrivateRoute = ({ children, permissions = [] }) => {
+  const { isAuthenticated, loading, hasAnyPermission } = useAuth();
   const location = useLocation();
-  
-  // Verifica se está carregando
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -23,19 +16,18 @@ const PrivateRoute = ({ permissions = [] }) => {
       </Box>
     );
   }
-  
-  // Verifica se está autenticado
+
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    // Redireciona para o login, salvando a rota atual para redirecionamento após login
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  
-  // Verifica permissões
+
+  // Se há permissões especificadas, verifica se o usuário tem acesso
   if (permissions.length > 0 && !hasAnyPermission(permissions)) {
-    return <Navigate to="/access-denied" replace />;
+    return <Navigate to="/acesso-negado" replace />;
   }
-  
-  // Renderiza o conteúdo da rota
-  return <Outlet />;
+
+  return children;
 };
 
 export default PrivateRoute;

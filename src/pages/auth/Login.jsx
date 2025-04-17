@@ -1,5 +1,5 @@
 // src/pages/auth/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Typography, 
   Box, 
@@ -90,7 +90,7 @@ const Footer = styled(Typography)(({ theme }) => ({
 
 const Login = () => {
   const theme = useTheme();
-  const { login, isLoading, error, resetError } = useAuth();
+  const { login, isLoading, error, resetError, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const [showPassword, setShowPassword] = useState(false);
@@ -100,6 +100,13 @@ const Login = () => {
     rememberMe: false
   });
   
+  // Verificar se o usuário está autenticado e redirecionar para a página principal
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+  
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
     setFormData(prev => ({
@@ -108,13 +115,20 @@ const Login = () => {
     }));
     
     // Resetar erro quando o usuário começa a digitar
-    if (error) resetError();
+    if (error && resetError) resetError();
   };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, password } = formData;
-    await login(email, password);
+    
+    // Fazer login
+    const result = await login(email, password);
+    
+    // O redirecionamento será feito pelo useEffect acima quando isAuthenticated mudar
+    if (result) {
+      console.log('Login bem-sucedido, redirecionando...');
+    }
   };
   
   return (

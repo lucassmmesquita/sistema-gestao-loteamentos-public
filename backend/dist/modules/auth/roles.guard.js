@@ -9,32 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrismaService = void 0;
+exports.RolesGuard = void 0;
 const common_1 = require("@nestjs/common");
-const client_1 = require("@prisma/client");
-let PrismaService = class PrismaService extends client_1.PrismaClient {
-    constructor() {
-        super({
-            log: ['query', 'info', 'warn', 'error'],
-        });
+const core_1 = require("@nestjs/core");
+let RolesGuard = class RolesGuard {
+    constructor(reflector) {
+        this.reflector = reflector;
     }
-    async onModuleInit() {
-        try {
-            await this.$connect();
-            console.log('Database connection established successfully');
+    canActivate(context) {
+        const roles = this.reflector.get('roles', context.getHandler());
+        if (!roles) {
+            return true;
         }
-        catch (error) {
-            console.error('Failed to connect to the database:', error);
-            throw error;
-        }
+        const request = context.switchToHttp().getRequest();
+        const user = request.user;
+        return this.matchRoles(roles, user.role);
     }
-    async onModuleDestroy() {
-        await this.$disconnect();
+    matchRoles(roles, userRole) {
+        return roles.includes(userRole);
     }
 };
-PrismaService = __decorate([
+RolesGuard = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
-], PrismaService);
-exports.PrismaService = PrismaService;
-//# sourceMappingURL=prisma.service.js.map
+    __metadata("design:paramtypes", [core_1.Reflector])
+], RolesGuard);
+exports.RolesGuard = RolesGuard;
+//# sourceMappingURL=roles.guard.js.map
