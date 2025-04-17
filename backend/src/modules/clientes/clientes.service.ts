@@ -11,9 +11,17 @@ export class ClientesService {
   async create(createClienteDto: CreateClienteDto) {
     const { endereco, contatos, ...clienteData } = createClienteDto;
 
+    // Converter a string de data para objeto Date, se existir
+    const dataProcessada = {
+      ...clienteData,
+      dataNascimento: clienteData.dataNascimento 
+        ? new Date(clienteData.dataNascimento) 
+        : clienteData.dataNascimento
+    };
+
     return this.prisma.cliente.create({
       data: {
-        ...clienteData,
+        ...dataProcessada,
         endereco: endereco ? {
           create: endereco
         } : undefined,
@@ -91,10 +99,18 @@ export class ClientesService {
     // Verificar se o cliente existe
     await this.findOne(id);
 
+    // Converter a string de data para objeto Date, se existir
+    const dataProcessada = {
+      ...clienteData,
+      dataNascimento: clienteData.dataNascimento 
+        ? new Date(clienteData.dataNascimento) 
+        : clienteData.dataNascimento
+    };
+
     return this.prisma.cliente.update({
       where: { id },
       data: {
-        ...clienteData,
+        ...dataProcessada,
         endereco: endereco ? {
           upsert: {
             create: endereco,

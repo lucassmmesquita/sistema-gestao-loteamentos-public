@@ -1,7 +1,8 @@
+// src/hooks/useClientes.js
+
 import { useContext } from 'react';
 import { ClienteContext } from '../contexts/ClienteContext';
 
-// Hook personalizado para acessar o ClienteContext
 const useClientes = () => {
   const context = useContext(ClienteContext);
   
