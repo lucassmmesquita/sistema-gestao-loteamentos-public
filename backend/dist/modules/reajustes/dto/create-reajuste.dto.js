@@ -17,7 +17,6 @@ class CreateReajusteDto {
         this.aplicado = false;
     }
 }
-exports.CreateReajusteDto = CreateReajusteDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -72,4 +71,5 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], CreateReajusteDto.prototype, "aplicado", void 0);
+exports.CreateReajusteDto = CreateReajusteDto;
 //# sourceMappingURL=create-reajuste.dto.js.map

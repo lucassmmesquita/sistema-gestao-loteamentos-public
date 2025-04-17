@@ -47,7 +47,6 @@ let LotesController = class LotesController {
         return this.lotesService.getLotesByLoteamento(loteamento);
     }
 };
-exports.LotesController = LotesController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -104,8 +103,9 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], LotesController.prototype, "getLotesByLoteamento", null);
-exports.LotesController = LotesController = __decorate([
+LotesController = __decorate([
     (0, common_1.Controller)('lotes'),
     __metadata("design:paramtypes", [lotes_service_1.LotesService])
 ], LotesController);
+exports.LotesController = LotesController;
 //# sourceMappingURL=lotes.controller.js.map

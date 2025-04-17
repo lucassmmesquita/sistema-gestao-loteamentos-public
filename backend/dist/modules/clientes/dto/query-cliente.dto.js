@@ -13,7 +13,6 @@ exports.QueryClienteDto = void 0;
 const class_validator_1 = require("class-validator");
 class QueryClienteDto {
 }
-exports.QueryClienteDto = QueryClienteDto;
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
@@ -34,4 +33,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], QueryClienteDto.prototype, "estado", void 0);
+exports.QueryClienteDto = QueryClienteDto;
 //# sourceMappingURL=query-cliente.dto.js.map

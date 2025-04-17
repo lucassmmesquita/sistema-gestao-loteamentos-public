@@ -185,3 +185,5 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para m
 ## 📧 Contato
 
 Para perguntas ou sugestões, por favor, entre em contato através do e-mail: exemplo@email.com
+
+npm run start:dev

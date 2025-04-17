@@ -117,9 +117,9 @@ let ClientesService = class ClientesService {
         });
     }
 };
-exports.ClientesService = ClientesService;
-exports.ClientesService = ClientesService = __decorate([
+ClientesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], ClientesService);
+exports.ClientesService = ClientesService;
 //# sourceMappingURL=clientes.service.js.map

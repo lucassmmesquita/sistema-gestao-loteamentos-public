@@ -434,10 +434,10 @@ export class InadimplenciaService {
           data: new Date(),
           mensagem: gatilho.mensagem,
           status: 'enviado',
-          parcelaInfo: { 
-            parcelaId: parseInt(parcelaId),
-            valor: boleto.valor,
-            dataVencimento: boleto.dataVencimento
+          parcelaInfo: {
+            parcelaId: parcelaId,
+            //valor: parcela.valor.toString(), // ou parcela.valor.toNumber()
+            //dataVencimento: parcela.dataVencimento.toISOString()
           }
         }
       });

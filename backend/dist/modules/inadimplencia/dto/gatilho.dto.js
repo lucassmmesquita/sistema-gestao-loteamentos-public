@@ -13,7 +13,6 @@ exports.ConfiguracaoGatilhosDto = exports.GatilhoDto = void 0;
 const class_validator_1 = require("class-validator");
 class GatilhoDto {
 }
-exports.GatilhoDto = GatilhoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(1),
@@ -31,9 +30,9 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], GatilhoDto.prototype, "mensagem", void 0);
+exports.GatilhoDto = GatilhoDto;
 class ConfiguracaoGatilhosDto {
 }
-exports.ConfiguracaoGatilhosDto = ConfiguracaoGatilhosDto;
 __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
@@ -68,4 +67,5 @@ __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], ConfiguracaoGatilhosDto.prototype, "gerarLog", void 0);
+exports.ConfiguracaoGatilhosDto = ConfiguracaoGatilhosDto;
 //# sourceMappingURL=gatilho.dto.js.map

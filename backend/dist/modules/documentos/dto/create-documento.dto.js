@@ -13,7 +13,6 @@ exports.CreateDocumentoDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateDocumentoDto {
 }
-exports.CreateDocumentoDto = CreateDocumentoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -35,4 +34,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateDocumentoDto.prototype, "descricao", void 0);
+exports.CreateDocumentoDto = CreateDocumentoDto;
 //# sourceMappingURL=create-documento.dto.js.map

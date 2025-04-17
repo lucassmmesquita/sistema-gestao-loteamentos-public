@@ -10,17 +10,17 @@ import { UpdateDocumentoDto } from './dto/update-documento.dto';
 export declare class DocumentosService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    createAditivo(createAditivoDto: CreateAditivoDto): Promise<{
+    createAditivo(createAditivoDto: CreateAditivoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         tipo: string;
         dataAssinatura: Date;
         motivoAditivo: string;
-        novoValor: import("@prisma/client/runtime/library").Decimal | null;
-        novaDataFim: Date | null;
-        documentoUrl: string | null;
+        novoValor: import("@prisma/client/runtime").Decimal;
+        novaDataFim: Date;
+        documentoUrl: string;
         status: string;
-    }>;
+    }, unknown, never> & {}>;
     findAllAditivos(contratoId?: number): Promise<({
         contrato: {
             id: number;
@@ -31,17 +31,17 @@ export declare class DocumentosService {
                 cpfCnpj: string;
             };
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         tipo: string;
         dataAssinatura: Date;
         motivoAditivo: string;
-        novoValor: import("@prisma/client/runtime/library").Decimal | null;
-        novaDataFim: Date | null;
-        documentoUrl: string | null;
+        novoValor: import("@prisma/client/runtime").Decimal;
+        novaDataFim: Date;
+        documentoUrl: string;
         status: string;
-    })[]>;
+    }, unknown, never> & {})[]>;
     findOneAditivo(id: number): Promise<{
         contrato: {
             cliente: {
@@ -49,63 +49,63 @@ export declare class DocumentosService {
                 nome: string;
                 cpfCnpj: string;
             };
-        } & {
+        } & import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
             clienteId: number;
             loteId: number;
             dataInicio: Date;
             dataFim: Date;
-            valorTotal: import("@prisma/client/runtime/library").Decimal;
-            valorEntrada: import("@prisma/client/runtime/library").Decimal;
+            valorTotal: import("@prisma/client/runtime").Decimal;
+            valorEntrada: import("@prisma/client/runtime").Decimal;
             numeroParcelas: number;
             dataVencimento: number;
             clausulas: string;
+            status: string;
             dataCriacao: Date;
             parcelasPagas: number;
-            ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-        };
-    } & {
+            ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         tipo: string;
         dataAssinatura: Date;
         motivoAditivo: string;
-        novoValor: import("@prisma/client/runtime/library").Decimal | null;
-        novaDataFim: Date | null;
-        documentoUrl: string | null;
+        novoValor: import("@prisma/client/runtime").Decimal;
+        novaDataFim: Date;
+        documentoUrl: string;
         status: string;
-    }>;
-    updateAditivo(id: number, updateAditivoDto: UpdateAditivoDto): Promise<{
+    }, unknown, never> & {}>;
+    updateAditivo(id: number, updateAditivoDto: UpdateAditivoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         tipo: string;
         dataAssinatura: Date;
         motivoAditivo: string;
-        novoValor: import("@prisma/client/runtime/library").Decimal | null;
-        novaDataFim: Date | null;
-        documentoUrl: string | null;
+        novoValor: import("@prisma/client/runtime").Decimal;
+        novaDataFim: Date;
+        documentoUrl: string;
         status: string;
-    }>;
-    removeAditivo(id: number): Promise<{
+    }, unknown, never> & {}>;
+    removeAditivo(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         tipo: string;
         dataAssinatura: Date;
         motivoAditivo: string;
-        novoValor: import("@prisma/client/runtime/library").Decimal | null;
-        novaDataFim: Date | null;
-        documentoUrl: string | null;
+        novoValor: import("@prisma/client/runtime").Decimal;
+        novaDataFim: Date;
+        documentoUrl: string;
         status: string;
-    }>;
-    createDistrato(createDistratoDto: CreateDistratoDto): Promise<{
+    }, unknown, never> & {}>;
+    createDistrato(createDistratoDto: CreateDistratoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataDistrato: Date;
         motivoDistrato: string;
-        valorDevolucao: import("@prisma/client/runtime/library").Decimal | null;
-    }>;
+        valorDevolucao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
     findAllDistratos(contratoId?: number): Promise<({
         contrato: {
             id: number;
@@ -116,14 +116,14 @@ export declare class DocumentosService {
                 cpfCnpj: string;
             };
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataDistrato: Date;
         motivoDistrato: string;
-        valorDevolucao: import("@prisma/client/runtime/library").Decimal | null;
-    })[]>;
+        valorDevolucao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {})[]>;
     findOneDistrato(id: number): Promise<{
         contrato: {
             cliente: {
@@ -131,53 +131,53 @@ export declare class DocumentosService {
                 nome: string;
                 cpfCnpj: string;
             };
-        } & {
+        } & import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
             clienteId: number;
             loteId: number;
             dataInicio: Date;
             dataFim: Date;
-            valorTotal: import("@prisma/client/runtime/library").Decimal;
-            valorEntrada: import("@prisma/client/runtime/library").Decimal;
+            valorTotal: import("@prisma/client/runtime").Decimal;
+            valorEntrada: import("@prisma/client/runtime").Decimal;
             numeroParcelas: number;
             dataVencimento: number;
             clausulas: string;
+            status: string;
             dataCriacao: Date;
             parcelasPagas: number;
-            ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-        };
-    } & {
+            ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataDistrato: Date;
         motivoDistrato: string;
-        valorDevolucao: import("@prisma/client/runtime/library").Decimal | null;
-    }>;
-    updateDistrato(id: number, updateDistratoDto: UpdateDistratoDto): Promise<{
+        valorDevolucao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    updateDistrato(id: number, updateDistratoDto: UpdateDistratoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataDistrato: Date;
         motivoDistrato: string;
-        valorDevolucao: import("@prisma/client/runtime/library").Decimal | null;
-    }>;
-    removeDistrato(id: number): Promise<{
+        valorDevolucao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    removeDistrato(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataDistrato: Date;
         motivoDistrato: string;
-        valorDevolucao: import("@prisma/client/runtime/library").Decimal | null;
-    }>;
-    createQuitacao(createQuitacaoDto: CreateQuitacaoDto): Promise<{
+        valorDevolucao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    createQuitacao(createQuitacaoDto: CreateQuitacaoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataQuitacao: Date;
-        valorQuitacao: import("@prisma/client/runtime/library").Decimal;
-    }>;
+        valorQuitacao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
     findAllQuitacoes(contratoId?: number): Promise<({
         contrato: {
             id: number;
@@ -188,13 +188,13 @@ export declare class DocumentosService {
                 cpfCnpj: string;
             };
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataQuitacao: Date;
-        valorQuitacao: import("@prisma/client/runtime/library").Decimal;
-    })[]>;
+        valorQuitacao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {})[]>;
     findOneQuitacao(id: number): Promise<{
         contrato: {
             cliente: {
@@ -202,101 +202,101 @@ export declare class DocumentosService {
                 nome: string;
                 cpfCnpj: string;
             };
-        } & {
+        } & import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
             clienteId: number;
             loteId: number;
             dataInicio: Date;
             dataFim: Date;
-            valorTotal: import("@prisma/client/runtime/library").Decimal;
-            valorEntrada: import("@prisma/client/runtime/library").Decimal;
+            valorTotal: import("@prisma/client/runtime").Decimal;
+            valorEntrada: import("@prisma/client/runtime").Decimal;
             numeroParcelas: number;
             dataVencimento: number;
             clausulas: string;
+            status: string;
             dataCriacao: Date;
             parcelasPagas: number;
-            ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-        };
-    } & {
+            ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataQuitacao: Date;
-        valorQuitacao: import("@prisma/client/runtime/library").Decimal;
-    }>;
-    updateQuitacao(id: number, updateQuitacaoDto: UpdateQuitacaoDto): Promise<{
+        valorQuitacao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    updateQuitacao(id: number, updateQuitacaoDto: UpdateQuitacaoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataQuitacao: Date;
-        valorQuitacao: import("@prisma/client/runtime/library").Decimal;
-    }>;
-    removeQuitacao(id: number): Promise<{
+        valorQuitacao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    removeQuitacao(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
-        documentoUrl: string | null;
         dataQuitacao: Date;
-        valorQuitacao: import("@prisma/client/runtime/library").Decimal;
-    }>;
-    createDocumento(createDocumentoDto: CreateDocumentoDto): Promise<{
+        valorQuitacao: import("@prisma/client/runtime").Decimal;
+        documentoUrl: string;
+    }, unknown, never> & {}>;
+    createDocumento(createDocumentoDto: CreateDocumentoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    }>;
-    uploadDocumento(contratoId: number, tipo: string, file: any): Promise<{
+    }, unknown, never> & {}>;
+    uploadDocumento(contratoId: number, tipo: string, file: any): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    }>;
+    }, unknown, never> & {}>;
     findAllDocumentos(contratoId?: number): Promise<({
         cliente: {
             id: number;
             nome: string;
             cpfCnpj: string;
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    })[]>;
+    }, unknown, never> & {})[]>;
     findOneDocumento(id: number): Promise<{
         cliente: {
             id: number;
             nome: string;
             cpfCnpj: string;
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    }>;
-    updateDocumento(id: number, updateDocumentoDto: UpdateDocumentoDto): Promise<{
+    }, unknown, never> & {}>;
+    updateDocumento(id: number, updateDocumentoDto: UpdateDocumentoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    }>;
-    removeDocumento(id: number): Promise<{
+    }, unknown, never> & {}>;
+    removeDocumento(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
-        tipo: string;
         clienteId: number;
+        tipo: string;
         nome: string;
         arquivo: string;
         dataUpload: Date;
-    }>;
+    }, unknown, never> & {}>;
 }

@@ -13,8 +13,7 @@ const boletos_controller_1 = require("./boletos.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let BoletosModule = class BoletosModule {
 };
-exports.BoletosModule = BoletosModule;
-exports.BoletosModule = BoletosModule = __decorate([
+BoletosModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [boletos_controller_1.BoletosController],
@@ -22,4 +21,5 @@ exports.BoletosModule = BoletosModule = __decorate([
         exports: [boletos_service_1.BoletosService],
     })
 ], BoletosModule);
+exports.BoletosModule = BoletosModule;
 //# sourceMappingURL=boletos.module.js.map

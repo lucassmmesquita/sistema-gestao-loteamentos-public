@@ -6,8 +6,17 @@ const clienteService = {
    * @returns {Promise} Promise com a lista de clientes
    */
   getAll: async () => {
-    const response = await api.get('/clientes');
-    return response.data;
+    try {
+      console.log('clienteService.getAll: Iniciando requisição');
+      const response = await api.get('/clientes');
+      console.log('clienteService.getAll: Requisição bem-sucedida', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('clienteService.getAll: Erro na requisição', error);
+      console.error('clienteService.getAll: Status do erro', error.response?.status);
+      console.error('clienteService.getAll: Detalhes do erro', error.response?.data);
+      throw error;
+    }
   },
 
   /**
@@ -26,11 +35,21 @@ const clienteService = {
    * @returns {Promise} Promise com o cliente criado
    */
   create: async (cliente) => {
-    // Adiciona a data de cadastro
-    cliente.dataCadastro = new Date().toISOString();
-    
-    const response = await api.post('/clientes', cliente);
-    return response.data;
+    try {
+      console.log('clienteService.create: Iniciando requisição com dados:', cliente);
+      // Adiciona a data de cadastro
+      cliente.dataCadastro = new Date().toISOString();
+      
+      console.log('clienteService.create: URL da requisição', api.defaults.baseURL + '/clientes');
+      const response = await api.post('/clientes', cliente);
+      console.log('clienteService.create: Requisição bem-sucedida', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('clienteService.create: Erro na requisição', error);
+      console.error('clienteService.create: Status do erro', error.response?.status);
+      console.error('clienteService.create: Detalhes do erro', error.response?.data);
+      throw error;
+    }
   },
 
   /**

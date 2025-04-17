@@ -6,118 +6,118 @@ export declare class ClientesController {
     private readonly clientesService;
     constructor(clientesService: ClientesService);
     create(createClienteDto: CreateClienteDto): Promise<{
-        endereco: {
+        endereco: import("@prisma/client/runtime").GetResult<{
+            id: number;
+            clienteId: number;
             cep: string;
             logradouro: string;
             numero: string;
-            complemento: string | null;
+            complemento: string;
             bairro: string;
             cidade: string;
             estado: string;
+        }, unknown, never> & {};
+        contatos: import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
-        };
-        contatos: {
             telefones: string[];
             emails: string[];
-            id: number;
-            clienteId: number;
-        };
-    } & {
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
+        id: number;
         nome: string;
         cpfCnpj: string;
-        dataNascimento: Date | null;
-        id: number;
+        dataNascimento: Date;
         dataCadastro: Date;
-    }>;
+    }, unknown, never> & {}>;
     findAll(query: QueryClienteDto): Promise<({
-        endereco: {
+        endereco: import("@prisma/client/runtime").GetResult<{
+            id: number;
+            clienteId: number;
             cep: string;
             logradouro: string;
             numero: string;
-            complemento: string | null;
+            complemento: string;
             bairro: string;
             cidade: string;
             estado: string;
+        }, unknown, never> & {};
+        contatos: import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
-        };
-        contatos: {
             telefones: string[];
             emails: string[];
-            id: number;
-            clienteId: number;
-        };
-    } & {
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
+        id: number;
         nome: string;
         cpfCnpj: string;
-        dataNascimento: Date | null;
-        id: number;
+        dataNascimento: Date;
         dataCadastro: Date;
-    })[]>;
+    }, unknown, never> & {})[]>;
     findOne(id: number): Promise<{
-        endereco: {
+        endereco: import("@prisma/client/runtime").GetResult<{
+            id: number;
+            clienteId: number;
             cep: string;
             logradouro: string;
             numero: string;
-            complemento: string | null;
+            complemento: string;
             bairro: string;
             cidade: string;
             estado: string;
+        }, unknown, never> & {};
+        contatos: import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
-        };
-        contatos: {
             telefones: string[];
             emails: string[];
-            id: number;
-            clienteId: number;
-        };
-        documentos: {
-            nome: string;
+        }, unknown, never> & {};
+        documentos: (import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
             tipo: string;
+            nome: string;
             arquivo: string;
             dataUpload: Date;
-        }[];
-    } & {
+        }, unknown, never> & {})[];
+    } & import("@prisma/client/runtime").GetResult<{
+        id: number;
         nome: string;
         cpfCnpj: string;
-        dataNascimento: Date | null;
-        id: number;
+        dataNascimento: Date;
         dataCadastro: Date;
-    }>;
+    }, unknown, never> & {}>;
     update(id: number, updateClienteDto: UpdateClienteDto): Promise<{
-        endereco: {
+        endereco: import("@prisma/client/runtime").GetResult<{
+            id: number;
+            clienteId: number;
             cep: string;
             logradouro: string;
             numero: string;
-            complemento: string | null;
+            complemento: string;
             bairro: string;
             cidade: string;
             estado: string;
+        }, unknown, never> & {};
+        contatos: import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
-        };
-        contatos: {
             telefones: string[];
             emails: string[];
-            id: number;
-            clienteId: number;
-        };
-    } & {
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
+        id: number;
         nome: string;
         cpfCnpj: string;
-        dataNascimento: Date | null;
-        id: number;
+        dataNascimento: Date;
         dataCadastro: Date;
-    }>;
-    remove(id: number): Promise<{
+    }, unknown, never> & {}>;
+    remove(id: number): Promise<import("@prisma/client/runtime").GetResult<{
+        id: number;
         nome: string;
         cpfCnpj: string;
-        dataNascimento: Date | null;
-        id: number;
+        dataNascimento: Date;
         dataCadastro: Date;
-    }>;
+    }, unknown, never> & {}>;
 }

@@ -57,7 +57,6 @@ let InadimplenciaController = class InadimplenciaController {
         return this.inadimplenciaService.exportarDados(formato, query);
     }
 };
-exports.InadimplenciaController = InadimplenciaController;
 __decorate([
     (0, common_1.Get)('clientes-inadimplentes'),
     __param(0, (0, common_1.Query)()),
@@ -137,8 +136,9 @@ __decorate([
     __metadata("design:paramtypes", [String, query_inadimplencia_dto_1.QueryInadimplenciaDto]),
     __metadata("design:returntype", void 0)
 ], InadimplenciaController.prototype, "exportarDados", null);
-exports.InadimplenciaController = InadimplenciaController = __decorate([
+InadimplenciaController = __decorate([
     (0, common_1.Controller)('inadimplencia'),
     __metadata("design:paramtypes", [inadimplencia_service_1.InadimplenciaService])
 ], InadimplenciaController);
+exports.InadimplenciaController = InadimplenciaController;
 //# sourceMappingURL=inadimplencia.controller.js.map

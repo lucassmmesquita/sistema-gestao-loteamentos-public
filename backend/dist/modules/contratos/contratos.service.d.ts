@@ -5,96 +5,95 @@ import { QueryContratoDto } from './dto/query-contrato.dto';
 export declare class ContratosService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(createContratoDto: CreateContratoDto): Promise<{
+    create(createContratoDto: CreateContratoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {}>;
     findAll(query: QueryContratoDto): Promise<({
         cliente: {
+            id: number;
             nome: string;
             cpfCnpj: string;
-            id: number;
         };
-        lote: {
-            numero: string;
+        lote: import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
+            numero: string;
             quadra: string;
             loteamento: string;
             area: number;
-            valorBase: import("@prisma/client/runtime/library").Decimal;
-        };
-    } & {
+            valorBase: import("@prisma/client/runtime").Decimal;
+            status: string;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    })[]>;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {})[]>;
     findOne(id: number): Promise<{
         cliente: {
-            endereco: {
+            endereco: import("@prisma/client/runtime").GetResult<{
+                id: number;
+                clienteId: number;
                 cep: string;
                 logradouro: string;
                 numero: string;
-                complemento: string | null;
+                complemento: string;
                 bairro: string;
                 cidade: string;
                 estado: string;
+            }, unknown, never> & {};
+            contatos: import("@prisma/client/runtime").GetResult<{
                 id: number;
                 clienteId: number;
-            };
-            contatos: {
                 telefones: string[];
                 emails: string[];
-                id: number;
-                clienteId: number;
-            };
-        } & {
+            }, unknown, never> & {};
+        } & import("@prisma/client/runtime").GetResult<{
+            id: number;
             nome: string;
             cpfCnpj: string;
-            dataNascimento: Date | null;
-            id: number;
+            dataNascimento: Date;
             dataCadastro: Date;
-        };
-        lote: {
-            numero: string;
+        }, unknown, never> & {};
+        lote: import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
+            numero: string;
             quadra: string;
             loteamento: string;
             area: number;
-            valorBase: import("@prisma/client/runtime/library").Decimal;
-        };
-        boletos: {
+            valorBase: import("@prisma/client/runtime").Decimal;
+            status: string;
+        }, unknown, never> & {};
+        boletos: (import("@prisma/client/runtime").GetResult<{
             id: number;
             clienteId: number;
-            dataVencimento: Date;
-            status: string;
             clienteNome: string;
             contratoId: number;
-            valor: import("@prisma/client/runtime/library").Decimal;
+            valor: import("@prisma/client/runtime").Decimal;
+            dataVencimento: Date;
             numeroParcela: number;
             descricao: string;
             nossoNumero: string;
@@ -102,126 +101,127 @@ export declare class ContratosService {
             codigoBarras: string;
             pdfUrl: string;
             dataGeracao: Date;
-            dataPagamento: Date | null;
-            valorPago: import("@prisma/client/runtime/library").Decimal | null;
-            formaPagamento: string | null;
-            dataCancelamento: Date | null;
-            comprovante: string | null;
-        }[];
-        reajustes: {
-            id: number;
             status: string;
+            dataPagamento: Date;
+            valorPago: import("@prisma/client/runtime").Decimal;
+            formaPagamento: string;
+            dataCancelamento: Date;
+            comprovante: string;
+        }, unknown, never> & {})[];
+        reajustes: (import("@prisma/client/runtime").GetResult<{
+            id: number;
             contratoId: number;
             parcelaReferencia: number;
-            valorOriginal: import("@prisma/client/runtime/library").Decimal;
-            valorReajustado: import("@prisma/client/runtime/library").Decimal;
-            indiceAplicado: import("@prisma/client/runtime/library").Decimal;
+            valorOriginal: import("@prisma/client/runtime").Decimal;
+            valorReajustado: import("@prisma/client/runtime").Decimal;
+            indiceAplicado: import("@prisma/client/runtime").Decimal;
             indiceBase: string;
-            percentualAdicional: import("@prisma/client/runtime/library").Decimal;
-            reajusteTotal: import("@prisma/client/runtime/library").Decimal;
+            percentualAdicional: import("@prisma/client/runtime").Decimal;
+            reajusteTotal: import("@prisma/client/runtime").Decimal;
             dataReferencia: Date;
-            dataAplicacao: Date | null;
+            dataAplicacao: Date;
+            status: string;
             aplicado: boolean;
-        }[];
-    } & {
+        }, unknown, never> & {})[];
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {}>;
     update(id: number, updateContratoDto: UpdateContratoDto): Promise<{
-        cliente: {
+        cliente: import("@prisma/client/runtime").GetResult<{
+            id: number;
             nome: string;
             cpfCnpj: string;
-            dataNascimento: Date | null;
-            id: number;
+            dataNascimento: Date;
             dataCadastro: Date;
-        };
-        lote: {
-            numero: string;
+        }, unknown, never> & {};
+        lote: import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
+            numero: string;
             quadra: string;
             loteamento: string;
             area: number;
-            valorBase: import("@prisma/client/runtime/library").Decimal;
-        };
-    } & {
+            valorBase: import("@prisma/client/runtime").Decimal;
+            status: string;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
-    remove(id: number): Promise<{
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {}>;
+    remove(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {}>;
     getByClienteId(clienteId: number): Promise<({
-        lote: {
-            numero: string;
+        lote: import("@prisma/client/runtime").GetResult<{
             id: number;
-            status: string;
+            numero: string;
             quadra: string;
             loteamento: string;
             area: number;
-            valorBase: import("@prisma/client/runtime/library").Decimal;
-        };
-    } & {
+            valorBase: import("@prisma/client/runtime").Decimal;
+            status: string;
+        }, unknown, never> & {};
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
         dataInicio: Date;
         dataFim: Date;
-        valorTotal: import("@prisma/client/runtime/library").Decimal;
-        valorEntrada: import("@prisma/client/runtime/library").Decimal;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
         numeroParcelas: number;
         dataVencimento: number;
         clausulas: string;
         status: string;
         dataCriacao: Date;
         parcelasPagas: number;
-        ultimoReajuste: import("@prisma/client/runtime/library").JsonValue | null;
-    })[]>;
-    getLotesDisponiveis(): Promise<{
-        numero: string;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {})[]>;
+    getLotesDisponiveis(): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
-        status: string;
+        numero: string;
         quadra: string;
         loteamento: string;
         area: number;
-        valorBase: import("@prisma/client/runtime/library").Decimal;
-    }[]>;
+        valorBase: import("@prisma/client/runtime").Decimal;
+        status: string;
+    }, unknown, never> & {})[]>;
     gerarPrevia(contratoDto: CreateContratoDto): Promise<string>;
 }

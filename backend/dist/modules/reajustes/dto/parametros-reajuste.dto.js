@@ -13,7 +13,6 @@ exports.ParametrosReajusteDto = void 0;
 const class_validator_1 = require("class-validator");
 class ParametrosReajusteDto {
 }
-exports.ParametrosReajusteDto = ParametrosReajusteDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -33,4 +32,5 @@ __decorate([
     (0, class_validator_1.Min)(1),
     __metadata("design:type", Number)
 ], ParametrosReajusteDto.prototype, "alertaAntecipadoDias", void 0);
+exports.ParametrosReajusteDto = ParametrosReajusteDto;
 //# sourceMappingURL=parametros-reajuste.dto.js.map

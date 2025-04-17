@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class CreateQuitacaoDto {
 }
-exports.CreateQuitacaoDto = CreateQuitacaoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -34,4 +33,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateQuitacaoDto.prototype, "documentoUrl", void 0);
+exports.CreateQuitacaoDto = CreateQuitacaoDto;
 //# sourceMappingURL=create-quitacao.dto.js.map

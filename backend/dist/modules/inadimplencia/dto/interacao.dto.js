@@ -13,7 +13,6 @@ exports.CreateInteracaoDto = void 0;
 const class_validator_1 = require("class-validator");
 class CreateInteracaoDto {
 }
-exports.CreateInteracaoDto = CreateInteracaoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -38,4 +37,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateInteracaoDto.prototype, "parcelaId", void 0);
+exports.CreateInteracaoDto = CreateInteracaoDto;
 //# sourceMappingURL=interacao.dto.js.map

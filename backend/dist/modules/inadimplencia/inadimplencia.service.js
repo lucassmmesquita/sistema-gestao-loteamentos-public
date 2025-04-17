@@ -350,9 +350,7 @@ let InadimplenciaService = class InadimplenciaService {
                     mensagem: gatilho.mensagem,
                     status: 'enviado',
                     parcelaInfo: {
-                        parcelaId: parseInt(parcelaId),
-                        valor: boleto.valor,
-                        dataVencimento: boleto.dataVencimento
+                        parcelaId: parcelaId,
                     }
                 }
             });
@@ -389,9 +387,9 @@ let InadimplenciaService = class InadimplenciaService {
         }
     }
 };
-exports.InadimplenciaService = InadimplenciaService;
-exports.InadimplenciaService = InadimplenciaService = __decorate([
+InadimplenciaService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], InadimplenciaService);
+exports.InadimplenciaService = InadimplenciaService;
 //# sourceMappingURL=inadimplencia.service.js.map

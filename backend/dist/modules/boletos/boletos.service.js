@@ -154,9 +154,9 @@ let BoletosService = class BoletosService {
         return `104${Math.floor(10000000000000000000000000000000000000000 + Math.random() * 90000000000000000000000000000000000000000).toString()}`;
     }
 };
-exports.BoletosService = BoletosService;
-exports.BoletosService = BoletosService = __decorate([
+BoletosService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], BoletosService);
+exports.BoletosService = BoletosService;
 //# sourceMappingURL=boletos.service.js.map

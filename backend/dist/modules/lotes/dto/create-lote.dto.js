@@ -16,7 +16,6 @@ class CreateLoteDto {
         this.status = 'disponivel';
     }
 }
-exports.CreateLoteDto = CreateLoteDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -44,4 +43,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateLoteDto.prototype, "status", void 0);
+exports.CreateLoteDto = CreateLoteDto;
 //# sourceMappingURL=create-lote.dto.js.map

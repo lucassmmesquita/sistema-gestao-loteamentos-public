@@ -15,65 +15,65 @@ export declare class ReajustesService {
                 cpfCnpj: string;
             };
         };
-    } & {
+    } & import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         parcelaReferencia: number;
-        valorOriginal: import("@prisma/client/runtime/library").Decimal;
-        valorReajustado: import("@prisma/client/runtime/library").Decimal;
-        indiceAplicado: import("@prisma/client/runtime/library").Decimal;
+        valorOriginal: import("@prisma/client/runtime").Decimal;
+        valorReajustado: import("@prisma/client/runtime").Decimal;
+        indiceAplicado: import("@prisma/client/runtime").Decimal;
         indiceBase: string;
-        percentualAdicional: import("@prisma/client/runtime/library").Decimal;
-        reajusteTotal: import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: import("@prisma/client/runtime").Decimal;
+        reajusteTotal: import("@prisma/client/runtime").Decimal;
         dataReferencia: Date;
-        dataAplicacao: Date | null;
+        dataAplicacao: Date;
         status: string;
         aplicado: boolean;
-    })[]>;
+    }, unknown, never> & {})[]>;
     findReajustesPrevistos(dataInicio?: string, dataFim?: string): Promise<any[]>;
-    findParametrosReajuste(): Promise<{
+    findParametrosReajuste(): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         indiceBase: string;
-        percentualAdicional: import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: import("@prisma/client/runtime").Decimal;
         intervaloParcelas: number;
         alertaAntecipadoDias: number;
-    }>;
-    updateParametrosReajuste(parametrosReajusteDto: ParametrosReajusteDto): Promise<{
+    }, unknown, never> & {}>;
+    updateParametrosReajuste(parametrosReajusteDto: ParametrosReajusteDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         indiceBase: string;
-        percentualAdicional: import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: import("@prisma/client/runtime").Decimal;
         intervaloParcelas: number;
         alertaAntecipadoDias: number;
-    }>;
-    findIndicesEconomicos(): Promise<{
+    }, unknown, never> & {}>;
+    findIndicesEconomicos(): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
+        IGPM: import("@prisma/client/runtime").Decimal;
+        IPCA: import("@prisma/client/runtime").Decimal;
+        INPC: import("@prisma/client/runtime").Decimal;
         data: Date;
-        IGPM: import("@prisma/client/runtime/library").Decimal;
-        IPCA: import("@prisma/client/runtime/library").Decimal;
-        INPC: import("@prisma/client/runtime/library").Decimal;
-    }>;
-    updateIndicesEconomicos(indicesEconomicosDto: IndicesEconomicosDto): Promise<{
+    }, unknown, never> & {}>;
+    updateIndicesEconomicos(indicesEconomicosDto: IndicesEconomicosDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
+        IGPM: import("@prisma/client/runtime").Decimal;
+        IPCA: import("@prisma/client/runtime").Decimal;
+        INPC: import("@prisma/client/runtime").Decimal;
         data: Date;
-        IGPM: import("@prisma/client/runtime/library").Decimal;
-        IPCA: import("@prisma/client/runtime/library").Decimal;
-        INPC: import("@prisma/client/runtime/library").Decimal;
-    }>;
-    aplicarReajuste(contratoId: number): Promise<{
+    }, unknown, never> & {}>;
+    aplicarReajuste(contratoId: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         parcelaReferencia: number;
-        valorOriginal: import("@prisma/client/runtime/library").Decimal;
-        valorReajustado: import("@prisma/client/runtime/library").Decimal;
-        indiceAplicado: import("@prisma/client/runtime/library").Decimal;
+        valorOriginal: import("@prisma/client/runtime").Decimal;
+        valorReajustado: import("@prisma/client/runtime").Decimal;
+        indiceAplicado: import("@prisma/client/runtime").Decimal;
         indiceBase: string;
-        percentualAdicional: import("@prisma/client/runtime/library").Decimal;
-        reajusteTotal: import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: import("@prisma/client/runtime").Decimal;
+        reajusteTotal: import("@prisma/client/runtime").Decimal;
         dataReferencia: Date;
-        dataAplicacao: Date | null;
+        dataAplicacao: Date;
         status: string;
         aplicado: boolean;
-    }>;
+    }, unknown, never> & {}>;
     simularReajuste(contratoId: number, parametrosOverride?: Partial<ParametrosReajusteDto>): Promise<{
         contratoId: number;
         contrato: {
@@ -85,26 +85,26 @@ export declare class ReajustesService {
         valorReajustado: number;
         indiceAplicado: any;
         indiceBase: string;
-        percentualAdicional: number | import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: number | import("@prisma/client/runtime").Decimal;
         reajusteTotal: any;
         dataReferencia: Date;
         simulado: boolean;
     }>;
-    findHistoricoReajustes(contratoId: number): Promise<{
+    findHistoricoReajustes(contratoId: number): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
         contratoId: number;
         parcelaReferencia: number;
-        valorOriginal: import("@prisma/client/runtime/library").Decimal;
-        valorReajustado: import("@prisma/client/runtime/library").Decimal;
-        indiceAplicado: import("@prisma/client/runtime/library").Decimal;
+        valorOriginal: import("@prisma/client/runtime").Decimal;
+        valorReajustado: import("@prisma/client/runtime").Decimal;
+        indiceAplicado: import("@prisma/client/runtime").Decimal;
         indiceBase: string;
-        percentualAdicional: import("@prisma/client/runtime/library").Decimal;
-        reajusteTotal: import("@prisma/client/runtime/library").Decimal;
+        percentualAdicional: import("@prisma/client/runtime").Decimal;
+        reajusteTotal: import("@prisma/client/runtime").Decimal;
         dataReferencia: Date;
-        dataAplicacao: Date | null;
+        dataAplicacao: Date;
         status: string;
         aplicado: boolean;
-    }[]>;
+    }, unknown, never> & {})[]>;
     gerarRelatorioReajustes(query: QueryReajusteDto): Promise<{
         dataCriacao: string;
         totalContratos: number;

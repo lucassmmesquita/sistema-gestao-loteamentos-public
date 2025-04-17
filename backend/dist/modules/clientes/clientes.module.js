@@ -13,8 +13,7 @@ const clientes_controller_1 = require("./clientes.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let ClientesModule = class ClientesModule {
 };
-exports.ClientesModule = ClientesModule;
-exports.ClientesModule = ClientesModule = __decorate([
+ClientesModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [clientes_controller_1.ClientesController],
@@ -22,4 +21,5 @@ exports.ClientesModule = ClientesModule = __decorate([
         exports: [clientes_service_1.ClientesService],
     })
 ], ClientesModule);
+exports.ClientesModule = ClientesModule;
 //# sourceMappingURL=clientes.module.js.map

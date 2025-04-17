@@ -16,7 +16,6 @@ class CreateContratoDto {
         this.status = 'ativo';
     }
 }
-exports.CreateContratoDto = CreateContratoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -62,4 +61,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateContratoDto.prototype, "status", void 0);
+exports.CreateContratoDto = CreateContratoDto;
 //# sourceMappingURL=create-contrato.dto.js.map

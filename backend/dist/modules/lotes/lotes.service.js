@@ -122,9 +122,9 @@ let LotesService = class LotesService {
         });
     }
 };
-exports.LotesService = LotesService;
-exports.LotesService = LotesService = __decorate([
+LotesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], LotesService);
+exports.LotesService = LotesService;
 //# sourceMappingURL=lotes.service.js.map
