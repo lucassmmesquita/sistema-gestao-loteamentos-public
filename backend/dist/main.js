@@ -5,8 +5,15 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.enableCors();
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, {
+        logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+        abortOnError: false
+    });
+    app.enableCors({
+        origin: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        credentials: true,
+    });
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         transform: true,
@@ -28,11 +35,18 @@ async function bootstrap() {
         .addTag('documentos')
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('api', app, document);
+    swagger_1.SwaggerModule.setup('api/docs', app, document);
     app.setGlobalPrefix('api');
+    process.on('unhandledRejection', (reason, promise) => {
+        console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+    process.on('uncaughtException', (error) => {
+        console.error('Uncaught Exception:', error);
+    });
     const port = process.env.PORT || 3001;
     await app.listen(port);
     console.log(`Aplicação iniciada na porta ${port}`);
+    console.log(`Documentação da API disponível em: http://localhost:${port}/api/docs`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
