@@ -1,4 +1,4 @@
-// src/contexts/AuthContext.js
+// src/contexts/AuthContext.jsx
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import authService from '../services/authService';
@@ -35,6 +35,11 @@ export const AuthProvider = ({ children }) => {
     
     checkAuth();
   }, [token]);
+  
+  // Função para resetar erros
+  const resetError = useCallback(() => {
+    setError(null);
+  }, []);
   
   // Login
   const login = useCallback(async (email, password) => {
@@ -154,9 +159,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
   
+  // Função para verificar permissões (compatibilidade com componente PrivateRoute)
+  const checkPermission = useCallback((permission) => {
+    return hasPermission(permission);
+  }, [hasPermission]);
+  
   const value = {
     user,
     loading,
+    isLoading: loading, // Alias para compatibilidade
     error,
     token,
     isAuthenticated: !!user,
@@ -168,7 +179,9 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
     hasPermission,
     hasAnyPermission,
-    hasAllPermissions
+    hasAllPermissions,
+    checkPermission, // Adicionado para compatibilidade
+    resetError
   };
   
   return (

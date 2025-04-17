@@ -19,7 +19,14 @@ let PrismaService = class PrismaService extends client_1.PrismaClient {
         });
     }
     async onModuleInit() {
-        await this.$connect();
+        try {
+            await this.$connect();
+            console.log('Database connection established successfully');
+        }
+        catch (error) {
+            console.error('Failed to connect to the database:', error);
+            throw error;
+        }
     }
     async onModuleDestroy() {
         await this.$disconnect();

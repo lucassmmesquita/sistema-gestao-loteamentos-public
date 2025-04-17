@@ -6,11 +6,18 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   constructor() {
     super({
       log: ['query', 'info', 'warn', 'error'],
+      // Não incluir enableTracing pois não está disponível no tipo
     });
   }
 
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+      console.log('Database connection established successfully');
+    } catch (error) {
+      console.error('Failed to connect to the database:', error);
+      throw error;
+    }
   }
 
   async onModuleDestroy() {

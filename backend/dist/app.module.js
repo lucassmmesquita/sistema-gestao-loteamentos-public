@@ -18,6 +18,7 @@ const inadimplencia_module_1 = require("./modules/inadimplencia/inadimplencia.mo
 const reajustes_module_1 = require("./modules/reajustes/reajustes.module");
 const documentos_module_1 = require("./modules/documentos/documentos.module");
 const dashboard_module_1 = require("./modules/dashboard/dashboard.module");
+const auth_module_1 = require("./modules/auth/auth.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -35,6 +36,7 @@ AppModule = __decorate([
             reajustes_module_1.ReajustesModule,
             documentos_module_1.DocumentosModule,
             dashboard_module_1.DashboardModule,
+            auth_module_1.AuthModule,
         ],
     })
 ], AppModule);
