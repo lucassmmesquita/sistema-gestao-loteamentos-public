@@ -17,7 +17,6 @@ class CreateAditivoDto {
         this.status = 'ativo';
     }
 }
-exports.CreateAditivoDto = CreateAditivoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -57,4 +56,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateAditivoDto.prototype, "status", void 0);
+exports.CreateAditivoDto = CreateAditivoDto;
 //# sourceMappingURL=create-aditivo.dto.js.map

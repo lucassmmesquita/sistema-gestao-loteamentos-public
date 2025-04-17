@@ -200,9 +200,9 @@ COMPRADOR
         return textoContrato;
     }
 };
-exports.ContratosService = ContratosService;
-exports.ContratosService = ContratosService = __decorate([
+ContratosService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], ContratosService);
+exports.ContratosService = ContratosService;
 //# sourceMappingURL=contratos.service.js.map

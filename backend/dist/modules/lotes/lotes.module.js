@@ -13,8 +13,7 @@ const lotes_controller_1 = require("./lotes.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let LotesModule = class LotesModule {
 };
-exports.LotesModule = LotesModule;
-exports.LotesModule = LotesModule = __decorate([
+LotesModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [lotes_controller_1.LotesController],
@@ -22,4 +21,5 @@ exports.LotesModule = LotesModule = __decorate([
         exports: [lotes_service_1.LotesService],
     })
 ], LotesModule);
+exports.LotesModule = LotesModule;
 //# sourceMappingURL=lotes.module.js.map

@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class QueryReajusteDto {
 }
-exports.QueryReajusteDto = QueryReajusteDto;
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
@@ -42,4 +41,5 @@ __decorate([
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], QueryReajusteDto.prototype, "dataFim", void 0);
+exports.QueryReajusteDto = QueryReajusteDto;
 //# sourceMappingURL=query-reajuste.dto.js.map

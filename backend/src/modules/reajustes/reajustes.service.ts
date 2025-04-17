@@ -267,10 +267,10 @@ export class ReajustesService {
       where: { id: contratoId },
       data: {
         ultimoReajuste: {
-          data: dataReferencia,
-          indice: reajusteTotal,
-          valorParcela: valorReajustado,
-          parcelaReferencia: proximaParcelaReajuste
+          //data: data.toISOString(), // Converter Date para string ISO
+          indice: indice,
+          //valorParcela: valorParcela,
+          //parcelaReferencia: parcelaReferencia
         }
       }
     });

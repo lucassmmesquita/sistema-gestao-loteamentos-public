@@ -13,8 +13,7 @@ const contratos_controller_1 = require("./contratos.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let ContratosModule = class ContratosModule {
 };
-exports.ContratosModule = ContratosModule;
-exports.ContratosModule = ContratosModule = __decorate([
+ContratosModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [contratos_controller_1.ContratosController],
@@ -22,4 +21,5 @@ exports.ContratosModule = ContratosModule = __decorate([
         exports: [contratos_service_1.ContratosService],
     })
 ], ContratosModule);
+exports.ContratosModule = ContratosModule;
 //# sourceMappingURL=contratos.module.js.map

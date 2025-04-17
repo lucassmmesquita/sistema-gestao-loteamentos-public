@@ -38,7 +38,6 @@ let ClientesController = class ClientesController {
         return this.clientesService.remove(id);
     }
 };
-exports.ClientesController = ClientesController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -75,8 +74,9 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], ClientesController.prototype, "remove", null);
-exports.ClientesController = ClientesController = __decorate([
+ClientesController = __decorate([
     (0, common_1.Controller)('clientes'),
     __metadata("design:paramtypes", [clientes_service_1.ClientesService])
 ], ClientesController);
+exports.ClientesController = ClientesController;
 //# sourceMappingURL=clientes.controller.js.map

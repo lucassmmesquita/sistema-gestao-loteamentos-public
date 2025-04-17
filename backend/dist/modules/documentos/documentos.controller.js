@@ -98,7 +98,6 @@ let DocumentosController = class DocumentosController {
         return this.documentosService.removeDocumento(id);
     }
 };
-exports.DocumentosController = DocumentosController;
 __decorate([
     (0, common_1.Post)('aditivos'),
     __param(0, (0, common_1.Body)()),
@@ -260,8 +259,9 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], DocumentosController.prototype, "removeDocumento", null);
-exports.DocumentosController = DocumentosController = __decorate([
+DocumentosController = __decorate([
     (0, common_1.Controller)('documentos'),
     __metadata("design:paramtypes", [documentos_service_1.DocumentosService])
 ], DocumentosController);
+exports.DocumentosController = DocumentosController;
 //# sourceMappingURL=documentos.controller.js.map

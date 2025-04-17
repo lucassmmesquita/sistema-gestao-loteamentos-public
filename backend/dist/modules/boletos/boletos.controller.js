@@ -40,7 +40,6 @@ let BoletosController = class BoletosController {
     atualizarStatusPorArquivoRetorno(registros) {
     }
 };
-exports.BoletosController = BoletosController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -91,8 +90,9 @@ __decorate([
     __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", void 0)
 ], BoletosController.prototype, "atualizarStatusPorArquivoRetorno", null);
-exports.BoletosController = BoletosController = __decorate([
+BoletosController = __decorate([
     (0, common_1.Controller)('boletos'),
     __metadata("design:paramtypes", [boletos_service_1.BoletosService])
 ], BoletosController);
+exports.BoletosController = BoletosController;
 //# sourceMappingURL=boletos.controller.js.map

@@ -13,7 +13,6 @@ exports.IndicesEconomicosDto = void 0;
 const class_validator_1 = require("class-validator");
 class IndicesEconomicosDto {
 }
-exports.IndicesEconomicosDto = IndicesEconomicosDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(0),
@@ -33,4 +32,5 @@ __decorate([
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], IndicesEconomicosDto.prototype, "data", void 0);
+exports.IndicesEconomicosDto = IndicesEconomicosDto;
 //# sourceMappingURL=indices-economicos.dto.js.map

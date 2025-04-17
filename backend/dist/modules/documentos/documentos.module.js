@@ -13,8 +13,7 @@ const documentos_controller_1 = require("./documentos.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let DocumentosModule = class DocumentosModule {
 };
-exports.DocumentosModule = DocumentosModule;
-exports.DocumentosModule = DocumentosModule = __decorate([
+DocumentosModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [documentos_controller_1.DocumentosController],
@@ -22,4 +21,5 @@ exports.DocumentosModule = DocumentosModule = __decorate([
         exports: [documentos_service_1.DocumentosService],
     })
 ], DocumentosModule);
+exports.DocumentosModule = DocumentosModule;
 //# sourceMappingURL=documentos.module.js.map

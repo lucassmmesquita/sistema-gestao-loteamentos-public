@@ -13,8 +13,7 @@ const reajustes_controller_1 = require("./reajustes.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let ReajustesModule = class ReajustesModule {
 };
-exports.ReajustesModule = ReajustesModule;
-exports.ReajustesModule = ReajustesModule = __decorate([
+ReajustesModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [reajustes_controller_1.ReajustesController],
@@ -22,4 +21,5 @@ exports.ReajustesModule = ReajustesModule = __decorate([
         exports: [reajustes_service_1.ReajustesService],
     })
 ], ReajustesModule);
+exports.ReajustesModule = ReajustesModule;
 //# sourceMappingURL=reajustes.module.js.map

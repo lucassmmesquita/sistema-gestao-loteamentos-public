@@ -201,10 +201,7 @@ let ReajustesService = class ReajustesService {
             where: { id: contratoId },
             data: {
                 ultimoReajuste: {
-                    data: dataReferencia,
-                    indice: reajusteTotal,
-                    valorParcela: valorReajustado,
-                    parcelaReferencia: proximaParcelaReajuste
+                    indice: indice,
                 }
             }
         });
@@ -310,9 +307,9 @@ let ReajustesService = class ReajustesService {
         };
     }
 };
-exports.ReajustesService = ReajustesService;
-exports.ReajustesService = ReajustesService = __decorate([
+ReajustesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], ReajustesService);
+exports.ReajustesService = ReajustesService;
 //# sourceMappingURL=reajustes.service.js.map

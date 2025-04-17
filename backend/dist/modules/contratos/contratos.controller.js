@@ -47,7 +47,6 @@ let ContratosController = class ContratosController {
         return this.contratosService.gerarPrevia(contratoDto);
     }
 };
-exports.ContratosController = ContratosController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -104,8 +103,9 @@ __decorate([
     __metadata("design:paramtypes", [create_contrato_dto_1.CreateContratoDto]),
     __metadata("design:returntype", void 0)
 ], ContratosController.prototype, "gerarPrevia", null);
-exports.ContratosController = ContratosController = __decorate([
+ContratosController = __decorate([
     (0, common_1.Controller)('contratos'),
     __metadata("design:paramtypes", [contratos_service_1.ContratosService])
 ], ContratosController);
+exports.ContratosController = ContratosController;
 //# sourceMappingURL=contratos.controller.js.map

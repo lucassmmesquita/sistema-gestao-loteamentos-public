@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class CreateBoletoDto {
 }
-exports.CreateBoletoDto = CreateBoletoDto;
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -66,4 +65,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateBoletoDto.prototype, "pdfUrl", void 0);
+exports.CreateBoletoDto = CreateBoletoDto;
 //# sourceMappingURL=create-boleto.dto.js.map

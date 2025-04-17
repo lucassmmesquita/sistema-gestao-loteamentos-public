@@ -53,7 +53,6 @@ let ReajustesController = class ReajustesController {
         return this.reajustesService.gerarRelatorioReajustes(query);
     }
 };
-exports.ReajustesController = ReajustesController;
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),
@@ -124,8 +123,9 @@ __decorate([
     __metadata("design:paramtypes", [query_reajuste_dto_1.QueryReajusteDto]),
     __metadata("design:returntype", void 0)
 ], ReajustesController.prototype, "gerarRelatorioReajustes", null);
-exports.ReajustesController = ReajustesController = __decorate([
+ReajustesController = __decorate([
     (0, common_1.Controller)('reajustes'),
     __metadata("design:paramtypes", [reajustes_service_1.ReajustesService])
 ], ReajustesController);
+exports.ReajustesController = ReajustesController;
 //# sourceMappingURL=reajustes.controller.js.map

@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class QueryInadimplenciaDto {
 }
-exports.QueryInadimplenciaDto = QueryInadimplenciaDto;
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
@@ -66,4 +65,5 @@ __decorate([
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], QueryInadimplenciaDto.prototype, "dataUltimaCobrancaFim", void 0);
+exports.QueryInadimplenciaDto = QueryInadimplenciaDto;
 //# sourceMappingURL=query-inadimplencia.dto.js.map

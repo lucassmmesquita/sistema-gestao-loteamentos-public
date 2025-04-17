@@ -13,8 +13,7 @@ const inadimplencia_controller_1 = require("./inadimplencia.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let InadimplenciaModule = class InadimplenciaModule {
 };
-exports.InadimplenciaModule = InadimplenciaModule;
-exports.InadimplenciaModule = InadimplenciaModule = __decorate([
+InadimplenciaModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [inadimplencia_controller_1.InadimplenciaController],
@@ -22,4 +21,5 @@ exports.InadimplenciaModule = InadimplenciaModule = __decorate([
         exports: [inadimplencia_service_1.InadimplenciaService],
     })
 ], InadimplenciaModule);
+exports.InadimplenciaModule = InadimplenciaModule;
 //# sourceMappingURL=inadimplencia.module.js.map

@@ -14,7 +14,6 @@ const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 class EnderecoDto {
 }
-exports.EnderecoDto = EnderecoDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -44,9 +43,9 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], EnderecoDto.prototype, "estado", void 0);
+exports.EnderecoDto = EnderecoDto;
 class ContatoDto {
 }
-exports.ContatoDto = ContatoDto;
 __decorate([
     (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
@@ -55,9 +54,9 @@ __decorate([
     (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], ContatoDto.prototype, "emails", void 0);
+exports.ContatoDto = ContatoDto;
 class CreateClienteDto {
 }
-exports.CreateClienteDto = CreateClienteDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
@@ -83,4 +82,5 @@ __decorate([
     (0, class_transformer_1.Type)(() => ContatoDto),
     __metadata("design:type", ContatoDto)
 ], CreateClienteDto.prototype, "contatos", void 0);
+exports.CreateClienteDto = CreateClienteDto;
 //# sourceMappingURL=create-cliente.dto.js.map

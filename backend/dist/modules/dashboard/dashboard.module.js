@@ -13,8 +13,7 @@ const dashboard_controller_1 = require("./dashboard.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 let DashboardModule = class DashboardModule {
 };
-exports.DashboardModule = DashboardModule;
-exports.DashboardModule = DashboardModule = __decorate([
+DashboardModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [dashboard_controller_1.DashboardController],
@@ -22,4 +21,5 @@ exports.DashboardModule = DashboardModule = __decorate([
         exports: [dashboard_service_1.DashboardService],
     })
 ], DashboardModule);
+exports.DashboardModule = DashboardModule;
 //# sourceMappingURL=dashboard.module.js.map
