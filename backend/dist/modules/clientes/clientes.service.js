@@ -29,8 +29,11 @@ let ClientesService = class ClientesService {
     }
     async create(createClienteDto) {
         const { endereco, contatos } = createClienteDto, clienteData = __rest(createClienteDto, ["endereco", "contatos"]);
+        const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
+                ? new Date(clienteData.dataNascimento)
+                : clienteData.dataNascimento });
         return this.prisma.cliente.create({
-            data: Object.assign(Object.assign({}, clienteData), { endereco: endereco ? {
+            data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
                     create: endereco
                 } : undefined, contatos: contatos ? {
                     create: contatos
@@ -91,9 +94,12 @@ let ClientesService = class ClientesService {
     async update(id, updateClienteDto) {
         const { endereco, contatos } = updateClienteDto, clienteData = __rest(updateClienteDto, ["endereco", "contatos"]);
         await this.findOne(id);
+        const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
+                ? new Date(clienteData.dataNascimento)
+                : clienteData.dataNascimento });
         return this.prisma.cliente.update({
             where: { id },
-            data: Object.assign(Object.assign({}, clienteData), { endereco: endereco ? {
+            data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
                     upsert: {
                         create: endereco,
                         update: endereco

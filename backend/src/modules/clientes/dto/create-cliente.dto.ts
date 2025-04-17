@@ -1,5 +1,6 @@
 import { IsString, IsOptional, IsDateString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer'; // Adicionando importação para Transform
 
 export class EnderecoDto {
   @IsString()
@@ -41,7 +42,7 @@ export class CreateClienteDto {
   cpfCnpj: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateString() // Usando IsDateString em vez de IsDate, pois valida strings no formato de data
   dataNascimento?: string;
 
   @IsOptional()

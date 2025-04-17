@@ -44,37 +44,41 @@ export const ClienteProvider = ({ children }) => {
   }, []);
 
   // Salva um cliente (novo ou existente)
-  const saveCliente = useCallback(async (cliente) => {
-    setLoading(true);
-    setError(null);
+const saveCliente = useCallback(async (cliente) => {
+  setLoading(true);
+  setError(null);
+  
+  try {
+    console.log('ClienteContext.saveCliente: Iniciando salvamento do cliente', cliente);
+    let savedCliente;
     
-    try {
-      let savedCliente;
+    if (cliente.id) {
+      console.log(`ClienteContext.saveCliente: Atualizando cliente existente (ID: ${cliente.id})`);
+      // Atualiza cliente existente
+      savedCliente = await clienteService.update(cliente.id, cliente);
       
-      if (cliente.id) {
-        // Atualiza cliente existente
-        savedCliente = await clienteService.update(cliente.id, cliente);
-        
-        // Atualiza a lista de clientes
-        setClientes(prev => prev.map(c => c.id === cliente.id ? savedCliente : c));
-      } else {
-        // Cria novo cliente
-        savedCliente = await clienteService.create(cliente);
-        
-        // Adiciona à lista de clientes
-        setClientes(prev => [...prev, savedCliente]);
-      }
+      // Atualiza a lista de clientes
+      setClientes(prev => prev.map(c => c.id === cliente.id ? savedCliente : c));
+    } else {
+      console.log('ClienteContext.saveCliente: Criando novo cliente');
+      // Cria novo cliente
+      savedCliente = await clienteService.create(cliente);
       
-      setCurrentCliente(savedCliente);
-      return savedCliente;
-    } catch (err) {
-      setError('Erro ao salvar cliente: ' + (err.message || 'Erro desconhecido'));
-      console.error('Erro ao salvar cliente:', err);
-      return null;
-    } finally {
-      setLoading(false);
+      // Adiciona à lista de clientes
+      setClientes(prev => [...prev, savedCliente]);
     }
-  }, []);
+    
+    console.log('ClienteContext.saveCliente: Cliente salvo com sucesso', savedCliente);
+    setCurrentCliente(savedCliente);
+    return savedCliente;
+  } catch (err) {
+    console.error('ClienteContext.saveCliente: Erro ao salvar cliente', err);
+    setError('Erro ao salvar cliente: ' + (err.message || 'Erro desconhecido'));
+    throw err; // Propaga o erro para ser tratado pelo componente
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   // Remove um cliente
   const deleteCliente = useCallback(async (id) => {

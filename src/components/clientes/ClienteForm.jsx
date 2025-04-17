@@ -1,3 +1,4 @@
+// src/components/clientes/ClienteForm.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
@@ -17,9 +18,6 @@ import {
   Snackbar,
   Alert,
   Paper,
-  Stepper,
-  Step,
-  StepLabel,
   IconButton
 } from '@mui/material';
 import {
@@ -27,7 +25,9 @@ import {
   LocationOn as LocationIcon,
   Phone as PhoneIcon,
   Add as AddIcon,
-  Remove as RemoveIcon
+  Remove as RemoveIcon,
+  Save as SaveIcon,
+  ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 import ReactInputMask from 'react-input-mask';
 import useClientes from '../../hooks/useClientes';
@@ -101,16 +101,13 @@ const ClienteForm = ({ cliente = null }) => {
   const { saveCliente, loading, error: apiError } = useClientes();
   
   // Estados
-  const [activeStep, setActiveStep] = useState(0);
   const [documentos, setDocumentos] = useState([]);
   const [notification, setNotification] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
-  
-  // Definição dos passos do formulário
-  const steps = ['Dados Pessoais', 'Endereço', 'Contatos', 'Documentos'];
+  const [submitting, setSubmitting] = useState(false);
   
   // Inicializa o formulário com react-hook-form
   const { handleSubmit, control, formState: { errors }, setValue, getValues, reset, watch } = useForm({
@@ -164,6 +161,8 @@ const ClienteForm = ({ cliente = null }) => {
   // Carrega os dados do cliente quando disponíveis
   useEffect(() => {
     if (cliente) {
+      console.log('Carregando dados do cliente:', cliente);
+      
       // Preenche o formulário com os dados do cliente
       reset({
         nome: cliente.nome || '',
@@ -218,17 +217,11 @@ const ClienteForm = ({ cliente = null }) => {
     }
   };
   
-  // Manipuladores para o stepper
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-  
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-  
   // Manipulador para salvar o cliente
   const onSubmit = async (data) => {
+    console.log('Formulário submetido com dados:', data);
+    setSubmitting(true);
+    
     // Adiciona os documentos aos dados do cliente
     const clienteData = {
       ...data,
@@ -241,7 +234,10 @@ const ClienteForm = ({ cliente = null }) => {
     }
     
     try {
+      console.log('Enviando dados para o backend:', clienteData);
       const result = await saveCliente(clienteData);
+      
+      console.log('Resposta do backend:', result);
       
       if (result) {
         setNotification({
@@ -256,402 +252,384 @@ const ClienteForm = ({ cliente = null }) => {
         }, 2000);
       }
     } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
+      
       setNotification({
         open: true,
-        message: 'Erro ao salvar cliente: ' + error.message,
+        message: 'Erro ao salvar cliente: ' + (error.message || 'Erro desconhecido'),
         severity: 'error'
       });
-    }
-  };
-  
-  // Função para renderizar o conteúdo do passo atual
-  const getStepContent = (step) => {
-    switch (step) {
-      case 0: // Dados Pessoais
-        return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Informações Pessoais
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Controller
-                  name="nome"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Nome Completo"
-                      fullWidth
-                      error={!!errors.nome}
-                      helperText={errors.nome?.message}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <PersonIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Controller
-                  name="cpfCnpj"
-                  control={control}
-                  render={({ field }) => (
-                    <ReactInputMask
-                      mask={field.value.replace(/[^\d]/g, '').length <= 11 ? "999.999.999-99" : "99.999.999/9999-99"}
-                      value={field.value}
-                      onChange={field.onChange}
-                    >
-                      {(inputProps) => (
-                        <TextField
-                          {...inputProps}
-                          label="CPF/CNPJ"
-                          fullWidth
-                          error={!!errors.cpfCnpj}
-                          helperText={errors.cpfCnpj?.message}
-                        />
-                      )}
-                    </ReactInputMask>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Controller
-                  name="dataNascimento"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Data de Nascimento"
-                      type="date"
-                      fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      error={!!errors.dataNascimento}
-                      helperText={errors.dataNascimento?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        );
-        
-      case 1: // Endereço
-        return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Endereço
-            </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name="endereco.cep"
-                  control={control}
-                  render={({ field }) => (
-                    <ReactInputMask
-                      mask="99999-999"
-                      value={field.value}
-                      onChange={field.onChange}
-                    >
-                      {(inputProps) => (
-                        <TextField
-                          {...inputProps}
-                          label="CEP"
-                          fullWidth
-                          error={!!errors.endereco?.cep}
-                          helperText={errors.endereco?.cep?.message}
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <LocationIcon />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      )}
-                    </ReactInputMask>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Controller
-                  name="endereco.logradouro"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Logradouro"
-                      fullWidth
-                      error={!!errors.endereco?.logradouro}
-                      helperText={errors.endereco?.logradouro?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name="endereco.numero"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Número"
-                      fullWidth
-                      error={!!errors.endereco?.numero}
-                      helperText={errors.endereco?.numero?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Controller
-                  name="endereco.complemento"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Complemento"
-                      fullWidth
-                      error={!!errors.endereco?.complemento}
-                      helperText={errors.endereco?.complemento?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name="endereco.bairro"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Bairro"
-                      fullWidth
-                      error={!!errors.endereco?.bairro}
-                      helperText={errors.endereco?.bairro?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={5}>
-                <Controller
-                  name="endereco.cidade"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Cidade"
-                      fullWidth
-                      error={!!errors.endereco?.cidade}
-                      helperText={errors.endereco?.cidade?.message}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <Controller
-                  name="endereco.estado"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Estado"
-                      fullWidth
-                      error={!!errors.endereco?.estado}
-                      helperText={errors.endereco?.estado?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        );
-        
-      case 2: // Contatos
-        return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Contatos
-            </Typography>
-            
-            {/* Telefones */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="subtitle1" gutterBottom>
-                Telefones
-              </Typography>
-              {getValues('contatos.telefones').map((telefone, index) => (
-                <Grid container spacing={2} key={`telefone-${index}`} sx={{ mb: 1 }}>
-                  <Grid item xs>
-                    <Controller
-                      name={`contatos.telefones[${index}]`}
-                      control={control}
-                      render={({ field }) => (
-                        <ReactInputMask
-                          mask={field.value.replace(/[^\d]/g, '').length <= 10 ? "(99) 9999-9999" : "(99) 99999-9999"}
-                          value={field.value}
-                          onChange={field.onChange}
-                        >
-                          {(inputProps) => (
-                            <TextField
-                              {...inputProps}
-                              label={`Telefone ${index + 1}`}
-                              fullWidth
-                              error={!!errors.contatos?.telefones?.[index]}
-                              helperText={errors.contatos?.telefones?.[index]?.message}
-                              InputProps={{
-                                startAdornment: (
-                                  <InputAdornment position="start">
-                                    <PhoneIcon />
-                                  </InputAdornment>
-                                ),
-                              }}
-                            />
-                          )}
-                        </ReactInputMask>
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs="auto">
-                    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                      <IconButton 
-                        color="error" 
-                        onClick={() => removeTelefone(index)}
-                        disabled={getValues('contatos.telefones').length <= 1}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                      {index === getValues('contatos.telefones').length - 1 && (
-                        <IconButton color="primary" onClick={addTelefone}>
-                          <AddIcon />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </Grid>
-                </Grid>
-              ))}
-            </Box>
-            
-            {/* Emails */}
-            <Box>
-              <Typography variant="subtitle1" gutterBottom>
-                E-mails
-              </Typography>
-              {getValues('contatos.emails').map((email, index) => (
-                <Grid container spacing={2} key={`email-${index}`} sx={{ mb: 1 }}>
-                  <Grid item xs>
-                    <Controller
-                      name={`contatos.emails[${index}]`}
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label={`E-mail ${index + 1}`}
-                          fullWidth
-                          error={!!errors.contatos?.emails?.[index]}
-                          helperText={errors.contatos?.emails?.[index]?.message}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs="auto">
-                    <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                      <IconButton 
-                        color="error" 
-                        onClick={() => removeEmail(index)}
-                        disabled={getValues('contatos.emails').length <= 1}
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                      {index === getValues('contatos.emails').length - 1 && (
-                        <IconButton color="primary" onClick={addEmail}>
-                          <AddIcon />
-                        </IconButton>
-                      )}
-                    </Box>
-                  </Grid>
-                </Grid>
-              ))}
-            </Box>
-          </Box>
-        );
-        
-      case 3: // Documentos
-        return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Documentos
-            </Typography>
-            <DocumentosUpload 
-              documentos={documentos} 
-              onChange={setDocumentos} 
-            />
-          </Box>
-        );
-        
-      default:
-        return 'Passo desconhecido';
+    } finally {
+      setSubmitting(false);
     }
   };
   
   return (
     <>
-      <Loading open={loading} />
+      <Loading open={loading || submitting} />
       
       <Card>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
-            {cliente ? 'Editar Cliente' : 'Novo Cliente'}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+            <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate('/clientes')}
+              sx={{ mr: 2 }}
+            >
+              Voltar
+            </Button>
+            <Typography variant="h5" component="h2">
+              {cliente ? 'Editar Cliente' : 'Novo Cliente'}
+            </Typography>
+          </Box>
           
-          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+          {/* Exibir erros da API se houver */}
+          {apiError && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {apiError}
+            </Alert>
+          )}
           
           <form onSubmit={handleSubmit(onSubmit)}>
             <Paper sx={{ p: 3, mb: 4 }}>
-              {getStepContent(activeStep)}
+              {/* Seção de Dados Pessoais */}
+              <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                Informações Pessoais
+              </Typography>
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                <Grid item xs={12}>
+                  <Controller
+                    name="nome"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Nome Completo"
+                        fullWidth
+                        error={!!errors.nome}
+                        helperText={errors.nome?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <PersonIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="cpfCnpj"
+                    control={control}
+                    render={({ field }) => (
+                      <ReactInputMask
+                        mask={field.value.replace(/[^\d]/g, '').length <= 11 ? "999.999.999-99" : "99.999.999/9999-99"}
+                        value={field.value}
+                        onChange={field.onChange}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            label="CPF/CNPJ"
+                            fullWidth
+                            error={!!errors.cpfCnpj}
+                            helperText={errors.cpfCnpj?.message}
+                          />
+                        )}
+                      </ReactInputMask>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="dataNascimento"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Data de Nascimento"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        error={!!errors.dataNascimento}
+                        helperText={errors.dataNascimento?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+              
+              {/* Seção de Endereço */}
+              <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                Endereço
+              </Typography>
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="endereco.cep"
+                    control={control}
+                    render={({ field }) => (
+                      <ReactInputMask
+                        mask="99999-999"
+                        value={field.value}
+                        onChange={field.onChange}
+                      >
+                        {(inputProps) => (
+                          <TextField
+                            {...inputProps}
+                            label="CEP"
+                            fullWidth
+                            error={!!errors.endereco?.cep}
+                            helperText={errors.endereco?.cep?.message}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <LocationIcon />
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        )}
+                      </ReactInputMask>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <Controller
+                    name="endereco.logradouro"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Logradouro"
+                        fullWidth
+                        error={!!errors.endereco?.logradouro}
+                        helperText={errors.endereco?.logradouro?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="endereco.numero"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Número"
+                        fullWidth
+                        error={!!errors.endereco?.numero}
+                        helperText={errors.endereco?.numero?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={8}>
+                  <Controller
+                    name="endereco.complemento"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Complemento"
+                        fullWidth
+                        error={!!errors.endereco?.complemento}
+                        helperText={errors.endereco?.complemento?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Controller
+                    name="endereco.bairro"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Bairro"
+                        fullWidth
+                        error={!!errors.endereco?.bairro}
+                        helperText={errors.endereco?.bairro?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={5}>
+                  <Controller
+                    name="endereco.cidade"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Cidade"
+                        fullWidth
+                        error={!!errors.endereco?.cidade}
+                        helperText={errors.endereco?.cidade?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                  <Controller
+                    name="endereco.estado"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Estado"
+                        fullWidth
+                        error={!!errors.endereco?.estado}
+                        helperText={errors.endereco?.estado?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+              
+              {/* Seção de Contatos */}
+              <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                Contatos
+              </Typography>
+              
+              {/* Telefones */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Telefones
+                </Typography>
+                {getValues('contatos.telefones').map((telefone, index) => (
+                  <Grid container spacing={2} key={`telefone-${index}`} sx={{ mb: 1 }}>
+                    <Grid item xs>
+                      <Controller
+                        name={`contatos.telefones[${index}]`}
+                        control={control}
+                        render={({ field }) => (
+                          <ReactInputMask
+                            mask={field.value.replace(/[^\d]/g, '').length <= 10 ? "(99) 9999-9999" : "(99) 99999-9999"}
+                            value={field.value}
+                            onChange={field.onChange}
+                          >
+                            {(inputProps) => (
+                              <TextField
+                                {...inputProps}
+                                label={`Telefone ${index + 1}`}
+                                fullWidth
+                                error={!!errors.contatos?.telefones?.[index]}
+                                helperText={errors.contatos?.telefones?.[index]?.message}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <PhoneIcon />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                              />
+                            )}
+                          </ReactInputMask>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs="auto">
+                      <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                        <IconButton 
+                          color="error" 
+                          onClick={() => removeTelefone(index)}
+                          disabled={getValues('contatos.telefones').length <= 1}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                        {index === getValues('contatos.telefones').length - 1 && (
+                          <IconButton color="primary" onClick={addTelefone}>
+                            <AddIcon />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+              
+              {/* Emails */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="subtitle1" gutterBottom>
+                  E-mails
+                </Typography>
+                {getValues('contatos.emails').map((email, index) => (
+                  <Grid container spacing={2} key={`email-${index}`} sx={{ mb: 1 }}>
+                    <Grid item xs>
+                      <Controller
+                        name={`contatos.emails[${index}]`}
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label={`E-mail ${index + 1}`}
+                            fullWidth
+                            error={!!errors.contatos?.emails?.[index]}
+                            helperText={errors.contatos?.emails?.[index]?.message}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs="auto">
+                      <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                        <IconButton 
+                          color="error" 
+                          onClick={() => removeEmail(index)}
+                          disabled={getValues('contatos.emails').length <= 1}
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                        {index === getValues('contatos.emails').length - 1 && (
+                          <IconButton color="primary" onClick={addEmail}>
+                            <AddIcon />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </Grid>
+                  </Grid>
+                ))}
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+              
+              {/* Seção de Documentos */}
+              <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                Documentos
+              </Typography>
+              <DocumentosUpload 
+                documentos={documentos} 
+                onChange={setDocumentos} 
+              />
             </Paper>
             
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* Botões de Ação */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
               <Button
                 variant="outlined"
-                onClick={activeStep === 0 ? () => navigate('/clientes') : handleBack}
-                sx={{ mt: 3, ml: 1 }}
+                onClick={() => navigate('/clientes')}
+                disabled={submitting}
               >
-                {activeStep === 0 ? 'Cancelar' : 'Voltar'}
+                Cancelar
               </Button>
               
-              <Box>
-                {activeStep === steps.length - 1 ? (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    sx={{ mt: 3, ml: 1 }}
-                  >
-                    Salvar
-                  </Button>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    sx={{ mt: 3, ml: 1 }}
-                  >
-                    Próximo
-                  </Button>
-                )}
-              </Box>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={submitting}
+                startIcon={<SaveIcon />}
+              >
+                {submitting ? 'Salvando...' : 'Salvar'}
+              </Button>
             </Box>
           </form>
         </CardContent>

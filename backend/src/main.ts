@@ -1,11 +1,24 @@
-// backend/src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  // Criar pasta de uploads se não existir
+  const uploadsDir = join(__dirname, '..', 'uploads');
+  if (!existsSync(uploadsDir)) {
+    mkdirSync(uploadsDir);
+  }
+  
+  const documentosDir = join(uploadsDir, 'documentos');
+  if (!existsSync(documentosDir)) {
+    mkdirSync(documentosDir);
+  }
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     // Adicionando opções para melhorar o log e detecção de erros
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
     abortOnError: false
@@ -29,6 +42,11 @@ async function bootstrap() {
       },
     }),
   );
+  
+  // Configurar pasta estática para acesso aos documentos
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
   
   // Configuração do Swagger
   const config = new DocumentBuilder()

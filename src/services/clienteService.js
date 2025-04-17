@@ -40,6 +40,11 @@ const clienteService = {
       // Adiciona a data de cadastro
       cliente.dataCadastro = new Date().toISOString();
       
+      // Assegura que dataNascimento está em formato ISO se existir
+      if (cliente.dataNascimento) {
+        cliente.dataNascimento = new Date(cliente.dataNascimento).toISOString();
+      }
+      
       console.log('clienteService.create: URL da requisição', api.defaults.baseURL + '/clientes');
       const response = await api.post('/clientes', cliente);
       console.log('clienteService.create: Requisição bem-sucedida', response.data);
@@ -59,7 +64,15 @@ const clienteService = {
    * @returns {Promise} Promise com o cliente atualizado
    */
   update: async (id, cliente) => {
-    const response = await api.put(`/clientes/${id}`, cliente);
+    // Cria uma cópia para não modificar o objeto original
+    const clienteParaEnviar = { ...cliente };
+    
+    // Assegura que dataNascimento está em formato ISO se existir
+    if (clienteParaEnviar.dataNascimento) {
+      clienteParaEnviar.dataNascimento = new Date(clienteParaEnviar.dataNascimento).toISOString();
+    }
+    
+    const response = await api.put(`/clientes/${id}`, clienteParaEnviar);
     return response.data;
   },
 
