@@ -2,6 +2,8 @@
 
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { ContratosModule } from './modules/contratos/contratos.module';
@@ -11,12 +13,16 @@ import { InadimplenciaModule } from './modules/inadimplencia/inadimplencia.modul
 import { ReajustesModule } from './modules/reajustes/reajustes.module';
 import { DocumentosModule } from './modules/documentos/documentos.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
-import { AuthModule } from './modules/auth/auth.module'; // Nova importação
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     PrismaModule,
     ClientesModule,
@@ -27,7 +33,7 @@ import { AuthModule } from './modules/auth/auth.module'; // Nova importação
     ReajustesModule,
     DocumentosModule,
     DashboardModule,
-    AuthModule, // Adicionado o módulo de autenticação
+    AuthModule,
   ],
 })
 export class AppModule {}

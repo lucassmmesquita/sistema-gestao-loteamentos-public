@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 const prisma_module_1 = require("./prisma/prisma.module");
 const clientes_module_1 = require("./modules/clientes/clientes.module");
 const contratos_module_1 = require("./modules/contratos/contratos.module");
@@ -26,6 +28,10 @@ AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
+            }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'uploads'),
+                serveRoot: '/uploads',
             }),
             prisma_module_1.PrismaModule,
             clientes_module_1.ClientesModule,

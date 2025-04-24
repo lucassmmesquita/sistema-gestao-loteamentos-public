@@ -608,6 +608,7 @@ const ClienteForm = ({ cliente = null }) => {
               <DocumentosUpload 
                 documentos={documentos} 
                 onChange={setDocumentos} 
+                clienteId={cliente?.id} // Passa o ID do cliente quando estiver editando
               />
             </Paper>
             

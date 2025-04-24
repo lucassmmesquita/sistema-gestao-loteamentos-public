@@ -80,6 +80,7 @@ export declare class ClientesService {
             nome: string;
             arquivo: string;
             dataUpload: Date;
+            s3Key: string;
         }, unknown, never> & {})[];
     } & import("@prisma/client/runtime").GetResult<{
         id: number;

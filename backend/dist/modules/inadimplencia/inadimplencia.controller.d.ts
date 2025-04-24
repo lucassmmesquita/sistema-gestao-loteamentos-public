@@ -1,5 +1,3 @@
-/// <reference types="node" />
-/// <reference types="node" />
 import { InadimplenciaService } from './inadimplencia.service';
 import { QueryInadimplenciaDto } from './dto/query-inadimplencia.dto';
 import { CreateInteracaoDto } from './dto/interacao.dto';

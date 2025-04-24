@@ -23,26 +23,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const client_1 = require("@prisma/client");
 let ClientesService = class ClientesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async create(createClienteDto) {
         const { endereco, contatos } = createClienteDto, clienteData = __rest(createClienteDto, ["endereco", "contatos"]);
-        const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
-                ? new Date(clienteData.dataNascimento)
-                : clienteData.dataNascimento });
-        return this.prisma.cliente.create({
-            data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
-                    create: endereco
-                } : undefined, contatos: contatos ? {
-                    create: contatos
-                } : undefined }),
-            include: {
-                endereco: true,
-                contatos: true
+        try {
+            const clienteExistente = await this.prisma.cliente.findUnique({
+                where: { cpfCnpj: clienteData.cpfCnpj }
+            });
+            if (clienteExistente) {
+                throw new common_1.ConflictException(`Cliente com CPF/CNPJ ${clienteData.cpfCnpj} já existe`);
             }
-        });
+            const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
+                    ? new Date(clienteData.dataNascimento)
+                    : clienteData.dataNascimento });
+            return this.prisma.cliente.create({
+                data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
+                        create: endereco
+                    } : undefined, contatos: contatos ? {
+                        create: contatos
+                    } : undefined }),
+                include: {
+                    endereco: true,
+                    contatos: true
+                }
+            });
+        }
+        catch (error) {
+            if (error instanceof common_1.ConflictException) {
+                throw error;
+            }
+            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new common_1.ConflictException(`Cliente com CPF/CNPJ ${clienteData.cpfCnpj} já existe`);
+                }
+            }
+            throw error;
+        }
     }
     async findAll(query) {
         const filters = {};
@@ -92,29 +112,50 @@ let ClientesService = class ClientesService {
         return cliente;
     }
     async update(id, updateClienteDto) {
-        const { endereco, contatos } = updateClienteDto, clienteData = __rest(updateClienteDto, ["endereco", "contatos"]);
-        await this.findOne(id);
-        const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
-                ? new Date(clienteData.dataNascimento)
-                : clienteData.dataNascimento });
-        return this.prisma.cliente.update({
-            where: { id },
-            data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
-                    upsert: {
-                        create: endereco,
-                        update: endereco
-                    }
-                } : undefined, contatos: contatos ? {
-                    upsert: {
-                        create: contatos,
-                        update: contatos
-                    }
-                } : undefined }),
-            include: {
-                endereco: true,
-                contatos: true
+        try {
+            const { endereco, contatos } = updateClienteDto, clienteData = __rest(updateClienteDto, ["endereco", "contatos"]);
+            const clienteExistente = await this.findOne(id);
+            if (clienteData.cpfCnpj && clienteData.cpfCnpj !== clienteExistente.cpfCnpj) {
+                const clienteComMesmoCpfCnpj = await this.prisma.cliente.findUnique({
+                    where: { cpfCnpj: clienteData.cpfCnpj }
+                });
+                if (clienteComMesmoCpfCnpj && clienteComMesmoCpfCnpj.id !== id) {
+                    throw new common_1.ConflictException(`Já existe um cliente com o CPF/CNPJ ${clienteData.cpfCnpj}`);
+                }
             }
-        });
+            const dataProcessada = Object.assign(Object.assign({}, clienteData), { dataNascimento: clienteData.dataNascimento
+                    ? new Date(clienteData.dataNascimento)
+                    : clienteData.dataNascimento });
+            return this.prisma.cliente.update({
+                where: { id },
+                data: Object.assign(Object.assign({}, dataProcessada), { endereco: endereco ? {
+                        upsert: {
+                            create: endereco,
+                            update: endereco
+                        }
+                    } : undefined, contatos: contatos ? {
+                        upsert: {
+                            create: contatos,
+                            update: contatos
+                        }
+                    } : undefined }),
+                include: {
+                    endereco: true,
+                    contatos: true
+                }
+            });
+        }
+        catch (error) {
+            if (error instanceof common_1.ConflictException) {
+                throw error;
+            }
+            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new common_1.ConflictException('Já existe um cliente com o CPF/CNPJ fornecido');
+                }
+            }
+            throw error;
+        }
     }
     async remove(id) {
         await this.findOne(id);

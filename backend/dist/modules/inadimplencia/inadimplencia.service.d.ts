@@ -1,5 +1,3 @@
-/// <reference types="node" />
-/// <reference types="node" />
 import { PrismaService } from '../../prisma/prisma.service';
 import { QueryInadimplenciaDto } from './dto/query-inadimplencia.dto';
 import { CreateInteracaoDto } from './dto/interacao.dto';

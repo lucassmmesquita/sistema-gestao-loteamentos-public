@@ -63,6 +63,7 @@ model Documento {
   nome        String
   arquivo     String
   dataUpload  DateTime @default(now())
+  s3Key       String?  // Adicione este campo
   cliente     Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 
   @@map("documentos")

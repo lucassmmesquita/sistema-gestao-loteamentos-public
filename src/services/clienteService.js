@@ -1,3 +1,5 @@
+// src/services/clienteService.js
+
 import api from './api';
 
 const clienteService = {
@@ -37,16 +39,23 @@ const clienteService = {
   create: async (cliente) => {
     try {
       console.log('clienteService.create: Iniciando requisição com dados:', cliente);
-      // Adiciona a data de cadastro
-      cliente.dataCadastro = new Date().toISOString();
+      
+      // Cria uma cópia para não modificar o objeto original
+      const clienteParaEnviar = { ...cliente };
+      
+      // Remove propriedades não aceitas pelo backend
+      delete clienteParaEnviar.documentos;
+      delete clienteParaEnviar.dataCadastro;
       
       // Assegura que dataNascimento está em formato ISO se existir
-      if (cliente.dataNascimento) {
-        cliente.dataNascimento = new Date(cliente.dataNascimento).toISOString();
+      if (clienteParaEnviar.dataNascimento) {
+        clienteParaEnviar.dataNascimento = new Date(clienteParaEnviar.dataNascimento).toISOString();
       }
       
       console.log('clienteService.create: URL da requisição', api.defaults.baseURL + '/clientes');
-      const response = await api.post('/clientes', cliente);
+      console.log('clienteService.create: Dados formatados para envio:', clienteParaEnviar);
+      
+      const response = await api.post('/clientes', clienteParaEnviar);
       console.log('clienteService.create: Requisição bem-sucedida', response.data);
       return response.data;
     } catch (error) {
@@ -64,16 +73,34 @@ const clienteService = {
    * @returns {Promise} Promise com o cliente atualizado
    */
   update: async (id, cliente) => {
-    // Cria uma cópia para não modificar o objeto original
-    const clienteParaEnviar = { ...cliente };
-    
-    // Assegura que dataNascimento está em formato ISO se existir
-    if (clienteParaEnviar.dataNascimento) {
-      clienteParaEnviar.dataNascimento = new Date(clienteParaEnviar.dataNascimento).toISOString();
+    try {
+      console.log('clienteService.update: Iniciando atualização do cliente', id, cliente);
+      
+      // Cria uma cópia para não modificar o objeto original
+      const clienteParaEnviar = { ...cliente };
+      
+      // Remove o campo id para evitar conflitos
+      delete clienteParaEnviar.id;
+      
+      // Remove propriedades não aceitas pelo backend
+      delete clienteParaEnviar.documentos;
+      delete clienteParaEnviar.dataCadastro;
+      
+      // Assegura que dataNascimento está em formato ISO se existir
+      if (clienteParaEnviar.dataNascimento) {
+        clienteParaEnviar.dataNascimento = new Date(clienteParaEnviar.dataNascimento).toISOString();
+      }
+      
+      console.log('clienteService.update: Dados formatados para envio:', clienteParaEnviar);
+      const response = await api.put(`/clientes/${id}`, clienteParaEnviar);
+      console.log('clienteService.update: Resposta do servidor:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('clienteService.update: Erro na requisição', error);
+      console.error('clienteService.update: Status do erro', error.response?.status);
+      console.error('clienteService.update: Detalhes do erro', error.response?.data);
+      throw error;
     }
-    
-    const response = await api.put(`/clientes/${id}`, clienteParaEnviar);
-    return response.data;
   },
 
   /**
