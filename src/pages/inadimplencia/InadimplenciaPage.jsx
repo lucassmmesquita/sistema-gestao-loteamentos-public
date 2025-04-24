@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/pages/inadimplencia/InadimplenciaPage.jsx
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -13,7 +14,8 @@ import {
   Card,
   CardContent,
   Stack,
-  alpha
+  alpha,
+  Alert
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -26,60 +28,107 @@ import {
   NotificationsActive
 } from '@mui/icons-material';
 
-import { InadimplenciaProvider } from '../../contexts/InadimplenciaContext';
+import { InadimplenciaProvider, useInadimplenciaContext } from '../../contexts/InadimplenciaContext';
 import ClientesInadimplentesTable from '../../components/inadimplencia/ClientesInadimplentesTable';
 import GatilhosAutomaticos from '../../components/inadimplencia/GatilhosAutomaticos';
 import EnvioManualCobranca from '../../components/inadimplencia/EnvioManualCobranca';
+import Loading from '../../components/common/Loading';
 
-/**
- * Página principal do módulo de inadimplência
- * @returns {JSX.Element} - Componente renderizado
- */
-const InadimplenciaPage = () => {
+// Wrapper para o conteúdo que usa o contexto
+const InadimplenciaContent = () => {
   const [tabAtual, setTabAtual] = useState(0);
+  const { 
+    clientesInadimplentes,
+    loading, 
+    error, 
+    carregarClientesInadimplentes
+  } = useInadimplenciaContext();
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Carregar dados quando o componente montar
+  useEffect(() => {
+    carregarClientesInadimplentes();
+  }, [carregarClientesInadimplentes]);
   
   // Função para manipular mudança de tab
   const handleTabChange = (event, newValue) => {
     setTabAtual(newValue);
   };
   
+  // Função auxiliar para formatar valores monetários
+  const formatarValor = (valor) => {
+    if (valor === undefined || valor === null) return 'R$ 0,00';
+    
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
+  };
+  
   // Função para renderizar os indicadores
   const renderizarIndicadores = () => {
+    // Calcular estatísticas de forma segura com base nos dados reais
+    const totalClientes = Array.isArray(clientesInadimplentes) ? clientesInadimplentes.length : 0;
+    
+    let valorTotal = 0;
+    let taxaInadimplencia = 0;
+    let comunicacoesEnviadas = 0;
+    
+    if (Array.isArray(clientesInadimplentes)) {
+      // Calcular valor total
+      valorTotal = clientesInadimplentes.reduce((total, cliente) => {
+        if (!cliente || !Array.isArray(cliente.parcelas)) return total;
+        
+        const valorCliente = cliente.parcelas.reduce((soma, parcela) => {
+          if (!parcela || isNaN(parseFloat(parcela.valorAtualizado))) return soma;
+          return soma + parseFloat(parcela.valorAtualizado);
+        }, 0);
+        
+        return total + valorCliente;
+      }, 0);
+      
+      // Contar comunicações enviadas se a informação estiver disponível
+      comunicacoesEnviadas = clientesInadimplentes.reduce((total, cliente) => {
+        if (!cliente || !Array.isArray(cliente.comunicacoes)) return total;
+        return total + cliente.comunicacoes.length;
+      }, 0);
+    }
+    
     const indicadores = [
       {
         titulo: 'Clientes Inadimplentes',
-        valor: '142',
+        valor: totalClientes.toString(),
         icone: <PeopleIcon sx={{ fontSize: 40 }} color="primary" />,
-        variacao: '+12%',
-        descricao: 'Em relação ao mês anterior',
-        corVariacao: theme.palette.error.main
+        variacao: '',
+        descricao: 'Total atual',
+        corVariacao: theme.palette.text.secondary
       },
       {
         titulo: 'Valor Total em Aberto',
-        valor: 'R$ 278.450,00',
+        valor: formatarValor(valorTotal),
         icone: <DashboardIcon sx={{ fontSize: 40 }} color="primary" />,
-        variacao: '+8%',
-        descricao: 'Em relação ao mês anterior',
-        corVariacao: theme.palette.error.main
+        variacao: '',
+        descricao: 'Total atual',
+        corVariacao: theme.palette.text.secondary
       },
       {
         titulo: 'Taxa de Inadimplência',
-        valor: '8,2%',
+        // Aqui usamos um valor calculado se disponível, caso contrário N/A
+        valor: taxaInadimplencia ? `${taxaInadimplencia.toFixed(2)}%` : 'N/A',
         icone: <Collections sx={{ fontSize: 40 }} color="primary" />,
-        variacao: '-2%',
-        descricao: 'Em relação ao mês anterior',
-        corVariacao: theme.palette.success.main
+        variacao: '',
+        descricao: 'Calculado sobre contratos ativos',
+        corVariacao: theme.palette.text.secondary
       },
       {
         titulo: 'Comunicações Enviadas',
-        valor: '325',
+        valor: comunicacoesEnviadas.toString(),
         icone: <Email sx={{ fontSize: 40 }} color="primary" />,
-        variacao: '+45%',
-        descricao: 'Em relação ao mês anterior',
-        corVariacao: theme.palette.error.main
+        variacao: '',
+        descricao: 'Total de notificações',
+        corVariacao: theme.palette.text.secondary
       }
     ];
     
@@ -116,15 +165,17 @@ const InadimplenciaPage = () => {
                   {indicador.valor}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: indicador.corVariacao,
-                      fontWeight: 500
-                    }}
-                  >
-                    {indicador.variacao}
-                  </Typography>
+                  {indicador.variacao && (
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        color: indicador.corVariacao,
+                        fontWeight: 500
+                      }}
+                    >
+                      {indicador.variacao}
+                    </Typography>
+                  )}
                   <Typography 
                     variant="body2" 
                     color="text.secondary" 
@@ -142,7 +193,16 @@ const InadimplenciaPage = () => {
   };
   
   return (
-    <InadimplenciaProvider>
+    <>
+      <Loading open={loading} />
+      
+      {/* Exibir erro, se houver */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+      
       {/* Título da página */}
       <Box sx={{ 
         display: 'flex', 
@@ -264,7 +324,9 @@ const InadimplenciaPage = () => {
         }}
       >
         {tabAtual === 0 && (
-          <ClientesInadimplentesTable />
+          <ClientesInadimplentesTable 
+            formatarValor={formatarValor} 
+          />
         )}
         
         {tabAtual === 1 && (
@@ -275,6 +337,18 @@ const InadimplenciaPage = () => {
           <EnvioManualCobranca />
         )}
       </Box>
+    </>
+  );
+};
+
+/**
+ * Página principal do módulo de inadimplência
+ * @returns {JSX.Element} - Componente renderizado
+ */
+const InadimplenciaPage = () => {
+  return (
+    <InadimplenciaProvider>
+      <InadimplenciaContent />
     </InadimplenciaProvider>
   );
 };

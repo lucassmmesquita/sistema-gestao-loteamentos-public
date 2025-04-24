@@ -19,7 +19,9 @@ export const inadimplenciaService = {
         }
       });
       
+      console.log('Enviando requisição para /inadimplencia/clientes com parâmetros:', params.toString());
       const response = await api.get(`/inadimplencia/clientes?${params}`);
+      console.log('Resposta recebida:', response);
       return response;
     } catch (error) {
       console.error('Erro ao listar clientes inadimplentes:', error);
@@ -194,57 +196,6 @@ export const comunicacaoService = {
       return response;
     } catch (error) {
       console.error(`Erro ao obter histórico de comunicações para cliente ${clienteId}:`, error);
-      throw error;
-    }
-  },
-  
-  /**
-   * Verifica o status de uma comunicação enviada
-   * @param {string} comunicacaoId - ID da comunicação
-   * @returns {Promise} - Promise com os dados da requisição
-   */
-  verificarStatusComunicacao: async (comunicacaoId) => {
-    try {
-      const response = await api.get(`/inadimplencia/comunicacao/${comunicacaoId}/status`);
-      return response;
-    } catch (error) {
-      console.error(`Erro ao verificar status da comunicação ${comunicacaoId}:`, error);
-      throw error;
-    }
-  },
-  
-  /**
-   * Envia cobrança automática baseada em gatilhos
-   * @param {string} clienteId - ID do cliente
-   * @param {string} parcelaId - ID da parcela
-   * @param {Object} gatilho - Configuração do gatilho a ser aplicado
-   * @returns {Promise} - Promise com os dados da requisição
-   */
-  enviarCobrancaAutomatica: async (clienteId, parcelaId, gatilho) => {
-    try {
-      const response = await api.post('/inadimplencia/comunicacao/automatica', {
-        clienteId,
-        parcelaId,
-        gatilho
-      });
-      return response;
-    } catch (error) {
-      console.error(`Erro ao enviar cobrança automática para cliente ${clienteId}, parcela ${parcelaId}:`, error);
-      throw error;
-    }
-  },
-  
-  /**
-   * Obtém modelos de mensagens predefinidos
-   * @param {string} tipo - Tipo de comunicação (email, sms, whatsapp)
-   * @returns {Promise} - Promise com os dados da requisição
-   */
-  obterModelosMensagens: async (tipo) => {
-    try {
-      const response = await api.get(`/inadimplencia/comunicacao/modelos?tipo=${tipo}`);
-      return response;
-    } catch (error) {
-      console.error(`Erro ao obter modelos de mensagens para ${tipo}:`, error);
       throw error;
     }
   }

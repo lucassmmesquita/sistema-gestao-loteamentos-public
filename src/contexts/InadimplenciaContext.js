@@ -26,6 +26,7 @@ export const InadimplenciaProvider = ({ children }) => {
     diasAtrasoMax: '',
     dataUltimaCobrancaInicio: '',
     dataUltimaCobrancaFim: '',
+    busca: ''
   });
   
   // Estado para configuração de gatilhos
@@ -40,11 +41,21 @@ export const InadimplenciaProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('Carregando clientes inadimplentes com filtros:', filtros);
       const response = await inadimplenciaService.listarClientesInadimplentes(filtros);
-      setClientesInadimplentes(response.data);
+      
+      if (response && response.data) {
+        console.log('Dados recebidos do backend:', response.data);
+        setClientesInadimplentes(response.data);
+      } else {
+        console.warn('Resposta vazia ou inválida do backend');
+        setClientesInadimplentes([]);
+      }
     } catch (err) {
-      setError('Erro ao carregar clientes inadimplentes. Por favor, tente novamente.');
       console.error('Erro ao carregar clientes inadimplentes:', err);
+      setError('Erro ao carregar clientes inadimplentes. Por favor, tente novamente.');
+      setClientesInadimplentes([]);
     } finally {
       setLoading(false);
     }
@@ -54,9 +65,8 @@ export const InadimplenciaProvider = ({ children }) => {
   const carregarGatilhos = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await inadimplenciaService.obterGatilhos();
-      if (response.data && response.data.gatilhos) {
+      if (response && response.data && response.data.gatilhos) {
         setGatilhos(response.data.gatilhos);
       }
     } catch (err) {
@@ -93,6 +103,7 @@ export const InadimplenciaProvider = ({ children }) => {
       diasAtrasoMax: '',
       dataUltimaCobrancaInicio: '',
       dataUltimaCobrancaFim: '',
+      busca: ''
     });
   };
   
@@ -166,6 +177,31 @@ export const InadimplenciaProvider = ({ children }) => {
     }
   };
   
+  // Funções utilitárias
+  const formatarValor = (valor) => {
+    if (valor === undefined || valor === null) return 'R$ 0,00';
+    
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
+  };
+  
+  const calcularDiasAtraso = (dataVencimento) => {
+    if (!dataVencimento) return 0;
+    
+    const hoje = new Date();
+    const vencimento = new Date(dataVencimento);
+    
+    // Verifica se a data é válida
+    if (isNaN(vencimento.getTime())) return 0;
+    
+    const diffTime = Math.abs(hoje - vencimento);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  };
+  
   // Valor do contexto
   const value = {
     clientesInadimplentes,
@@ -179,7 +215,9 @@ export const InadimplenciaProvider = ({ children }) => {
     enviarComunicacaoManual,
     registrarInteracao,
     gerarNovoBoleto,
-    carregarClientesInadimplentes
+    carregarClientesInadimplentes,
+    formatarValor,
+    calcularDiasAtraso
   };
   
   return (
