@@ -1,45 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, Put } from '@nestjs/common';
+// backend/src/modules/inadimplencia/inadimplencia.controller.ts
+
+import { Controller, Get, Post, Body, Param, Query, Delete, Put, ParseIntPipe } from '@nestjs/common';
 import { InadimplenciaService } from './inadimplencia.service';
-import { CreateClienteInadimplenteDto } from './dto/cliente-inadimplente.dto';
-import { UpdateClienteInadimplenteDto } from './dto/update-cliente-inadimplente.dto';
 import { QueryInadimplenciaDto } from './dto/query-inadimplencia.dto';
-import { CreateInteracaoDto } from './dto/interacao.dto';
-import { CreateComunicacaoDto } from './dto/comunicacao.dto';
-import { ConfiguracaoGatilhosDto } from './dto/gatilho.dto';
+import { RegistrarInteracaoDto } from './dto/registrar-interacao.dto';
+import { EnviarComunicacaoDto } from './dto/enviar-comunicacao.dto';
+import { GerarBoletoDto } from './dto/gerar-boleto.dto';
+import { SalvarGatilhosDto } from './dto/salvar-gatilhos.dto';
 
 @Controller('inadimplencia')
 export class InadimplenciaController {
   constructor(private readonly inadimplenciaService: InadimplenciaService) {}
 
-  @Get('clientes-inadimplentes')
+  @Get('clientes')
   listarClientesInadimplentes(@Query() query: QueryInadimplenciaDto) {
     return this.inadimplenciaService.listarClientesInadimplentes(query);
   }
 
-  @Get('clientes-inadimplentes/:id')
+  @Get('clientes/:id')
   obterClienteInadimplente(@Param('id', ParseIntPipe) id: number) {
     return this.inadimplenciaService.obterClienteInadimplente(id);
   }
 
-  @Post('clientes/:clienteId/interacoes')
-  registrarInteracao(
-    @Param('clienteId', ParseIntPipe) clienteId: number,
-    @Body() createInteracaoDto: CreateInteracaoDto,
-  ) {
-    return this.inadimplenciaService.registrarInteracao(clienteId, createInteracaoDto);
+  @Get('clientes/:id/interacoes')
+  obterHistoricoInteracoes(@Param('id', ParseIntPipe) id: number) {
+    return this.inadimplenciaService.obterHistoricoInteracoes(id);
   }
 
-  @Get('clientes/:clienteId/interacoes')
-  obterHistoricoInteracoes(@Param('clienteId', ParseIntPipe) clienteId: number) {
-    return this.inadimplenciaService.obterHistoricoInteracoes(clienteId);
+  @Post('clientes/:id/interacoes')
+  registrarInteracao(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dados: RegistrarInteracaoDto,
+  ) {
+    return this.inadimplenciaService.registrarInteracao(id, dados);
+  }
+
+  @Get('clientes/:id/comunicacoes')
+  obterHistoricoComunicacoes(@Param('id', ParseIntPipe) id: number) {
+    return this.inadimplenciaService.obterHistoricoComunicacoes(id);
+  }
+
+  @Post('comunicacao/enviar')
+  enviarComunicacao(@Body() dados: EnviarComunicacaoDto) {
+    return this.inadimplenciaService.enviarComunicacao(dados);
   }
 
   @Post('clientes/:clienteId/parcelas/:parcelaId/boleto')
   gerarNovoBoleto(
     @Param('clienteId', ParseIntPipe) clienteId: number,
-    @Param('parcelaId') parcelaId: string,
+    @Param('parcelaId', ParseIntPipe) parcelaId: number,
+    @Body() dados: GerarBoletoDto,
   ) {
-    return this.inadimplenciaService.gerarNovoBoleto(clienteId, parcelaId);
+    return this.inadimplenciaService.gerarNovoBoleto(clienteId, parcelaId, dados);
   }
 
   @Get('configuracoes/gatilhos')
@@ -48,36 +60,17 @@ export class InadimplenciaController {
   }
 
   @Put('configuracoes/gatilhos')
-  salvarGatilhos(@Body() configuracaoGatilhosDto: ConfiguracaoGatilhosDto) {
-    return this.inadimplenciaService.salvarGatilhos(configuracaoGatilhosDto);
-  }
-
-  @Post('comunicacao/enviar')
-  enviarComunicacao(@Body() createComunicacaoDto: CreateComunicacaoDto) {
-    return this.inadimplenciaService.enviarComunicacao(createComunicacaoDto);
-  }
-
-  @Get('clientes/:clienteId/comunicacoes')
-  obterHistoricoComunicacoes(@Param('clienteId', ParseIntPipe) clienteId: number) {
-    return this.inadimplenciaService.obterHistoricoComunicacoes(clienteId);
+  salvarGatilhos(@Body() dados: SalvarGatilhosDto) {
+    return this.inadimplenciaService.salvarGatilhos(dados);
   }
 
   @Post('comunicacao/automatica')
-  enviarCobrancaAutomatica(
-    @Body() data: { clienteId: number; parcelaId: string; gatilho: any },
-  ) {
-    return this.inadimplenciaService.enviarCobrancaAutomatica(
-      data.clienteId,
-      data.parcelaId,
-      data.gatilho,
-    );
+  enviarCobrancaAutomatica(@Body() dados: any) {
+    return this.inadimplenciaService.enviarCobrancaAutomatica(dados);
   }
 
-  @Get('clientes-inadimplentes/exportar')
-  exportarDados(
-    @Query('formato') formato: string,
-    @Query() query: QueryInadimplenciaDto,
-  ) {
-    return this.inadimplenciaService.exportarDados(formato, query);
+  @Get('exportar')
+  exportarDados(@Query('formato') formato: string, @Query() filtros: QueryInadimplenciaDto) {
+    return this.inadimplenciaService.exportarDados(formato, filtros);
   }
 }

@@ -1,483 +1,343 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+// backend/src/modules/inadimplencia/inadimplencia.service.ts
+
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateClienteInadimplenteDto } from './dto/cliente-inadimplente.dto';
-import { UpdateClienteInadimplenteDto } from './dto/update-cliente-inadimplente.dto';
 import { QueryInadimplenciaDto } from './dto/query-inadimplencia.dto';
-import { CreateInteracaoDto } from './dto/interacao.dto';
-import { CreateComunicacaoDto } from './dto/comunicacao.dto';
-import { ConfiguracaoGatilhosDto } from './dto/gatilho.dto';
+import { RegistrarInteracaoDto } from './dto/registrar-interacao.dto';
+import { EnviarComunicacaoDto } from './dto/enviar-comunicacao.dto';
+import { GerarBoletoDto } from './dto/gerar-boleto.dto';
+import { SalvarGatilhosDto } from './dto/salvar-gatilhos.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class InadimplenciaService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listarClientesInadimplentes(query: QueryInadimplenciaDto) {
-    try {
-      // Construir consulta básica para boletos vencidos
-      const hoje = new Date();
-      
-      // Busca boletos vencidos
-      const boletosVencidos = await this.prisma.boleto.findMany({
-        where: {
-          status: 'gerado',
-          dataVencimento: {
-            lt: hoje
-          }
-        },
-        include: {
-          cliente: {
-            include: {
-              contatos: true
-            }
-          },
-          contrato: true
-        }
-      });
-      
-      // Agrupar por cliente
-      const clientesMap = new Map();
-      
-      for (const boleto of boletosVencidos) {
-        const clienteId = boleto.clienteId;
-        const contratoId = boleto.contratoId;
-        
-        // Calcular dias de atraso
-        const dataVencimento = boleto.dataVencimento;
-        const diffTime = Math.abs(hoje.getTime() - dataVencimento.getTime());
-        const diasAtraso = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        const key = `${clienteId}-${contratoId}`;
-        
-        if (!clientesMap.has(key)) {
-          clientesMap.set(key, {
-            id: clienteId, // Usamos clienteId como ID temporário
-            clienteId: clienteId,
-            contratoId: contratoId,
-            valorEmAberto: 0,
-            diasAtraso: 0,
-            status: 'pendente',
-            cliente: boleto.cliente,
-            contrato: boleto.contrato,
-            parcelas: []
-          });
-        }
-        
-        const clienteInfo = clientesMap.get(key);
-        
-        // Atualiza valor em aberto
-        clienteInfo.valorEmAberto += Number(boleto.valor);
-        
-        // Pega o maior número de dias de atraso
-        if (diasAtraso > clienteInfo.diasAtraso) {
-          clienteInfo.diasAtraso = diasAtraso;
-        }
-        
-        // Adiciona parcela
-        clienteInfo.parcelas.push({
-          id: boleto.id,
-          numero: boleto.numeroParcela,
-          dataVencimento: boleto.dataVencimento,
-          valor: Number(boleto.valor),
-          valorAtualizado: Number(boleto.valor), // Aqui poderia aplicar juros/multa
-          status: 'vencido'
-        });
-      }
-      
-      // Converter para array e aplicar filtros
-      let clientesInadimplentes = Array.from(clientesMap.values());
-      
-      // Aplicar filtros
-      if (query.clienteId) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.clienteId === query.clienteId);
-      }
-      
-      if (query.contratoId) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.contratoId === query.contratoId);
-      }
-      
-      if (query.status) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.status === query.status);
-      }
-      
-      if (query.diasAtrasoMin) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.diasAtraso >= query.diasAtrasoMin);
-      }
-      
-      if (query.diasAtrasoMax) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.diasAtraso <= query.diasAtrasoMax);
-      }
-      
-      if (query.valorMinimo) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.valorEmAberto >= query.valorMinimo);
-      }
-      
-      if (query.valorMaximo) {
-        clientesInadimplentes = clientesInadimplentes.filter(c => c.valorEmAberto <= query.valorMaximo);
-      }
-      
-      // Ordenar por dias de atraso (maior para menor)
-      clientesInadimplentes.sort((a, b) => b.diasAtraso - a.diasAtraso);
-      
-      return clientesInadimplentes;
-    } catch (error) {
-      console.error('Erro ao listar clientes inadimplentes:', error);
-      throw new InternalServerErrorException('Erro ao listar clientes inadimplentes: ' + error.message);
+    // Construir o filtro com base nos parâmetros da query
+    const filtros: any = {};
+
+    if (query.statusPagamento) {
+      filtros.status = query.statusPagamento;
     }
+
+    if (query.contratoId) {
+      filtros.contratoId = parseInt(query.contratoId as string);
+    }
+
+    if (query.valorMinimo) {
+      filtros.valorEmAberto = {
+        gte: parseFloat(query.valorMinimo as string),
+      };
+    }
+
+    if (query.valorMaximo) {
+      filtros.valorEmAberto = {
+        ...(filtros.valorEmAberto || {}),
+        lte: parseFloat(query.valorMaximo as string),
+      };
+    }
+
+    if (query.diasAtrasoMin) {
+      filtros.diasAtraso = {
+        gte: parseInt(query.diasAtrasoMin as string),
+      };
+    }
+
+    if (query.diasAtrasoMax) {
+      filtros.diasAtraso = {
+        ...(filtros.diasAtraso || {}),
+        lte: parseInt(query.diasAtrasoMax as string),
+      };
+    }
+
+    // Buscar os clientes inadimplentes com base nos filtros
+    const clientesInadimplentes = await this.prisma.clienteInadimplente.findMany({
+      where: filtros,
+      include: {
+        cliente: true,
+        parcelas: true,
+      },
+    });
+
+    // Retornar os dados formatados
+    return clientesInadimplentes.map((clienteInadimplente) => ({
+      id: clienteInadimplente.id,
+      cliente: {
+        id: clienteInadimplente.cliente.id,
+        nome: clienteInadimplente.cliente.nome,
+        cpfCnpj: clienteInadimplente.cliente.cpfCnpj,
+      },
+      contratoId: clienteInadimplente.contratoId,
+      valorEmAberto: clienteInadimplente.valorEmAberto,
+      diasAtraso: clienteInadimplente.diasAtraso,
+      ultimaCobranca: clienteInadimplente.ultimaCobranca,
+      status: clienteInadimplente.status,
+      parcelas: clienteInadimplente.parcelas,
+    }));
   }
 
   async obterClienteInadimplente(id: number) {
-    try {
-      // Como estamos trabalhando com objetos em memória, vamos buscar direto por boletos
-      const boleto = await this.prisma.boleto.findUnique({
-        where: { id },
-        include: {
-          cliente: {
-            include: {
-              endereco: true,
-              contatos: true
-            }
-          },
-          contrato: true
-        }
-      });
-      
-      if (!boleto) {
-        throw new NotFoundException(`Boleto ID ${id} não encontrado`);
-      }
-      
-      // Calcula dias de atraso
-      const hoje = new Date();
-      const dataVencimento = boleto.dataVencimento;
-      const diffTime = Math.abs(hoje.getTime() - dataVencimento.getTime());
-      const diasAtraso = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Constrói o objeto de cliente inadimplente
-      const clienteInadimplente = {
-        id: boleto.id,
-        clienteId: boleto.clienteId,
-        contratoId: boleto.contratoId,
-        valorEmAberto: Number(boleto.valor),
-        diasAtraso,
-        status: 'pendente',
-        cliente: boleto.cliente,
-        contrato: boleto.contrato,
-        parcelas: [{
-          id: boleto.id,
-          numero: boleto.numeroParcela,
-          dataVencimento: boleto.dataVencimento,
-          valor: Number(boleto.valor),
-          valorAtualizado: Number(boleto.valor),
-          status: 'vencido'
-        }]
-      };
-      
-      return clienteInadimplente;
-    } catch (error) {
-      console.error(`Erro ao obter cliente inadimplente ${id}:`, error);
-      throw new InternalServerErrorException(`Erro ao obter cliente inadimplente: ${error.message}`);
-    }
-  }
+    const clienteInadimplente = await this.prisma.clienteInadimplente.findUnique({
+      where: { id },
+      include: {
+        cliente: true,
+        parcelas: true,
+      },
+    });
 
-  async registrarInteracao(clienteId: number, createInteracaoDto: CreateInteracaoDto) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: clienteId }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-      }
-      
-      return this.prisma.interacao.create({
-        data: {
-          ...createInteracaoDto,
-          clienteId
-        }
-      });
-    } catch (error) {
-      console.error(`Erro ao registrar interação para cliente ${clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao registrar interação: ${error.message}`);
+    if (!clienteInadimplente) {
+      throw new NotFoundException(`Cliente inadimplente ID ${id} não encontrado`);
     }
+
+    return {
+      id: clienteInadimplente.id,
+      cliente: {
+        id: clienteInadimplente.cliente.id,
+        nome: clienteInadimplente.cliente.nome,
+        cpfCnpj: clienteInadimplente.cliente.cpfCnpj,
+      },
+      contratoId: clienteInadimplente.contratoId,
+      valorEmAberto: clienteInadimplente.valorEmAberto,
+      diasAtraso: clienteInadimplente.diasAtraso,
+      ultimaCobranca: clienteInadimplente.ultimaCobranca,
+      status: clienteInadimplente.status,
+      parcelas: clienteInadimplente.parcelas,
+    };
   }
 
   async obterHistoricoInteracoes(clienteId: number) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: clienteId }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-      }
-      
-      return this.prisma.interacao.findMany({
-        where: { clienteId },
-        orderBy: { data: 'desc' }
-      });
-    } catch (error) {
-      console.error(`Erro ao obter histórico de interações para cliente ${clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao obter histórico de interações: ${error.message}`);
-    }
+    const interacoes = await this.prisma.interacao.findMany({
+      where: { clienteId },
+      orderBy: { data: 'desc' },
+    });
+
+    return interacoes;
   }
 
-  async gerarNovoBoleto(clienteId: number, parcelaId: string) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: clienteId }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-      }
-      
-      // Verificando a parcela para achar o contrato e valor
-      const boleto = await this.prisma.boleto.findUnique({
-        where: { id: parseInt(parcelaId) }
-      });
-      
-      if (!boleto) {
-        throw new NotFoundException(`Parcela ID ${parcelaId} não encontrada`);
-      }
-      
-      // Criar novo boleto com data de vencimento atualizada
-      const hoje = new Date();
-      const novaDataVencimento = new Date(hoje);
-      novaDataVencimento.setDate(hoje.getDate() + 7); // 7 dias no futuro
+  async registrarInteracao(clienteId: number, dados: RegistrarInteracaoDto) {
+    // Verificar se o cliente existe
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id: clienteId },
+    });
 
-      // Geramos aqui um número único para o boleto
-      const nossoNumero = Math.floor(10000000000 + Math.random() * 90000000000).toString();
-      const linhaDigitavel = `10492.${nossoNumero.substring(0, 5)}.${nossoNumero.substring(5, 10)}.${nossoNumero.substring(10, 11)}.${Math.floor(1000 + Math.random() * 9000)}`;
-      const codigoBarras = `104${Math.floor(10000000000000000000000000000000000000000 + Math.random() * 90000000000000000000000000000000000000000).toString()}`;
-      
-      // Criamos o novo boleto
-      const novoBoleto = await this.prisma.boleto.create({
-        data: {
-          clienteId: boleto.clienteId,
-          clienteNome: boleto.clienteNome,
-          contratoId: boleto.contratoId,
-          valor: boleto.valor,
-          dataVencimento: novaDataVencimento,
-          numeroParcela: boleto.numeroParcela,
-          descricao: `${boleto.descricao} (Nova emissão)`,
-          nossoNumero,
-          linhaDigitavel,
-          codigoBarras,
-          pdfUrl: `https://api.sistema.com/boletos/${nossoNumero}/pdf`,
-          status: 'gerado'
-        }
-      });
-      
-      return novoBoleto;
-    } catch (error) {
-      console.error(`Erro ao gerar novo boleto para cliente ${clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao gerar novo boleto: ${error.message}`);
+    if (!cliente) {
+      throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
     }
+
+    // Registrar a interação
+    return this.prisma.interacao.create({
+      data: {
+        id: uuidv4(),
+        clienteId,
+        tipo: dados.tipo,
+        data: new Date(),
+        observacao: dados.observacao,
+        usuario: dados.usuario,
+        parcelaId: dados.parcelaId,
+      },
+    });
+  }
+
+  async obterHistoricoComunicacoes(clienteId: number) {
+    const comunicacoes = await this.prisma.comunicacao.findMany({
+      where: { clienteId },
+      orderBy: { data: 'desc' },
+    });
+
+    return comunicacoes;
+  }
+
+  async enviarComunicacao(dados: EnviarComunicacaoDto) {
+    // Verificar se o cliente existe
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id: dados.clienteId },
+    });
+
+    if (!cliente) {
+      throw new NotFoundException(`Cliente ID ${dados.clienteId} não encontrado`);
+    }
+
+    // Em um cenário real, aqui seria feita a integração com um serviço de envio de email/SMS/WhatsApp
+    // Simulação de envio
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Registrar a comunicação
+    const comunicacao = await this.prisma.comunicacao.create({
+      data: {
+        id: uuidv4(),
+        clienteId: dados.clienteId,
+        tipo: dados.tipo,
+        data: new Date(),
+        mensagem: dados.mensagem,
+        status: 'enviado',
+        anexos: dados.anexos ? { anexos: dados.anexos } : undefined,
+      },
+    });
+
+    // Atualizar a data da última cobrança do cliente inadimplente
+    await this.prisma.clienteInadimplente.updateMany({
+      where: { clienteId: dados.clienteId },
+      data: { ultimaCobranca: new Date() },
+    });
+
+    return comunicacao;
+  }
+
+  async gerarNovoBoleto(clienteId: number, parcelaId: number, dados: GerarBoletoDto) {
+    // Verificar se o cliente existe
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id: clienteId },
+    });
+
+    if (!cliente) {
+      throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
+    }
+
+    // Verificar se a parcela existe
+    const parcela = await this.prisma.parcelaInadimplente.findUnique({
+      where: { id: parcelaId },
+    });
+
+    if (!parcela) {
+      throw new NotFoundException(`Parcela ID ${parcelaId} não encontrada`);
+    }
+
+    // Em um cenário real, aqui seria feita a integração com um serviço de geração de boletos
+    // Simulação de geração de boleto
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Gerar dados fictícios para o boleto
+    const boleto = {
+      id: Date.now(),
+      clienteId,
+      clienteNome: cliente.nome,
+      contratoId: parcela.clienteInadimplente_id, // Relacionamento com o contrato da parcela
+      valor: parcela.valorAtualizado,
+      dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Vencimento em 7 dias
+      numeroParcela: parcela.numero,
+      descricao: `Nova emissão - Parcela ${parcela.numero}`,
+      nossoNumero: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
+      linhaDigitavel: `${Date.now()}${Math.floor(Math.random() * 10000)}`,
+      codigoBarras: `${Date.now()}${Math.floor(Math.random() * 100000)}`,
+      pdfUrl: `/uploads/boletos/boleto_${Date.now()}.pdf`,
+      dataGeracao: new Date(),
+      status: 'gerado',
+    };
+
+    // Registrar o boleto no banco de dados
+    return this.prisma.boleto.create({
+      data: boleto,
+    });
   }
 
   async obterGatilhos() {
-    try {
-      const configuracao = await this.prisma.configuracaoGatilhos.findFirst();
-      
-      if (!configuracao) {
-        // Retorna configuração padrão se não existir
-        return {
+    // Buscar configuração de gatilhos do banco de dados
+    let configuracao = await this.prisma.configuracaoGatilhos.findFirst();
+
+    // Se não existir, criar uma configuração padrão
+    if (!configuracao) {
+      configuracao = await this.prisma.configuracaoGatilhos.create({
+        data: {
           executarAutomaticamente: true,
-          horarioExecucao: '03:00',
-          diasExecucao: ['1', '15'],
+          horarioExecucao: '08:00',
+          diasExecucao: ['1', '3', '5'], // Segunda, Quarta, Sexta
           repetirCobrancas: true,
           intervaloRepeticao: 7,
           limitarRepeticoes: true,
           limiteRepeticoes: 3,
           gerarLog: true,
           gatilhos: [
-            { dias: 7, tipo: 'email', ativo: true, mensagem: 'Prezado cliente, identificamos que você possui uma parcela com vencimento em 7 dias. Por favor, efetue o pagamento em dia para evitar juros e multas.' },
-            { dias: 15, tipo: 'sms', ativo: true, mensagem: 'Sua parcela está em atraso há 15 dias. Entre em contato conosco para regularização.' },
-            { dias: 30, tipo: 'whatsapp', ativo: true, mensagem: 'Importante: Parcela em atraso há 30 dias. Acesse o link para regularizar sua situação e evitar negativação do seu CPF.' }
-          ]
-        };
-      }
-      
-      return {
-        ...configuracao,
-        gatilhos: configuracao.gatilhos ? JSON.parse(JSON.stringify(configuracao.gatilhos)) : []
-      };
-    } catch (error) {
-      console.error('Erro ao obter configurações de gatilhos:', error);
-      throw new InternalServerErrorException(`Erro ao obter configurações de gatilhos: ${error.message}`);
+            { dias: 7, tipo: 'email', ativo: true, mensagem: 'Lembrete: Você possui uma parcela em atraso.' },
+            { dias: 15, tipo: 'sms', ativo: true, mensagem: 'Sua parcela está em atraso há 15 dias. Entre em contato.' },
+            { dias: 30, tipo: 'whatsapp', ativo: true, mensagem: 'Importante: Parcela em atraso há 30 dias. Acesse o link para regularizar.' },
+          ],
+        },
+      });
     }
+
+    return configuracao;
   }
 
-  async salvarGatilhos(configuracaoGatilhosDto: ConfiguracaoGatilhosDto) {
-    try {
-      const configuracao = await this.prisma.configuracaoGatilhos.findFirst();
-      
-      // Converter os gatilhos para JSON
-      const gatilhosJson = JSON.parse(JSON.stringify(configuracaoGatilhosDto.gatilhos));
-      
-      if (!configuracao) {
-        // Cria nova configuração
-        return this.prisma.configuracaoGatilhos.create({
-          data: {
-            executarAutomaticamente: configuracaoGatilhosDto.executarAutomaticamente,
-            horarioExecucao: configuracaoGatilhosDto.horarioExecucao,
-            diasExecucao: configuracaoGatilhosDto.diasExecucao,
-            repetirCobrancas: configuracaoGatilhosDto.repetirCobrancas,
-            intervaloRepeticao: configuracaoGatilhosDto.intervaloRepeticao,
-            limitarRepeticoes: configuracaoGatilhosDto.limitarRepeticoes,
-            limiteRepeticoes: configuracaoGatilhosDto.limiteRepeticoes,
-            gerarLog: configuracaoGatilhosDto.gerarLog,
-            gatilhos: gatilhosJson
-          }
-        });
-      }
-      
-      // Atualiza configuração existente
+  async salvarGatilhos(dados: SalvarGatilhosDto) {
+    // Buscar configuração existente ou criar uma nova
+    const configuracaoExistente = await this.prisma.configuracaoGatilhos.findFirst();
+
+    if (configuracaoExistente) {
+      // Atualizar configuração existente
       return this.prisma.configuracaoGatilhos.update({
-        where: { id: configuracao.id },
+        where: { id: configuracaoExistente.id },
         data: {
-          executarAutomaticamente: configuracaoGatilhosDto.executarAutomaticamente,
-          horarioExecucao: configuracaoGatilhosDto.horarioExecucao,
-          diasExecucao: configuracaoGatilhosDto.diasExecucao,
-          repetirCobrancas: configuracaoGatilhosDto.repetirCobrancas,
-          intervaloRepeticao: configuracaoGatilhosDto.intervaloRepeticao,
-          limitarRepeticoes: configuracaoGatilhosDto.limitarRepeticoes,
-          limiteRepeticoes: configuracaoGatilhosDto.limiteRepeticoes,
-          gerarLog: configuracaoGatilhosDto.gerarLog,
-          gatilhos: gatilhosJson
-        }
+          gatilhos: dados.gatilhos,
+        },
       });
-    } catch (error) {
-      console.error('Erro ao salvar configurações de gatilhos:', error);
-      throw new InternalServerErrorException(`Erro ao salvar configurações de gatilhos: ${error.message}`);
-    }
-  }
-
-  async enviarComunicacao(createComunicacaoDto: CreateComunicacaoDto) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: createComunicacaoDto.clienteId }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${createComunicacaoDto.clienteId} não encontrado`);
-      }
-      
-      // Em um ambiente real, aqui seria a integração com serviços de comunicação
-      // Como e-mail, SMS, WhatsApp, etc.
-      
-      // Registrando a comunicação no banco de dados
-      return this.prisma.comunicacao.create({
-        data: createComunicacaoDto
-      });
-    } catch (error) {
-      console.error(`Erro ao enviar comunicação para cliente ${createComunicacaoDto.clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao enviar comunicação: ${error.message}`);
-    }
-  }
-
-  async obterHistoricoComunicacoes(clienteId: number) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: clienteId }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-      }
-      
-      return this.prisma.comunicacao.findMany({
-        where: { clienteId },
-        orderBy: { data: 'desc' }
-      });
-    } catch (error) {
-      console.error(`Erro ao obter histórico de comunicações para cliente ${clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao obter histórico de comunicações: ${error.message}`);
-    }
-  }
-
-  async enviarCobrancaAutomatica(clienteId: number, parcelaId: string, gatilho: any) {
-    try {
-      // Verificando se o cliente existe
-      const cliente = await this.prisma.cliente.findUnique({
-        where: { id: clienteId },
-        include: {
-          contatos: true
-        }
-      });
-      
-      if (!cliente) {
-        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-      }
-      
-      // Obtendo informações do boleto/parcela
-      const boleto = await this.prisma.boleto.findUnique({
-        where: { id: parseInt(parcelaId) }
-      });
-      
-      if (!boleto) {
-        throw new NotFoundException(`Parcela/Boleto ID ${parcelaId} não encontrado`);
-      }
-      
-      // Em um ambiente real, aqui seria a integração com serviços de comunicação
-      // Com base no tipo de gatilho (email, sms, whatsapp)
-      
-      // Cria um registro da comunicação
-      const comunicacao = await this.prisma.comunicacao.create({
+    } else {
+      // Criar nova configuração
+      return this.prisma.configuracaoGatilhos.create({
         data: {
-          clienteId,
-          tipo: gatilho.tipo,
-          data: new Date(),
-          mensagem: gatilho.mensagem,
-          status: 'enviado',
-          parcelaInfo: {
-            parcelaId: parcelaId,
-            //valor: parcela.valor.toString(), // ou parcela.valor.toNumber()
-            //dataVencimento: parcela.dataVencimento.toISOString()
-          }
-        }
+          executarAutomaticamente: true,
+          horarioExecucao: '08:00',
+          diasExecucao: ['1', '3', '5'], // Segunda, Quarta, Sexta
+          repetirCobrancas: true,
+          intervaloRepeticao: 7,
+          limitarRepeticoes: true,
+          limiteRepeticoes: 3,
+          gerarLog: true,
+          gatilhos: dados.gatilhos,
+        },
       });
-      
-      return comunicacao;
-    } catch (error) {
-      console.error(`Erro ao enviar cobrança automática para cliente ${clienteId}:`, error);
-      throw new InternalServerErrorException(`Erro ao enviar cobrança automática: ${error.message}`);
     }
   }
 
-  async exportarDados(formato: string, query: QueryInadimplenciaDto) {
-    try {
-      // Busca os dados de inadimplência com base nos filtros
-      const dados = await this.listarClientesInadimplentes(query);
-      
-      // Simula a exportação para diferentes formatos
-      switch (formato) {
-        case 'excel':
-          // Simulando retorno de um arquivo Excel
-          return {
-            data: Buffer.from('Simulação de arquivo Excel'),
-            tipo: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            nome: `inadimplentes_${new Date().toISOString().split('T')[0]}.xlsx`
-          };
-        
-        case 'pdf':
-          // Simulando retorno de um arquivo PDF
-          return {
-            data: Buffer.from('Simulação de arquivo PDF'),
-            tipo: 'application/pdf',
-            nome: `inadimplentes_${new Date().toISOString().split('T')[0]}.pdf`
-          };
-        
-        default:
-          throw new Error('Formato de exportação não suportado');
-      }
-    } catch (error) {
-      console.error(`Erro ao exportar dados em formato ${formato}:`, error);
-      throw new InternalServerErrorException(`Erro ao exportar dados: ${error.message}`);
+  async enviarCobrancaAutomatica(dados: any) {
+    // Verificar se o cliente existe
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id: dados.clienteId },
+    });
+
+    if (!cliente) {
+      throw new NotFoundException(`Cliente ID ${dados.clienteId} não encontrado`);
     }
+
+    // Em um cenário real, aqui seria feita a integração com um serviço de envio de comunicações
+    // Simulação de envio
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Registrar a comunicação
+    const comunicacao = await this.prisma.comunicacao.create({
+      data: {
+        id: uuidv4(),
+        clienteId: dados.clienteId,
+        tipo: dados.gatilho.tipo,
+        data: new Date(),
+        mensagem: dados.gatilho.mensagem,
+        status: 'enviado',
+        parcelaInfo: { parcelaId: dados.parcelaId },
+      },
+    });
+
+    // Atualizar a data da última cobrança do cliente inadimplente
+    await this.prisma.clienteInadimplente.updateMany({
+      where: { clienteId: dados.clienteId },
+      data: { ultimaCobranca: new Date() },
+    });
+
+    return comunicacao;
+  }
+
+  async exportarDados(formato: string, filtros: QueryInadimplenciaDto) {
+    // Buscar os dados com base nos filtros
+    const clientesInadimplentes = await this.listarClientesInadimplentes(filtros);
+
+    // Em um cenário real, aqui seria gerado o arquivo no formato solicitado (Excel ou PDF)
+    // Simulação de geração de arquivo
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Retornar os dados
+    return {
+      dados: clientesInadimplentes,
+      formato,
+      dataGeracao: new Date(),
+    };
   }
 }

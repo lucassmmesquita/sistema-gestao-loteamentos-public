@@ -1,15 +1,15 @@
 import React from 'react';
-import { Typography, Container } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import ClienteForm from '../../components/clientes/ClienteForm';
 
 const CadastroCliente = () => {
   return (
-    <Container maxWidth="lg">
+    <Box sx={{ width: '100%', p: 2 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Cadastro de Cliente
       </Typography>
       <ClienteForm />
-    </Container>
+    </Box>
   );
 };
 

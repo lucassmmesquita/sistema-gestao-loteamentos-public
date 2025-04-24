@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Container, Alert, Button, Box } from '@mui/material';
+import { Typography, Alert, Button, Box } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ClienteForm from '../../components/clientes/ClienteForm';
 import useClientes from '../../hooks/useClientes';
@@ -24,7 +24,7 @@ const EditarCliente = () => {
   }, [id, loadCliente]);
   
   return (
-    <Container maxWidth="lg">
+    <Box sx={{ width: '100%', p: 2 }}>
       <Loading open={loading && !loaded} />
       
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -55,7 +55,7 @@ const EditarCliente = () => {
       {loaded && currentCliente && (
         <ClienteForm cliente={currentCliente} />
       )}
-    </Container>
+    </Box>
   );
 };
 

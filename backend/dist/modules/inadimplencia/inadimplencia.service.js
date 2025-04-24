@@ -12,379 +12,257 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InadimplenciaService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const uuid_1 = require("uuid");
 let InadimplenciaService = class InadimplenciaService {
     constructor(prisma) {
         this.prisma = prisma;
     }
     async listarClientesInadimplentes(query) {
-        try {
-            const hoje = new Date();
-            const boletosVencidos = await this.prisma.boleto.findMany({
-                where: {
-                    status: 'gerado',
-                    dataVencimento: {
-                        lt: hoje
-                    }
-                },
-                include: {
-                    cliente: {
-                        include: {
-                            contatos: true
-                        }
-                    },
-                    contrato: true
-                }
-            });
-            const clientesMap = new Map();
-            for (const boleto of boletosVencidos) {
-                const clienteId = boleto.clienteId;
-                const contratoId = boleto.contratoId;
-                const dataVencimento = boleto.dataVencimento;
-                const diffTime = Math.abs(hoje.getTime() - dataVencimento.getTime());
-                const diasAtraso = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const key = `${clienteId}-${contratoId}`;
-                if (!clientesMap.has(key)) {
-                    clientesMap.set(key, {
-                        id: clienteId,
-                        clienteId: clienteId,
-                        contratoId: contratoId,
-                        valorEmAberto: 0,
-                        diasAtraso: 0,
-                        status: 'pendente',
-                        cliente: boleto.cliente,
-                        contrato: boleto.contrato,
-                        parcelas: []
-                    });
-                }
-                const clienteInfo = clientesMap.get(key);
-                clienteInfo.valorEmAberto += Number(boleto.valor);
-                if (diasAtraso > clienteInfo.diasAtraso) {
-                    clienteInfo.diasAtraso = diasAtraso;
-                }
-                clienteInfo.parcelas.push({
-                    id: boleto.id,
-                    numero: boleto.numeroParcela,
-                    dataVencimento: boleto.dataVencimento,
-                    valor: Number(boleto.valor),
-                    valorAtualizado: Number(boleto.valor),
-                    status: 'vencido'
-                });
-            }
-            let clientesInadimplentes = Array.from(clientesMap.values());
-            if (query.clienteId) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.clienteId === query.clienteId);
-            }
-            if (query.contratoId) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.contratoId === query.contratoId);
-            }
-            if (query.status) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.status === query.status);
-            }
-            if (query.diasAtrasoMin) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.diasAtraso >= query.diasAtrasoMin);
-            }
-            if (query.diasAtrasoMax) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.diasAtraso <= query.diasAtrasoMax);
-            }
-            if (query.valorMinimo) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.valorEmAberto >= query.valorMinimo);
-            }
-            if (query.valorMaximo) {
-                clientesInadimplentes = clientesInadimplentes.filter(c => c.valorEmAberto <= query.valorMaximo);
-            }
-            clientesInadimplentes.sort((a, b) => b.diasAtraso - a.diasAtraso);
-            return clientesInadimplentes;
+        const filtros = {};
+        if (query.statusPagamento) {
+            filtros.status = query.statusPagamento;
         }
-        catch (error) {
-            console.error('Erro ao listar clientes inadimplentes:', error);
-            throw new common_1.InternalServerErrorException('Erro ao listar clientes inadimplentes: ' + error.message);
+        if (query.contratoId) {
+            filtros.contratoId = parseInt(query.contratoId);
         }
+        if (query.valorMinimo) {
+            filtros.valorEmAberto = {
+                gte: parseFloat(query.valorMinimo),
+            };
+        }
+        if (query.valorMaximo) {
+            filtros.valorEmAberto = Object.assign(Object.assign({}, (filtros.valorEmAberto || {})), { lte: parseFloat(query.valorMaximo) });
+        }
+        if (query.diasAtrasoMin) {
+            filtros.diasAtraso = {
+                gte: parseInt(query.diasAtrasoMin),
+            };
+        }
+        if (query.diasAtrasoMax) {
+            filtros.diasAtraso = Object.assign(Object.assign({}, (filtros.diasAtraso || {})), { lte: parseInt(query.diasAtrasoMax) });
+        }
+        const clientesInadimplentes = await this.prisma.clienteInadimplente.findMany({
+            where: filtros,
+            include: {
+                cliente: true,
+                parcelas: true,
+            },
+        });
+        return clientesInadimplentes.map((clienteInadimplente) => ({
+            id: clienteInadimplente.id,
+            cliente: {
+                id: clienteInadimplente.cliente.id,
+                nome: clienteInadimplente.cliente.nome,
+                cpfCnpj: clienteInadimplente.cliente.cpfCnpj,
+            },
+            contratoId: clienteInadimplente.contratoId,
+            valorEmAberto: clienteInadimplente.valorEmAberto,
+            diasAtraso: clienteInadimplente.diasAtraso,
+            ultimaCobranca: clienteInadimplente.ultimaCobranca,
+            status: clienteInadimplente.status,
+            parcelas: clienteInadimplente.parcelas,
+        }));
     }
     async obterClienteInadimplente(id) {
-        try {
-            const boleto = await this.prisma.boleto.findUnique({
-                where: { id },
-                include: {
-                    cliente: {
-                        include: {
-                            endereco: true,
-                            contatos: true
-                        }
-                    },
-                    contrato: true
-                }
-            });
-            if (!boleto) {
-                throw new common_1.NotFoundException(`Boleto ID ${id} não encontrado`);
-            }
-            const hoje = new Date();
-            const dataVencimento = boleto.dataVencimento;
-            const diffTime = Math.abs(hoje.getTime() - dataVencimento.getTime());
-            const diasAtraso = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const clienteInadimplente = {
-                id: boleto.id,
-                clienteId: boleto.clienteId,
-                contratoId: boleto.contratoId,
-                valorEmAberto: Number(boleto.valor),
-                diasAtraso,
-                status: 'pendente',
-                cliente: boleto.cliente,
-                contrato: boleto.contrato,
-                parcelas: [{
-                        id: boleto.id,
-                        numero: boleto.numeroParcela,
-                        dataVencimento: boleto.dataVencimento,
-                        valor: Number(boleto.valor),
-                        valorAtualizado: Number(boleto.valor),
-                        status: 'vencido'
-                    }]
-            };
-            return clienteInadimplente;
+        const clienteInadimplente = await this.prisma.clienteInadimplente.findUnique({
+            where: { id },
+            include: {
+                cliente: true,
+                parcelas: true,
+            },
+        });
+        if (!clienteInadimplente) {
+            throw new common_1.NotFoundException(`Cliente inadimplente ID ${id} não encontrado`);
         }
-        catch (error) {
-            console.error(`Erro ao obter cliente inadimplente ${id}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao obter cliente inadimplente: ${error.message}`);
-        }
-    }
-    async registrarInteracao(clienteId, createInteracaoDto) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: clienteId }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-            }
-            return this.prisma.interacao.create({
-                data: Object.assign(Object.assign({}, createInteracaoDto), { clienteId })
-            });
-        }
-        catch (error) {
-            console.error(`Erro ao registrar interação para cliente ${clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao registrar interação: ${error.message}`);
-        }
+        return {
+            id: clienteInadimplente.id,
+            cliente: {
+                id: clienteInadimplente.cliente.id,
+                nome: clienteInadimplente.cliente.nome,
+                cpfCnpj: clienteInadimplente.cliente.cpfCnpj,
+            },
+            contratoId: clienteInadimplente.contratoId,
+            valorEmAberto: clienteInadimplente.valorEmAberto,
+            diasAtraso: clienteInadimplente.diasAtraso,
+            ultimaCobranca: clienteInadimplente.ultimaCobranca,
+            status: clienteInadimplente.status,
+            parcelas: clienteInadimplente.parcelas,
+        };
     }
     async obterHistoricoInteracoes(clienteId) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: clienteId }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-            }
-            return this.prisma.interacao.findMany({
-                where: { clienteId },
-                orderBy: { data: 'desc' }
-            });
-        }
-        catch (error) {
-            console.error(`Erro ao obter histórico de interações para cliente ${clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao obter histórico de interações: ${error.message}`);
-        }
+        const interacoes = await this.prisma.interacao.findMany({
+            where: { clienteId },
+            orderBy: { data: 'desc' },
+        });
+        return interacoes;
     }
-    async gerarNovoBoleto(clienteId, parcelaId) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: clienteId }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-            }
-            const boleto = await this.prisma.boleto.findUnique({
-                where: { id: parseInt(parcelaId) }
-            });
-            if (!boleto) {
-                throw new common_1.NotFoundException(`Parcela ID ${parcelaId} não encontrada`);
-            }
-            const hoje = new Date();
-            const novaDataVencimento = new Date(hoje);
-            novaDataVencimento.setDate(hoje.getDate() + 7);
-            const nossoNumero = Math.floor(10000000000 + Math.random() * 90000000000).toString();
-            const linhaDigitavel = `10492.${nossoNumero.substring(0, 5)}.${nossoNumero.substring(5, 10)}.${nossoNumero.substring(10, 11)}.${Math.floor(1000 + Math.random() * 9000)}`;
-            const codigoBarras = `104${Math.floor(10000000000000000000000000000000000000000 + Math.random() * 90000000000000000000000000000000000000000).toString()}`;
-            const novoBoleto = await this.prisma.boleto.create({
-                data: {
-                    clienteId: boleto.clienteId,
-                    clienteNome: boleto.clienteNome,
-                    contratoId: boleto.contratoId,
-                    valor: boleto.valor,
-                    dataVencimento: novaDataVencimento,
-                    numeroParcela: boleto.numeroParcela,
-                    descricao: `${boleto.descricao} (Nova emissão)`,
-                    nossoNumero,
-                    linhaDigitavel,
-                    codigoBarras,
-                    pdfUrl: `https://api.sistema.com/boletos/${nossoNumero}/pdf`,
-                    status: 'gerado'
-                }
-            });
-            return novoBoleto;
+    async registrarInteracao(clienteId, dados) {
+        const cliente = await this.prisma.cliente.findUnique({
+            where: { id: clienteId },
+        });
+        if (!cliente) {
+            throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
         }
-        catch (error) {
-            console.error(`Erro ao gerar novo boleto para cliente ${clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao gerar novo boleto: ${error.message}`);
+        return this.prisma.interacao.create({
+            data: {
+                id: (0, uuid_1.v4)(),
+                clienteId,
+                tipo: dados.tipo,
+                data: new Date(),
+                observacao: dados.observacao,
+                usuario: dados.usuario,
+                parcelaId: dados.parcelaId,
+            },
+        });
+    }
+    async obterHistoricoComunicacoes(clienteId) {
+        const comunicacoes = await this.prisma.comunicacao.findMany({
+            where: { clienteId },
+            orderBy: { data: 'desc' },
+        });
+        return comunicacoes;
+    }
+    async enviarComunicacao(dados) {
+        const cliente = await this.prisma.cliente.findUnique({
+            where: { id: dados.clienteId },
+        });
+        if (!cliente) {
+            throw new common_1.NotFoundException(`Cliente ID ${dados.clienteId} não encontrado`);
         }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const comunicacao = await this.prisma.comunicacao.create({
+            data: {
+                id: (0, uuid_1.v4)(),
+                clienteId: dados.clienteId,
+                tipo: dados.tipo,
+                data: new Date(),
+                mensagem: dados.mensagem,
+                status: 'enviado',
+                anexos: dados.anexos ? { anexos: dados.anexos } : undefined,
+            },
+        });
+        await this.prisma.clienteInadimplente.updateMany({
+            where: { clienteId: dados.clienteId },
+            data: { ultimaCobranca: new Date() },
+        });
+        return comunicacao;
+    }
+    async gerarNovoBoleto(clienteId, parcelaId, dados) {
+        const cliente = await this.prisma.cliente.findUnique({
+            where: { id: clienteId },
+        });
+        if (!cliente) {
+            throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
+        }
+        const parcela = await this.prisma.parcelaInadimplente.findUnique({
+            where: { id: parcelaId },
+        });
+        if (!parcela) {
+            throw new common_1.NotFoundException(`Parcela ID ${parcelaId} não encontrada`);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const boleto = {
+            id: Date.now(),
+            clienteId,
+            clienteNome: cliente.nome,
+            contratoId: parcela.clienteInadimplente_id,
+            valor: parcela.valorAtualizado,
+            dataVencimento: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            numeroParcela: parcela.numero,
+            descricao: `Nova emissão - Parcela ${parcela.numero}`,
+            nossoNumero: `${Date.now()}${Math.floor(Math.random() * 1000)}`,
+            linhaDigitavel: `${Date.now()}${Math.floor(Math.random() * 10000)}`,
+            codigoBarras: `${Date.now()}${Math.floor(Math.random() * 100000)}`,
+            pdfUrl: `/uploads/boletos/boleto_${Date.now()}.pdf`,
+            dataGeracao: new Date(),
+            status: 'gerado',
+        };
+        return this.prisma.boleto.create({
+            data: boleto,
+        });
     }
     async obterGatilhos() {
-        try {
-            const configuracao = await this.prisma.configuracaoGatilhos.findFirst();
-            if (!configuracao) {
-                return {
+        let configuracao = await this.prisma.configuracaoGatilhos.findFirst();
+        if (!configuracao) {
+            configuracao = await this.prisma.configuracaoGatilhos.create({
+                data: {
                     executarAutomaticamente: true,
-                    horarioExecucao: '03:00',
-                    diasExecucao: ['1', '15'],
+                    horarioExecucao: '08:00',
+                    diasExecucao: ['1', '3', '5'],
                     repetirCobrancas: true,
                     intervaloRepeticao: 7,
                     limitarRepeticoes: true,
                     limiteRepeticoes: 3,
                     gerarLog: true,
                     gatilhos: [
-                        { dias: 7, tipo: 'email', ativo: true, mensagem: 'Prezado cliente, identificamos que você possui uma parcela com vencimento em 7 dias. Por favor, efetue o pagamento em dia para evitar juros e multas.' },
-                        { dias: 15, tipo: 'sms', ativo: true, mensagem: 'Sua parcela está em atraso há 15 dias. Entre em contato conosco para regularização.' },
-                        { dias: 30, tipo: 'whatsapp', ativo: true, mensagem: 'Importante: Parcela em atraso há 30 dias. Acesse o link para regularizar sua situação e evitar negativação do seu CPF.' }
-                    ]
-                };
-            }
-            return Object.assign(Object.assign({}, configuracao), { gatilhos: configuracao.gatilhos ? JSON.parse(JSON.stringify(configuracao.gatilhos)) : [] });
+                        { dias: 7, tipo: 'email', ativo: true, mensagem: 'Lembrete: Você possui uma parcela em atraso.' },
+                        { dias: 15, tipo: 'sms', ativo: true, mensagem: 'Sua parcela está em atraso há 15 dias. Entre em contato.' },
+                        { dias: 30, tipo: 'whatsapp', ativo: true, mensagem: 'Importante: Parcela em atraso há 30 dias. Acesse o link para regularizar.' },
+                    ],
+                },
+            });
         }
-        catch (error) {
-            console.error('Erro ao obter configurações de gatilhos:', error);
-            throw new common_1.InternalServerErrorException(`Erro ao obter configurações de gatilhos: ${error.message}`);
-        }
+        return configuracao;
     }
-    async salvarGatilhos(configuracaoGatilhosDto) {
-        try {
-            const configuracao = await this.prisma.configuracaoGatilhos.findFirst();
-            const gatilhosJson = JSON.parse(JSON.stringify(configuracaoGatilhosDto.gatilhos));
-            if (!configuracao) {
-                return this.prisma.configuracaoGatilhos.create({
-                    data: {
-                        executarAutomaticamente: configuracaoGatilhosDto.executarAutomaticamente,
-                        horarioExecucao: configuracaoGatilhosDto.horarioExecucao,
-                        diasExecucao: configuracaoGatilhosDto.diasExecucao,
-                        repetirCobrancas: configuracaoGatilhosDto.repetirCobrancas,
-                        intervaloRepeticao: configuracaoGatilhosDto.intervaloRepeticao,
-                        limitarRepeticoes: configuracaoGatilhosDto.limitarRepeticoes,
-                        limiteRepeticoes: configuracaoGatilhosDto.limiteRepeticoes,
-                        gerarLog: configuracaoGatilhosDto.gerarLog,
-                        gatilhos: gatilhosJson
-                    }
-                });
-            }
+    async salvarGatilhos(dados) {
+        const configuracaoExistente = await this.prisma.configuracaoGatilhos.findFirst();
+        if (configuracaoExistente) {
             return this.prisma.configuracaoGatilhos.update({
-                where: { id: configuracao.id },
+                where: { id: configuracaoExistente.id },
                 data: {
-                    executarAutomaticamente: configuracaoGatilhosDto.executarAutomaticamente,
-                    horarioExecucao: configuracaoGatilhosDto.horarioExecucao,
-                    diasExecucao: configuracaoGatilhosDto.diasExecucao,
-                    repetirCobrancas: configuracaoGatilhosDto.repetirCobrancas,
-                    intervaloRepeticao: configuracaoGatilhosDto.intervaloRepeticao,
-                    limitarRepeticoes: configuracaoGatilhosDto.limitarRepeticoes,
-                    limiteRepeticoes: configuracaoGatilhosDto.limiteRepeticoes,
-                    gerarLog: configuracaoGatilhosDto.gerarLog,
-                    gatilhos: gatilhosJson
-                }
+                    gatilhos: dados.gatilhos,
+                },
             });
         }
-        catch (error) {
-            console.error('Erro ao salvar configurações de gatilhos:', error);
-            throw new common_1.InternalServerErrorException(`Erro ao salvar configurações de gatilhos: ${error.message}`);
-        }
-    }
-    async enviarComunicacao(createComunicacaoDto) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: createComunicacaoDto.clienteId }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${createComunicacaoDto.clienteId} não encontrado`);
-            }
-            return this.prisma.comunicacao.create({
-                data: createComunicacaoDto
-            });
-        }
-        catch (error) {
-            console.error(`Erro ao enviar comunicação para cliente ${createComunicacaoDto.clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao enviar comunicação: ${error.message}`);
-        }
-    }
-    async obterHistoricoComunicacoes(clienteId) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: clienteId }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-            }
-            return this.prisma.comunicacao.findMany({
-                where: { clienteId },
-                orderBy: { data: 'desc' }
-            });
-        }
-        catch (error) {
-            console.error(`Erro ao obter histórico de comunicações para cliente ${clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao obter histórico de comunicações: ${error.message}`);
-        }
-    }
-    async enviarCobrancaAutomatica(clienteId, parcelaId, gatilho) {
-        try {
-            const cliente = await this.prisma.cliente.findUnique({
-                where: { id: clienteId },
-                include: {
-                    contatos: true
-                }
-            });
-            if (!cliente) {
-                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
-            }
-            const boleto = await this.prisma.boleto.findUnique({
-                where: { id: parseInt(parcelaId) }
-            });
-            if (!boleto) {
-                throw new common_1.NotFoundException(`Parcela/Boleto ID ${parcelaId} não encontrado`);
-            }
-            const comunicacao = await this.prisma.comunicacao.create({
+        else {
+            return this.prisma.configuracaoGatilhos.create({
                 data: {
-                    clienteId,
-                    tipo: gatilho.tipo,
-                    data: new Date(),
-                    mensagem: gatilho.mensagem,
-                    status: 'enviado',
-                    parcelaInfo: {
-                        parcelaId: parcelaId,
-                    }
-                }
+                    executarAutomaticamente: true,
+                    horarioExecucao: '08:00',
+                    diasExecucao: ['1', '3', '5'],
+                    repetirCobrancas: true,
+                    intervaloRepeticao: 7,
+                    limitarRepeticoes: true,
+                    limiteRepeticoes: 3,
+                    gerarLog: true,
+                    gatilhos: dados.gatilhos,
+                },
             });
-            return comunicacao;
-        }
-        catch (error) {
-            console.error(`Erro ao enviar cobrança automática para cliente ${clienteId}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao enviar cobrança automática: ${error.message}`);
         }
     }
-    async exportarDados(formato, query) {
-        try {
-            const dados = await this.listarClientesInadimplentes(query);
-            switch (formato) {
-                case 'excel':
-                    return {
-                        data: Buffer.from('Simulação de arquivo Excel'),
-                        tipo: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                        nome: `inadimplentes_${new Date().toISOString().split('T')[0]}.xlsx`
-                    };
-                case 'pdf':
-                    return {
-                        data: Buffer.from('Simulação de arquivo PDF'),
-                        tipo: 'application/pdf',
-                        nome: `inadimplentes_${new Date().toISOString().split('T')[0]}.pdf`
-                    };
-                default:
-                    throw new Error('Formato de exportação não suportado');
-            }
+    async enviarCobrancaAutomatica(dados) {
+        const cliente = await this.prisma.cliente.findUnique({
+            where: { id: dados.clienteId },
+        });
+        if (!cliente) {
+            throw new common_1.NotFoundException(`Cliente ID ${dados.clienteId} não encontrado`);
         }
-        catch (error) {
-            console.error(`Erro ao exportar dados em formato ${formato}:`, error);
-            throw new common_1.InternalServerErrorException(`Erro ao exportar dados: ${error.message}`);
-        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        const comunicacao = await this.prisma.comunicacao.create({
+            data: {
+                id: (0, uuid_1.v4)(),
+                clienteId: dados.clienteId,
+                tipo: dados.gatilho.tipo,
+                data: new Date(),
+                mensagem: dados.gatilho.mensagem,
+                status: 'enviado',
+                parcelaInfo: { parcelaId: dados.parcelaId },
+            },
+        });
+        await this.prisma.clienteInadimplente.updateMany({
+            where: { clienteId: dados.clienteId },
+            data: { ultimaCobranca: new Date() },
+        });
+        return comunicacao;
+    }
+    async exportarDados(formato, filtros) {
+        const clientesInadimplentes = await this.listarClientesInadimplentes(filtros);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return {
+            dados: clientesInadimplentes,
+            formato,
+            dataGeracao: new Date(),
+        };
     }
 };
 InadimplenciaService = __decorate([

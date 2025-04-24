@@ -9,14 +9,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentosModule = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
-const documentos_controller_1 = require("./documentos.controller");
-const documentos_service_1 = require("./documentos.service");
-const prisma_module_1 = require("../../prisma/prisma.module");
 const multer_1 = require("multer");
 const path_1 = require("path");
-const uuid_1 = require("uuid");
-const fs = require("fs");
-const path = require("path");
+const fs_1 = require("fs");
+const documentos_service_1 = require("./documentos.service");
+const documentos_controller_1 = require("./documentos.controller");
+const prisma_module_1 = require("../../prisma/prisma.module");
 let DocumentosModule = class DocumentosModule {
 };
 DocumentosModule = __decorate([
@@ -26,18 +24,26 @@ DocumentosModule = __decorate([
             platform_express_1.MulterModule.register({
                 storage: (0, multer_1.diskStorage)({
                     destination: (req, file, cb) => {
-                        const clienteId = req.params.clienteId;
-                        const tipoDocumento = req.body.tipoDocumento;
-                        const uploadPath = path.join(process.cwd(), 'uploads', 'documentos', clienteId, tipoDocumento);
-                        if (!fs.existsSync(uploadPath)) {
-                            fs.mkdirSync(uploadPath, { recursive: true });
+                        const baseDir = (0, path_1.join)(__dirname, '..', '..', '..', 'uploads');
+                        if (!(0, fs_1.existsSync)(baseDir)) {
+                            (0, fs_1.mkdirSync)(baseDir, { recursive: true });
                         }
-                        cb(null, uploadPath);
+                        const docsDir = (0, path_1.join)(baseDir, 'documentos');
+                        if (!(0, fs_1.existsSync)(docsDir)) {
+                            (0, fs_1.mkdirSync)(docsDir, { recursive: true });
+                        }
+                        const tempDir = (0, path_1.join)(docsDir, 'temp');
+                        if (!(0, fs_1.existsSync)(tempDir)) {
+                            (0, fs_1.mkdirSync)(tempDir, { recursive: true });
+                        }
+                        cb(null, tempDir);
                     },
                     filename: (req, file, cb) => {
-                        const uniqueSuffix = (0, uuid_1.v4)();
-                        const fileExt = (0, path_1.extname)(file.originalname);
-                        cb(null, `${uniqueSuffix}${fileExt}`);
+                        const randomName = Array(32)
+                            .fill(null)
+                            .map(() => Math.round(Math.random() * 16).toString(16))
+                            .join('');
+                        cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
                     },
                 }),
             }),

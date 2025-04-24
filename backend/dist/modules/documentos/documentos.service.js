@@ -12,59 +12,81 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentosService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const fs = require("fs");
-const path = require("path");
+const path_1 = require("path");
+const fs_1 = require("fs");
 let DocumentosService = class DocumentosService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(data) {
-        const cliente = await this.prisma.cliente.findUnique({
-            where: { id: data.clienteId },
-        });
-        if (!cliente) {
-            throw new common_1.NotFoundException(`Cliente com ID ${data.clienteId} não encontrado`);
-        }
-        console.log('Criando documento:', data);
+    async create(createDocumentoDto) {
         return this.prisma.documento.create({
-            data: {
-                clienteId: data.clienteId,
-                tipo: data.tipo,
-                nome: data.nome,
-                arquivo: data.arquivo,
-            },
+            data: createDocumentoDto,
         });
     }
     async findAll(clienteId) {
-        const where = clienteId ? { clienteId } : {};
-        return this.prisma.documento.findMany({
-            where,
-            orderBy: { dataUpload: 'desc' },
-        });
+        if (clienteId) {
+            return this.prisma.documento.findMany({
+                where: { clienteId },
+            });
+        }
+        return this.prisma.documento.findMany();
     }
     async findOne(id) {
         const documento = await this.prisma.documento.findUnique({
             where: { id },
         });
         if (!documento) {
-            throw new common_1.NotFoundException(`Documento com ID ${id} não encontrado`);
+            throw new common_1.NotFoundException(`Documento ID ${id} não encontrado`);
         }
         return documento;
     }
+    async update(id, updateDocumentoDto) {
+        await this.findOne(id);
+        return this.prisma.documento.update({
+            where: { id },
+            data: updateDocumentoDto,
+        });
+    }
     async remove(id) {
-        const documento = await this.findOne(id);
-        try {
-            const filePath = path.join(process.cwd(), documento.arquivo.replace(/^\/uploads/, 'uploads'));
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-        catch (error) {
-            console.error('Erro ao excluir arquivo:', error);
-        }
+        await this.findOne(id);
         return this.prisma.documento.delete({
             where: { id },
         });
+    }
+    async uploadFile(clienteId, file, tipoDocumento) {
+        try {
+            const cliente = await this.prisma.cliente.findUnique({
+                where: { id: clienteId },
+            });
+            if (!cliente) {
+                throw new common_1.NotFoundException(`Cliente ID ${clienteId} não encontrado`);
+            }
+            const baseDir = (0, path_1.join)(__dirname, '..', '..', '..', 'uploads');
+            const docsDir = (0, path_1.join)(baseDir, 'documentos');
+            const clienteFolderName = `${cliente.id}-${cliente.nome.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const clienteDir = (0, path_1.join)(docsDir, clienteFolderName);
+            if (!(0, fs_1.existsSync)(clienteDir)) {
+                (0, fs_1.mkdirSync)(clienteDir, { recursive: true });
+            }
+            const tempFilePath = file.path;
+            const fileName = (0, path_1.basename)(file.path);
+            const newFilePath = (0, path_1.join)(clienteDir, fileName);
+            (0, fs_1.renameSync)(tempFilePath, newFilePath);
+            const filePath = newFilePath;
+            return this.prisma.documento.create({
+                data: {
+                    clienteId,
+                    tipo: tipoDocumento,
+                    nome: file.originalname,
+                    arquivo: filePath,
+                    dataUpload: new Date(),
+                },
+            });
+        }
+        catch (error) {
+            console.error('Erro ao processar upload de arquivo:', error);
+            throw new Error(`Erro ao fazer upload: ${error.message}`);
+        }
     }
 };
 DocumentosService = __decorate([

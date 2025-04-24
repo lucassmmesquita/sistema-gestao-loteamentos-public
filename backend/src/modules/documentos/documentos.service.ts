@@ -2,47 +2,28 @@
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import * as fs from 'fs';
-import * as path from 'path';
+import { CreateDocumentoDto } from './dto/create-documento.dto';
+import { UpdateDocumentoDto } from './dto/update-documento.dto';
+import { join, basename } from 'path';
+import { existsSync, mkdirSync, renameSync } from 'fs';
 
 @Injectable()
 export class DocumentosService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: {
-    clienteId: number;
-    tipo: string;
-    nome: string;
-    arquivo: string;
-  }) {
-    // Verificar se o cliente existe
-    const cliente = await this.prisma.cliente.findUnique({
-      where: { id: data.clienteId },
-    });
-
-    if (!cliente) {
-      throw new NotFoundException(`Cliente com ID ${data.clienteId} não encontrado`);
-    }
-
-    console.log('Criando documento:', data);
-
+  async create(createDocumentoDto: CreateDocumentoDto) {
     return this.prisma.documento.create({
-      data: {
-        clienteId: data.clienteId,
-        tipo: data.tipo,
-        nome: data.nome,
-        arquivo: data.arquivo,
-      },
+      data: createDocumentoDto,
     });
   }
 
   async findAll(clienteId?: number) {
-    const where = clienteId ? { clienteId } : {};
-    
-    return this.prisma.documento.findMany({
-      where,
-      orderBy: { dataUpload: 'desc' },
-    });
+    if (clienteId) {
+      return this.prisma.documento.findMany({
+        where: { clienteId },
+      });
+    }
+    return this.prisma.documento.findMany();
   }
 
   async findOne(id: number) {
@@ -51,28 +32,82 @@ export class DocumentosService {
     });
 
     if (!documento) {
-      throw new NotFoundException(`Documento com ID ${id} não encontrado`);
+      throw new NotFoundException(`Documento ID ${id} não encontrado`);
     }
 
     return documento;
   }
 
-  async remove(id: number) {
-    // Verificar se o documento existe
-    const documento = await this.findOne(id);
+  async update(id: number, updateDocumentoDto: UpdateDocumentoDto) {
+    // Verifica se o documento existe
+    await this.findOne(id);
 
-    // Remove o arquivo físico
-    try {
-      const filePath = path.join(process.cwd(), documento.arquivo.replace(/^\/uploads/, 'uploads'));
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    } catch (error) {
-      console.error('Erro ao excluir arquivo:', error);
-    }
+    return this.prisma.documento.update({
+      where: { id },
+      data: updateDocumentoDto,
+    });
+  }
+
+  async remove(id: number) {
+    // Verifica se o documento existe
+    await this.findOne(id);
 
     return this.prisma.documento.delete({
       where: { id },
     });
+  }
+
+  async uploadFile(clienteId: number, file: Express.Multer.File, tipoDocumento: string) {
+    try {
+      // Busca o cliente para confirmar existência e obter o nome
+      const cliente = await this.prisma.cliente.findUnique({
+        where: { id: clienteId },
+      });
+
+      if (!cliente) {
+        throw new NotFoundException(`Cliente ID ${clienteId} não encontrado`);
+      }
+
+      // Diretórios de base
+      const baseDir = join(__dirname, '..', '..', '..', 'uploads');
+      const docsDir = join(baseDir, 'documentos');
+
+      // Criar o diretório do cliente se não existir
+      const clienteFolderName = `${cliente.id}-${cliente.nome.replace(/[^a-zA-Z0-9]/g, '_')}`;
+      const clienteDir = join(docsDir, clienteFolderName);
+      
+      if (!existsSync(clienteDir)) {
+        mkdirSync(clienteDir, { recursive: true });
+      }
+
+      // Caminho atual do arquivo temporário
+      const tempFilePath = file.path;
+      
+      // Nome do arquivo original
+      const fileName = basename(file.path);
+      
+      // Novo caminho no diretório do cliente
+      const newFilePath = join(clienteDir, fileName);
+      
+      // Move o arquivo para o diretório do cliente
+      renameSync(tempFilePath, newFilePath);
+
+      // Atualiza o caminho do arquivo para o novo local
+      const filePath = newFilePath;
+
+      // Cria o registro do documento com o novo caminho
+      return this.prisma.documento.create({
+        data: {
+          clienteId,
+          tipo: tipoDocumento,
+          nome: file.originalname,
+          arquivo: filePath, // Caminho atualizado
+          dataUpload: new Date(),
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao processar upload de arquivo:', error);
+      throw new Error(`Erro ao fazer upload: ${error.message}`);
+    }
   }
 }

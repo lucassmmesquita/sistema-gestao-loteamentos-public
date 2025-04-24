@@ -1,11 +1,10 @@
 export declare class QueryInadimplenciaDto {
-    clienteId?: number;
-    contratoId?: number;
-    status?: string;
-    diasAtrasoMin?: number;
-    diasAtrasoMax?: number;
-    valorMinimo?: number;
-    valorMaximo?: number;
+    statusPagamento?: string;
+    contratoId?: string;
+    valorMinimo?: string;
+    valorMaximo?: string;
+    diasAtrasoMin?: string;
+    diasAtrasoMax?: string;
     dataUltimaCobrancaInicio?: string;
     dataUltimaCobrancaFim?: string;
 }

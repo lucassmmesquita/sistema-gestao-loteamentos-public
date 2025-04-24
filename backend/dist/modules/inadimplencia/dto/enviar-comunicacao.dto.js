@@ -9,37 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateDocumentoDto = void 0;
+exports.EnviarComunicacaoDto = void 0;
 const class_validator_1 = require("class-validator");
-const class_transformer_1 = require("class-transformer");
-class CreateDocumentoDto {
+class EnviarComunicacaoDto {
 }
 __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], CreateDocumentoDto.prototype, "clienteId", void 0);
+], EnviarComunicacaoDto.prototype, "clienteId", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateDocumentoDto.prototype, "tipo", void 0);
+], EnviarComunicacaoDto.prototype, "tipo", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateDocumentoDto.prototype, "nome", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateDocumentoDto.prototype, "arquivo", void 0);
+], EnviarComunicacaoDto.prototype, "mensagem", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsDate)(),
-    (0, class_transformer_1.Type)(() => Date),
-    __metadata("design:type", Date)
-], CreateDocumentoDto.prototype, "dataUpload", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateDocumentoDto.prototype, "s3Key", void 0);
-exports.CreateDocumentoDto = CreateDocumentoDto;
-//# sourceMappingURL=create-documento.dto.js.map
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], EnviarComunicacaoDto.prototype, "anexos", void 0);
+exports.EnviarComunicacaoDto = EnviarComunicacaoDto;
+//# sourceMappingURL=enviar-comunicacao.dto.js.map

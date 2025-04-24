@@ -1,6 +1,8 @@
+// backend/src/modules/inadimplencia/inadimplencia.module.ts
+
 import { Module } from '@nestjs/common';
-import { InadimplenciaService } from './inadimplencia.service';
 import { InadimplenciaController } from './inadimplencia.controller';
+import { InadimplenciaService } from './inadimplencia.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({

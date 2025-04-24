@@ -1,3 +1,4 @@
+// src/pages/dashboard/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { 
   Grid, 
@@ -47,7 +48,7 @@ const formatarValor = (valor) => {
   }
   
   // Limitar a números dentro de um intervalo razoável para evitar overflow
-  const valorLimitado = Math.min(valorNumerico, 1e15); // Limita a 1 quadrilhão
+  const valorLimitado = Math.min(valorNumerico, 999999999.99); // Limita a 999 milhões
   
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -107,8 +108,14 @@ const Dashboard = () => {
       const reservados = lotes.filter(l => l.status === 'reservado').length;
       const vendidos = lotes.filter(l => l.status === 'vendido').length;
       
-      // Financial statistics
-      const valorTotal = contratos.reduce((sum, contrato) => sum + (contrato.valorTotal || 0), 0);
+      // Financial statistics - Corrigido para evitar valores inválidos
+      const valorTotal = contratos.reduce((sum, contrato) => {
+        // Certifique-se de que o valor é um número válido e razoável
+        const valor = parseFloat(contrato.valorTotal || 0);
+        if (isNaN(valor) || !isFinite(valor)) return sum;
+        return sum + valor;
+      }, 0);
+      
       const valorMedio = contratos.length > 0 ? valorTotal / contratos.length : 0;
       
       setStats({
@@ -142,7 +149,7 @@ const Dashboard = () => {
     >
       <Loading open={clientesLoading || contratosLoading} />
       
-      <AppleTitle sx={{ mb: 4 }}>Dashboard</AppleTitle>
+      <AppleTitle sx={{ mb: 4 }}>Tela Inicial</AppleTitle>
       
       {/* Main Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -208,7 +215,7 @@ const Dashboard = () => {
         >
           <AppleDashboardCard
             title="Vendas"
-            value={formatCurrency(stats.valorTotalContratos)}
+            value={formatarValor(stats.valorTotalContratos)}
             icon={<MoneyIcon fontSize="medium" />}
             colorClass="warning"
           />
@@ -322,7 +329,7 @@ const Dashboard = () => {
               <StatisticWrapper>
                 <StatisticLabel variant="body1">Valor Médio dos Contratos:</StatisticLabel>
                 <StatisticValue variant="body1">
-                  {formatCurrency(stats.valorMedioContratos)}
+                  {formatarValor(stats.valorMedioContratos)}
                 </StatisticValue>
               </StatisticWrapper>
               
@@ -348,7 +355,11 @@ const Dashboard = () => {
               <StatisticWrapper>
                 <StatisticLabel variant="body1">Valor Médio por Lote:</StatisticLabel>
                 <StatisticValue variant="body1">
-                  {formatCurrency(stats.valorTotalContratos / Math.max(1, (stats.lotesReservados + stats.lotesVendidos)))}
+                  {formatarValor(
+                    (stats.lotesReservados + stats.lotesVendidos) > 0 
+                      ? stats.valorTotalContratos / (stats.lotesReservados + stats.lotesVendidos)
+                      : 0
+                  )}
                 </StatisticValue>
               </StatisticWrapper>
             </Box>
@@ -385,8 +396,8 @@ const Dashboard = () => {
           </Typography>
           
           <Typography variant="body1">
-            O valor total dos contratos é de <strong>{formatCurrency(stats.valorTotalContratos)}</strong>, 
-            com um valor médio de <strong>{formatCurrency(stats.valorMedioContratos)}</strong> por contrato.
+            O valor total dos contratos é de <strong>{formatarValor(stats.valorTotalContratos)}</strong>, 
+            com um valor médio de <strong>{formatarValor(stats.valorMedioContratos)}</strong> por contrato.
           </Typography>
         </ApplePaper>
       </Box>

@@ -2,14 +2,12 @@
 
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { DocumentosController } from './documentos.controller';
-import { DocumentosService } from './documentos.service';
-import { PrismaModule } from '../../prisma/prisma.module';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import * as fs from 'fs';
-import * as path from 'path';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { DocumentosService } from './documentos.service';
+import { DocumentosController } from './documentos.controller';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
@@ -17,27 +15,34 @@ import * as path from 'path';
     MulterModule.register({
       storage: diskStorage({
         destination: (req, file, cb) => {
-          // Obter o clienteId dos parâmetros de rota
-          const clienteId = req.params.clienteId;
-          // Obter o tipo de documento do body
-          const tipoDocumento = req.body.tipoDocumento;
-          
-          // Criar o caminho para o diretório de destino
-          const uploadPath = path.join(process.cwd(), 'uploads', 'documentos', clienteId, tipoDocumento);
-          
-          // Criar o diretório se não existir
-          if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
+          // Primeiro, garantir que o diretório base de uploads existe
+          const baseDir = join(__dirname, '..', '..', '..', 'uploads');
+          if (!existsSync(baseDir)) {
+            mkdirSync(baseDir, { recursive: true });
           }
           
-          // Retornar o caminho
-          cb(null, uploadPath);
+          // Depois, garantir que o subdiretório de documentos existe
+          const docsDir = join(baseDir, 'documentos');
+          if (!existsSync(docsDir)) {
+            mkdirSync(docsDir, { recursive: true });
+          }
+          
+          // Usar o diretório temporário como destino inicial
+          const tempDir = join(docsDir, 'temp');
+          if (!existsSync(tempDir)) {
+            mkdirSync(tempDir, { recursive: true });
+          }
+          
+          // Usar o diretório criado como destino
+          cb(null, tempDir);
         },
         filename: (req, file, cb) => {
-          // Gerar um nome único para o arquivo
-          const uniqueSuffix = uuidv4();
-          const fileExt = extname(file.originalname);
-          cb(null, `${uniqueSuffix}${fileExt}`);
+          // Criar um nome aleatório para o arquivo
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
         },
       }),
     }),

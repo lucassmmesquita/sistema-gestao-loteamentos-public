@@ -1,46 +1,37 @@
-import { IsOptional, IsString, IsNumber, IsDateString } from 'class-validator';
-import { Type } from 'class-transformer';
+// backend/src/modules/inadimplencia/dto/query-inadimplencia.dto.ts
+
+import { IsOptional, IsString } from 'class-validator';
 
 export class QueryInadimplenciaDto {
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  clienteId?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  contratoId?: number;
+  @IsString()
+  statusPagamento?: string;
 
   @IsOptional()
   @IsString()
-  status?: string;
+  contratoId?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  diasAtrasoMin?: number;
+  @IsString()
+  valorMinimo?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  diasAtrasoMax?: number;
+  @IsString()
+  valorMaximo?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  valorMinimo?: number;
+  @IsString()
+  diasAtrasoMin?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  valorMaximo?: number;
+  @IsString()
+  diasAtrasoMax?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   dataUltimaCobrancaInicio?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsString()
   dataUltimaCobrancaFim?: string;
 }
