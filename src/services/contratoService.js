@@ -1,6 +1,18 @@
+// src/services/contratoService.js
+
 import api from './api';
 
 const contratoService = {
+  /**
+   * Importa contratos de uma planilha
+   * @param {Array} contratos - Lista de contratos a serem importados
+   * @returns {Promise} Promise com o resultado da importação
+   */
+  importarContratos: async (contratos) => {
+    const response = await api.post('/contratos/import', contratos);
+    return response.data;
+  },
+  
   /**
    * Busca todos os contratos
    * @returns {Promise} Promise com a lista de contratos

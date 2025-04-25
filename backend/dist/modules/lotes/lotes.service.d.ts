@@ -2,6 +2,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLoteDto } from './dto/create-lote.dto';
 import { UpdateLoteDto } from './dto/update-lote.dto';
 import { QueryLoteDto } from './dto/query-lote.dto';
+import { ImportLoteDto } from './dto/import-lote.dto';
 export declare class LotesService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -13,7 +14,13 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {}>;
+    importLotes(importLotesDto: ImportLoteDto[]): Promise<{
+        total: number;
+        processed: number;
+        results: any[];
+    }>;
     findAll(query: QueryLoteDto): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
         numero: string;
@@ -22,6 +29,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {})[]>;
     findOne(id: number): Promise<{
         contratos: ({
@@ -34,6 +42,11 @@ export declare class LotesService {
             id: number;
             clienteId: number;
             loteId: number;
+            chave: string;
+            numeroContrato: string;
+            dataEmissao: Date;
+            dataPrimeiraPrestacao: Date;
+            valorPrestacao: import("@prisma/client/runtime").Decimal;
             dataInicio: Date;
             dataFim: Date;
             valorTotal: import("@prisma/client/runtime").Decimal;
@@ -54,6 +67,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {}>;
     update(id: number, updateLoteDto: UpdateLoteDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -63,6 +77,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {}>;
     remove(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -72,6 +87,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {}>;
     getLotesDisponiveis(): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -81,6 +97,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {})[]>;
     getLotesByQuadra(quadra: string): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -90,6 +107,7 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {})[]>;
     getLotesByLoteamento(loteamento: string): Promise<(import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -99,5 +117,6 @@ export declare class LotesService {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {})[]>;
 }

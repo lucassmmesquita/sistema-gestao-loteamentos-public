@@ -2,9 +2,15 @@ import { ClientesService } from './clientes.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { QueryClienteDto } from './dto/query-cliente.dto';
+import { ImportClienteDto } from './dto/import-cliente.dto';
 export declare class ClientesController {
     private readonly clientesService;
     constructor(clientesService: ClientesService);
+    importClientes(importClientesDto: ImportClienteDto[]): Promise<{
+        total: number;
+        processed: number;
+        results: any[];
+    }>;
     create(createClienteDto: CreateClienteDto): Promise<{
         endereco: import("@prisma/client/runtime").GetResult<{
             id: number;
@@ -26,6 +32,8 @@ export declare class ClientesController {
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         nome: string;
+        nomeConjuge: string;
+        profissao: string;
         cpfCnpj: string;
         dataNascimento: Date;
         dataCadastro: Date;
@@ -51,6 +59,8 @@ export declare class ClientesController {
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         nome: string;
+        nomeConjuge: string;
+        profissao: string;
         cpfCnpj: string;
         dataNascimento: Date;
         dataCadastro: Date;
@@ -85,6 +95,8 @@ export declare class ClientesController {
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         nome: string;
+        nomeConjuge: string;
+        profissao: string;
         cpfCnpj: string;
         dataNascimento: Date;
         dataCadastro: Date;
@@ -110,6 +122,8 @@ export declare class ClientesController {
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         nome: string;
+        nomeConjuge: string;
+        profissao: string;
         cpfCnpj: string;
         dataNascimento: Date;
         dataCadastro: Date;
@@ -117,6 +131,8 @@ export declare class ClientesController {
     remove(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         nome: string;
+        nomeConjuge: string;
+        profissao: string;
         cpfCnpj: string;
         dataNascimento: Date;
         dataCadastro: Date;

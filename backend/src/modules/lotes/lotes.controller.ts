@@ -3,11 +3,16 @@ import { LotesService } from './lotes.service';
 import { CreateLoteDto } from './dto/create-lote.dto';
 import { UpdateLoteDto } from './dto/update-lote.dto';
 import { QueryLoteDto } from './dto/query-lote.dto';
+import { ImportLoteDto } from './dto/import-lote.dto';
  
 @Controller('lotes')
 export class LotesController {
   constructor(private readonly lotesService: LotesService) {}
 
+  @Post('import')
+  importLotes(@Body() importLotesDto: ImportLoteDto[]) {
+  return this.lotesService.importLotes(importLotesDto);
+  }
   @Post()
   create(@Body() createLoteDto: CreateLoteDto) {
     return this.lotesService.create(createLoteDto);
@@ -50,4 +55,5 @@ export class LotesController {
   getLotesByLoteamento(@Param('loteamento') loteamento: string) {
     return this.lotesService.getLotesByLoteamento(loteamento);
   }
+
 }

@@ -51,7 +51,8 @@ import {
   Add as AddIcon,
   Link as LinkIcon,
   ImportExport as ImportExportIcon,
-  FileCopy as FileCopyIcon
+  FileCopy as FileCopyIcon,
+  Landscape as LandscapeIcon
 } from '@mui/icons-material';
 
 // Custom styled components
@@ -147,7 +148,9 @@ const AppleNavbar = ({
     boletos: false,
     reajustes: false,
     inadimplencia: false,
-    contratos: false
+    contratos: false,
+    clientes: false,
+    lotes: false
   });
   
   // Estado para o menu de usuário
@@ -167,15 +170,26 @@ const AppleNavbar = ({
   // Menu structure
   const mainMenuItems = [
     { text: 'Home', icon: <HomeIcon />, path: '/' },
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Clientes', icon: <PeopleIcon />, path: '/clientes' }
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' }
+  ];
+  
+  const clientesSubMenuItems = [
+    { text: 'Listar Clientes', icon: <PeopleIcon />, path: '/clientes' },
+    { text: 'Novo Cliente', icon: <AddIcon />, path: '/clientes/cadastro' },
+    { text: 'Importar Clientes', icon: <ImportExportIcon />, path: '/clientes/importar' },
+  ];
+
+  const lotesSubMenuItems = [
+    { text: 'Listar Lotes', icon: <LandscapeIcon />, path: '/lotes' },
+    { text: 'Novo Lote', icon: <AddIcon />, path: '/lotes/cadastro' },
+    { text: 'Importar Lotes', icon: <ImportExportIcon />, path: '/lotes/importar' },
   ];
   
   const contratosSubMenuItems = [
     { text: 'Listar Contratos', icon: <DescriptionIcon />, path: '/contratos' },
     { text: 'Novo Contrato', icon: <AddIcon />, path: '/contratos/cadastro' },
     { text: 'Vincular Contratos', icon: <LinkIcon />, path: '/contratos/vincular' },
-    { text: 'Importar PDF', icon: <ImportExportIcon />, path: '/contratos/importar' },
+    { text: 'Importar Contratos', icon: <ImportExportIcon />, path: '/contratos/importar' },
   ];
   
   const boletosSubMenuItems = [
@@ -257,6 +271,12 @@ const AppleNavbar = ({
     }
     if (location.pathname.includes('/contratos')) {
       setSubMenus(prev => ({ ...prev, contratos: true }));
+    }
+    if (location.pathname.includes('/clientes')) {
+      setSubMenus(prev => ({ ...prev, clientes: true }));
+    }
+    if (location.pathname.includes('/lotes')) {
+      setSubMenus(prev => ({ ...prev, lotes: true }));
     }
   }, [location.pathname]);
   
@@ -408,6 +428,65 @@ const AppleNavbar = ({
               </StyledListItemButton>
             </StyledListItem>
           ))}
+
+          {/* Clientes submenu */}
+          <StyledListItem disablePadding>
+            <StyledListItemButton
+              selected={isActive('/clientes')}
+              onClick={() => handleToggleSubmenu('clientes')}
+            >
+              <ListItemIcon 
+                sx={{ 
+                  color: isActive('/clientes') 
+                    ? theme.palette.primary.main 
+                    : theme.palette.text.secondary,
+                  minWidth: 40
+                }}
+              >
+                <PeopleIcon />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Clientes" 
+                primaryTypographyProps={{ 
+                  fontWeight: isActive('/clientes') ? 600 : 500,
+                  fontSize: '0.95rem'
+                }}
+              />
+              {subMenus.clientes ? <ExpandLess /> : <ExpandMore />}
+            </StyledListItemButton>
+          </StyledListItem>
+          
+          <Collapse in={subMenus.clientes} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding sx={{ pl: 2 }}>
+              {clientesSubMenuItems.map((item) => (
+                <StyledListItem key={item.text} disablePadding>
+                  <StyledListItemButton
+                    selected={location.pathname === item.path}
+                    onClick={() => handleNavigate(item.path)}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemIcon 
+                      sx={{ 
+                        color: location.pathname === item.path 
+                          ? theme.palette.primary.main 
+                          : theme.palette.text.secondary,
+                        minWidth: 40
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ 
+                        fontWeight: location.pathname === item.path ? 600 : 500,
+                        fontSize: '0.9rem'
+                      }}
+                    />
+                  </StyledListItemButton>
+                </StyledListItem>
+              ))}
+            </List>
+          </Collapse>
           
           {/* Contratos submenu */}
           <StyledListItem disablePadding>
@@ -439,6 +518,65 @@ const AppleNavbar = ({
           <Collapse in={subMenus.contratos} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 2 }}>
               {contratosSubMenuItems.map((item) => (
+                <StyledListItem key={item.text} disablePadding>
+                  <StyledListItemButton
+                    selected={location.pathname === item.path}
+                    onClick={() => handleNavigate(item.path)}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemIcon 
+                      sx={{ 
+                        color: location.pathname === item.path 
+                          ? theme.palette.primary.main 
+                          : theme.palette.text.secondary,
+                        minWidth: 40
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.text} 
+                      primaryTypographyProps={{ 
+                        fontWeight: location.pathname === item.path ? 600 : 500,
+                        fontSize: '0.9rem'
+                      }}
+                    />
+                  </StyledListItemButton>
+                </StyledListItem>
+              ))}
+            </List>
+          </Collapse>
+          
+          {/* Lotes submenu */}
+          <StyledListItem disablePadding>
+            <StyledListItemButton
+              selected={isActive('/lotes')}
+              onClick={() => handleToggleSubmenu('lotes')}
+            >
+              <ListItemIcon 
+                sx={{ 
+                  color: isActive('/lotes') 
+                    ? theme.palette.primary.main 
+                    : theme.palette.text.secondary,
+                  minWidth: 40
+                }}
+              >
+                <LandscapeIcon />
+              </ListItemIcon>
+              <ListItemText 
+                primary="Lotes" 
+                primaryTypographyProps={{ 
+                  fontWeight: isActive('/lotes') ? 600 : 500,
+                  fontSize: '0.95rem'
+                }}
+              />
+              {subMenus.lotes ? <ExpandLess /> : <ExpandMore />}
+            </StyledListItemButton>
+          </StyledListItem>
+          
+          <Collapse in={subMenus.lotes} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding sx={{ pl: 2 }}>
+              {lotesSubMenuItems.map((item) => (
                 <StyledListItem key={item.text} disablePadding>
                   <StyledListItemButton
                     selected={location.pathname === item.path}

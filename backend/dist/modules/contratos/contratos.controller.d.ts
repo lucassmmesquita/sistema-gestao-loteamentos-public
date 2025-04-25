@@ -2,13 +2,24 @@ import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { QueryContratoDto } from './dto/query-contrato.dto';
+import { ImportContratoDto } from './dto/import-contrato.dto';
 export declare class ContratosController {
     private readonly contratosService;
     constructor(contratosService: ContratosService);
+    importContratos(importContratosDto: ImportContratoDto[]): Promise<{
+        total: number;
+        processed: number;
+        results: any[];
+    }>;
     create(createContratoDto: CreateContratoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -35,11 +46,17 @@ export declare class ContratosController {
             area: number;
             valorBase: import("@prisma/client/runtime").Decimal;
             status: string;
+            chave: string;
         }, unknown, never> & {};
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -74,6 +91,8 @@ export declare class ContratosController {
         } & import("@prisma/client/runtime").GetResult<{
             id: number;
             nome: string;
+            nomeConjuge: string;
+            profissao: string;
             cpfCnpj: string;
             dataNascimento: Date;
             dataCadastro: Date;
@@ -86,6 +105,7 @@ export declare class ContratosController {
             area: number;
             valorBase: import("@prisma/client/runtime").Decimal;
             status: string;
+            chave: string;
         }, unknown, never> & {};
         boletos: (import("@prisma/client/runtime").GetResult<{
             id: number;
@@ -127,6 +147,11 @@ export declare class ContratosController {
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -143,6 +168,8 @@ export declare class ContratosController {
         cliente: import("@prisma/client/runtime").GetResult<{
             id: number;
             nome: string;
+            nomeConjuge: string;
+            profissao: string;
             cpfCnpj: string;
             dataNascimento: Date;
             dataCadastro: Date;
@@ -155,11 +182,17 @@ export declare class ContratosController {
             area: number;
             valorBase: import("@prisma/client/runtime").Decimal;
             status: string;
+            chave: string;
         }, unknown, never> & {};
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -176,6 +209,11 @@ export declare class ContratosController {
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -197,11 +235,17 @@ export declare class ContratosController {
             area: number;
             valorBase: import("@prisma/client/runtime").Decimal;
             status: string;
+            chave: string;
         }, unknown, never> & {};
     } & import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
         loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
         dataInicio: Date;
         dataFim: Date;
         valorTotal: import("@prisma/client/runtime").Decimal;
@@ -222,6 +266,7 @@ export declare class ContratosController {
         area: number;
         valorBase: import("@prisma/client/runtime").Decimal;
         status: string;
+        chave: string;
     }, unknown, never> & {})[]>;
     gerarPrevia(contratoDto: CreateContratoDto): Promise<string>;
 }

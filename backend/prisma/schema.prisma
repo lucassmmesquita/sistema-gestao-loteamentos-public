@@ -12,6 +12,8 @@ datasource db {
 model Cliente {
   id                Int                @id @default(autoincrement())
   nome              String
+  nomeConjuge       String?            // Novo campo
+  profissao         String?            // Novo campo
   cpfCnpj           String             @unique
   dataNascimento    DateTime?
   endereco          Endereco?
@@ -63,7 +65,7 @@ model Documento {
   nome        String
   arquivo     String
   dataUpload  DateTime @default(now())
-  s3Key       String?  // Adicione este campo
+  s3Key       String?
   cliente     Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 
   @@map("documentos")
@@ -78,28 +80,29 @@ model Lote {
   area        Float
   valorBase   Decimal   @db.Decimal(10, 2)
   status      String    @default("disponivel")
-  chave       String?   // Novo campo para associação com contratos
+  chave       String?   // Novo campo
   contratos   Contrato[]
 
   @@map("lotes")
   @@index([status])
   @@index([quadra, numero])
-  @@index([chave]) // Novo índice
+  @@index([chave])  // Novo índice
 }
 
 model Contrato {
   id                    Int       @id @default(autoincrement())
   clienteId             Int
   loteId                Int
-  numeroContrato        String?   // Novo campo  
+  chave                 String?   // Novo campo
+  numeroContrato        String?   // Novo campo
   dataEmissao           DateTime? // Novo campo
+  dataPrimeiraPrestacao DateTime? // Novo campo
+  valorPrestacao        Decimal?  @db.Decimal(10, 2) // Novo campo
   dataInicio            DateTime
   dataFim               DateTime
   valorTotal            Decimal   @db.Decimal(10, 2)
   valorEntrada          Decimal   @db.Decimal(10, 2)
   numeroParcelas        Int
-  dataPrimeiraPrestacao DateTime? // Novo campo
-  valorPrestacao        Decimal?  @db.Decimal(10, 2) // Novo campo
   dataVencimento        Int
   clausulas             String    @db.Text
   status                String    @default("ativo")
@@ -119,6 +122,7 @@ model Contrato {
   @@index([clienteId])
   @@index([loteId])
   @@index([status])
+  @@index([chave])      // Novo índice
   @@index([numeroContrato]) // Novo índice
 }
 
@@ -335,7 +339,6 @@ model Quitacao {
   @@index([contratoId])
 }
 
-
 model User {
   id         Int      @id @default(autoincrement())
   email      String   @unique
@@ -349,29 +352,4 @@ model User {
   updatedAt  DateTime @updatedAt
 
   @@map("users")
-}
-
-model Cliente {
-  id                Int                @id @default(autoincrement())
-  nome              String
-  cpfCnpj           String             @unique
-  dataNascimento    DateTime?
-  nomeConjuge       String?            // Novo campo
-  profissao         String?            // Novo campo
-  numeroLote        String?            // Novo campo
-  quadraLote        String?            // Novo campo
-  areaLote          Float?             // Novo campo
-  bairro            String?            // Novo campo
-  endereco          Endereco?
-  contatos          Contato?
-  documentos        Documento[]
-  dataCadastro      DateTime           @default(now())
-  contratos         Contrato[]
-  boletos           Boleto[]
-  interacoes        Interacao[]
-  comunicacoes      Comunicacao[]
-  clientesInadimplentes ClienteInadimplente[]
-
-  @@map("clientes")
-  @@index([cpfCnpj])
 }

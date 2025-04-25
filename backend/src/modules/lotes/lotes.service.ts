@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateLoteDto } from './dto/create-lote.dto';
 import { UpdateLoteDto } from './dto/update-lote.dto';
 import { QueryLoteDto } from './dto/query-lote.dto';
+import { ImportLoteDto } from './dto/import-lote.dto';
 
 @Injectable()
 export class LotesService {
@@ -12,6 +13,56 @@ export class LotesService {
     return this.prisma.lote.create({
       data: createLoteDto
     });
+  }
+  async importLotes(importLotesDto: ImportLoteDto[]) {
+    const results = [];
+    
+    for (const loteDto of importLotesDto) {
+      try {
+        // Verificar se o lote já existe pela chave
+        const existingLote = await this.prisma.lote.findFirst({
+          where: { 
+            chave: loteDto.chave 
+          }
+        });
+        
+        if (existingLote) {
+          // Atualizar o lote existente
+          const updatedLote = await this.prisma.lote.update({
+            where: { id: existingLote.id },
+            data: {
+              numero: String(loteDto.lote),
+              quadra: String(loteDto.quadra),
+              area: loteDto.area,
+              chave: loteDto.chave
+            }
+          });
+          results.push({ status: 'updated', lote: updatedLote });
+        } else {
+          // Criar novo lote
+          const newLote = await this.prisma.lote.create({
+            data: {
+              numero: String(loteDto.lote),
+              quadra: String(loteDto.quadra),
+              area: loteDto.area,
+              chave: loteDto.chave,
+              loteamento: 'Importado', // Valor padrão
+              valorBase: 0, // Valor padrão
+              status: 'disponivel'
+            }
+          });
+          results.push({ status: 'created', lote: newLote });
+        }
+      } catch (error) {
+        results.push({ status: 'error', chave: loteDto.chave, error: error.message });
+      }
+    }
+    
+    return {
+      total: importLotesDto.length,
+      processed: results.length,
+      results
+    };
   }
 
   async findAll(query: QueryLoteDto) {

@@ -60,6 +60,8 @@ export declare class BoletosService {
         cliente: import("@prisma/client/runtime").GetResult<{
             id: number;
             nome: string;
+            nomeConjuge: string;
+            profissao: string;
             cpfCnpj: string;
             dataNascimento: Date;
             dataCadastro: Date;
@@ -68,6 +70,11 @@ export declare class BoletosService {
             id: number;
             clienteId: number;
             loteId: number;
+            chave: string;
+            numeroContrato: string;
+            dataEmissao: Date;
+            dataPrimeiraPrestacao: Date;
+            valorPrestacao: import("@prisma/client/runtime").Decimal;
             dataInicio: Date;
             dataFim: Date;
             valorTotal: import("@prisma/client/runtime").Decimal;

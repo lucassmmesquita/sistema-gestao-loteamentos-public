@@ -22,6 +22,9 @@ let ContratosController = class ContratosController {
     constructor(contratosService) {
         this.contratosService = contratosService;
     }
+    importContratos(importContratosDto) {
+        return this.contratosService.importContratos(importContratosDto);
+    }
     create(createContratoDto) {
         return this.contratosService.create(createContratoDto);
     }
@@ -47,6 +50,13 @@ let ContratosController = class ContratosController {
         return this.contratosService.gerarPrevia(contratoDto);
     }
 };
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], ContratosController.prototype, "importContratos", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

@@ -28,6 +28,75 @@ let ClientesService = class ClientesService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async importClientes(importClientesDto) {
+        const results = [];
+        for (const clienteDto of importClientesDto) {
+            try {
+                const existingCliente = await this.prisma.cliente.findUnique({
+                    where: { id: clienteDto.idCliente }
+                });
+                const clienteData = {
+                    nome: clienteDto.nomeComprador,
+                    nomeConjuge: clienteDto.nomeConjuge,
+                    profissao: clienteDto.profissao,
+                    dataNascimento: clienteDto.dataNascimento ? new Date(clienteDto.dataNascimento) : null,
+                    cpfCnpj: (existingCliente === null || existingCliente === void 0 ? void 0 : existingCliente.cpfCnpj) || `IMPORTADO-${clienteDto.idCliente}`
+                };
+                const enderecoData = clienteDto.bairro || clienteDto.estado || clienteDto.cep || clienteDto.enderecoCliente
+                    ? {
+                        bairro: clienteDto.bairro || '',
+                        estado: clienteDto.estado || '',
+                        cep: clienteDto.cep || '',
+                        logradouro: clienteDto.enderecoCliente || '',
+                        numero: '',
+                        cidade: ''
+                    }
+                    : null;
+                if (existingCliente) {
+                    const updatedCliente = await this.prisma.cliente.update({
+                        where: { id: existingCliente.id },
+                        data: Object.assign(Object.assign({}, clienteData), { endereco: enderecoData
+                                ? {
+                                    upsert: {
+                                        create: enderecoData,
+                                        update: enderecoData
+                                    }
+                                }
+                                : undefined }),
+                        include: {
+                            endereco: true
+                        }
+                    });
+                    results.push({ status: 'updated', cliente: updatedCliente });
+                }
+                else {
+                    const newCliente = await this.prisma.cliente.create({
+                        data: Object.assign(Object.assign({}, clienteData), { id: clienteDto.idCliente, endereco: enderecoData
+                                ? {
+                                    create: enderecoData
+                                }
+                                : undefined }),
+                        include: {
+                            endereco: true
+                        }
+                    });
+                    results.push({ status: 'created', cliente: newCliente });
+                }
+            }
+            catch (error) {
+                results.push({
+                    status: 'error',
+                    idCliente: clienteDto.idCliente,
+                    error: error.message
+                });
+            }
+        }
+        return {
+            total: importClientesDto.length,
+            processed: results.length,
+            results
+        };
+    }
     async create(createClienteDto) {
         const { endereco, contatos } = createClienteDto, clienteData = __rest(createClienteDto, ["endereco", "contatos"]);
         try {

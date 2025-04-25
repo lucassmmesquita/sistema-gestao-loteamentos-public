@@ -16,6 +16,68 @@ let ContratosService = class ContratosService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async importContratos(importContratosDto) {
+        const results = [];
+        for (const contratoDto of importContratosDto) {
+            try {
+                const lote = await this.prisma.lote.findFirst({
+                    where: { chave: contratoDto.chave }
+                });
+                if (!lote) {
+                    results.push({
+                        status: 'error',
+                        chave: contratoDto.chave,
+                        error: 'Lote não encontrado'
+                    });
+                    continue;
+                }
+                const existingContrato = await this.prisma.contrato.findFirst({
+                    where: { numeroContrato: contratoDto.numeroContrato }
+                });
+                const contratoData = {
+                    clienteId: contratoDto.idCliente,
+                    loteId: lote.id,
+                    chave: contratoDto.chave,
+                    numeroContrato: contratoDto.numeroContrato,
+                    dataEmissao: new Date(contratoDto.dataEmissao),
+                    valorTotal: contratoDto.valorContrato,
+                    numeroParcelas: contratoDto.numeroParcelas,
+                    dataPrimeiraPrestacao: new Date(contratoDto.dataPrimeiraPrestacao),
+                    valorPrestacao: contratoDto.valorPrestacao,
+                    dataInicio: new Date(contratoDto.dataPrimeiraPrestacao),
+                    dataFim: new Date(new Date(contratoDto.dataPrimeiraPrestacao).setMonth(new Date(contratoDto.dataPrimeiraPrestacao).getMonth() + contratoDto.numeroParcelas)),
+                    valorEntrada: 0,
+                    dataVencimento: new Date(contratoDto.dataPrimeiraPrestacao).getDate(),
+                    clausulas: 'Importado automaticamente'
+                };
+                if (existingContrato) {
+                    const updatedContrato = await this.prisma.contrato.update({
+                        where: { id: existingContrato.id },
+                        data: contratoData
+                    });
+                    results.push({ status: 'updated', contrato: updatedContrato });
+                }
+                else {
+                    const newContrato = await this.prisma.contrato.create({
+                        data: contratoData
+                    });
+                    results.push({ status: 'created', contrato: newContrato });
+                }
+            }
+            catch (error) {
+                results.push({
+                    status: 'error',
+                    numeroContrato: contratoDto.numeroContrato,
+                    error: error.message
+                });
+            }
+        }
+        return {
+            total: importContratosDto.length,
+            processed: results.length,
+            results
+        };
+    }
     async create(createContratoDto) {
         const cliente = await this.prisma.cliente.findUnique({
             where: { id: createContratoDto.clienteId }

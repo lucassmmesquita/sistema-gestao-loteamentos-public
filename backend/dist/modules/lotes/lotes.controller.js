@@ -22,6 +22,9 @@ let LotesController = class LotesController {
     constructor(lotesService) {
         this.lotesService = lotesService;
     }
+    importLotes(importLotesDto) {
+        return this.lotesService.importLotes(importLotesDto);
+    }
     create(createLoteDto) {
         return this.lotesService.create(createLoteDto);
     }
@@ -47,6 +50,13 @@ let LotesController = class LotesController {
         return this.lotesService.getLotesByLoteamento(loteamento);
     }
 };
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], LotesController.prototype, "importLotes", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

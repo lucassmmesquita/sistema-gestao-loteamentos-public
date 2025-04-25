@@ -21,6 +21,52 @@ let LotesService = class LotesService {
             data: createLoteDto
         });
     }
+    async importLotes(importLotesDto) {
+        const results = [];
+        for (const loteDto of importLotesDto) {
+            try {
+                const existingLote = await this.prisma.lote.findFirst({
+                    where: {
+                        chave: loteDto.chave
+                    }
+                });
+                if (existingLote) {
+                    const updatedLote = await this.prisma.lote.update({
+                        where: { id: existingLote.id },
+                        data: {
+                            numero: String(loteDto.lote),
+                            quadra: String(loteDto.quadra),
+                            area: loteDto.area,
+                            chave: loteDto.chave
+                        }
+                    });
+                    results.push({ status: 'updated', lote: updatedLote });
+                }
+                else {
+                    const newLote = await this.prisma.lote.create({
+                        data: {
+                            numero: String(loteDto.lote),
+                            quadra: String(loteDto.quadra),
+                            area: loteDto.area,
+                            chave: loteDto.chave,
+                            loteamento: 'Importado',
+                            valorBase: 0,
+                            status: 'disponivel'
+                        }
+                    });
+                    results.push({ status: 'created', lote: newLote });
+                }
+            }
+            catch (error) {
+                results.push({ status: 'error', chave: loteDto.chave, error: error.message });
+            }
+        }
+        return {
+            total: importLotesDto.length,
+            processed: results.length,
+            results
+        };
+    }
     async findAll(query) {
         const filters = {};
         if (query.status) {

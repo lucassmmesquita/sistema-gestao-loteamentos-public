@@ -3,10 +3,15 @@ import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { QueryContratoDto } from './dto/query-contrato.dto';
+import { ImportContratoDto } from './dto/import-contrato.dto';
 
 @Controller('contratos')
 export class ContratosController {
   constructor(private readonly contratosService: ContratosService) {}
+  @Post('import')
+  importContratos(@Body() importContratosDto: ImportContratoDto[]) {
+   return this.contratosService.importContratos(importContratosDto);
+  }
 
   @Post()
   create(@Body() createContratoDto: CreateContratoDto) {

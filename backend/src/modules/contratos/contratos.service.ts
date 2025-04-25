@@ -3,16 +3,91 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { QueryContratoDto } from './dto/query-contrato.dto';
+import { ImportContratoDto } from './dto/import-contrato.dto';
 
 @Injectable()
 export class ContratosService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async importContratos(importContratosDto: ImportContratoDto[]) {
+    const results = [];
+    
+    for (const contratoDto of importContratosDto) {
+      try {
+        // Buscar o lote pela chave
+        const lote = await this.prisma.lote.findFirst({
+          where: { chave: contratoDto.chave }
+        });
+        
+        if (!lote) {
+          results.push({ 
+            status: 'error', 
+            chave: contratoDto.chave, 
+            error: 'Lote não encontrado' 
+          });
+          continue;
+        }
+        
+        // Verificar se o contrato já existe pelo número do contrato
+        const existingContrato = await this.prisma.contrato.findFirst({
+          where: { numeroContrato: contratoDto.numeroContrato }
+        });
+        
+        // Preparar os dados do contrato
+        const contratoData = {
+          clienteId: contratoDto.idCliente,
+          loteId: lote.id,
+          chave: contratoDto.chave,
+          numeroContrato: contratoDto.numeroContrato,
+          dataEmissao: new Date(contratoDto.dataEmissao),
+          valorTotal: contratoDto.valorContrato,
+          numeroParcelas: contratoDto.numeroParcelas,
+          dataPrimeiraPrestacao: new Date(contratoDto.dataPrimeiraPrestacao),
+          valorPrestacao: contratoDto.valorPrestacao,
+          // Campos obrigatórios - valores padrão
+          dataInicio: new Date(contratoDto.dataPrimeiraPrestacao),
+          dataFim: new Date(new Date(contratoDto.dataPrimeiraPrestacao).setMonth(new Date(contratoDto.dataPrimeiraPrestacao).getMonth() + contratoDto.numeroParcelas)),
+          valorEntrada: 0, // Valor padrão
+          dataVencimento: new Date(contratoDto.dataPrimeiraPrestacao).getDate(),
+          clausulas: 'Importado automaticamente' // Valor padrão
+        };
+        
+        if (existingContrato) {
+          // Atualizar o contrato existente
+          const updatedContrato = await this.prisma.contrato.update({
+            where: { id: existingContrato.id },
+            data: contratoData
+          });
+          results.push({ status: 'updated', contrato: updatedContrato });
+        } else {
+          // Criar novo contrato
+          const newContrato = await this.prisma.contrato.create({
+            data: contratoData
+          });
+          results.push({ status: 'created', contrato: newContrato });
+        }
+      } catch (error) {
+        results.push({ 
+          status: 'error', 
+          numeroContrato: contratoDto.numeroContrato, 
+          error: error.message 
+        });
+      }
+    }
+    
+    return {
+      total: importContratosDto.length,
+      processed: results.length,
+      results
+    };
+  }
 
   async create(createContratoDto: CreateContratoDto) {
     // Verificando se o cliente existe
     const cliente = await this.prisma.cliente.findUnique({
       where: { id: createContratoDto.clienteId }
     });
+
     
     if (!cliente) {
       throw new NotFoundException(`Cliente ID ${createContratoDto.clienteId} não encontrado`);

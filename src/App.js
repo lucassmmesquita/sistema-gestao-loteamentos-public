@@ -12,6 +12,7 @@ import { BoletoProvider } from './contexts/BoletoContext';
 import { DocumentosContratuaisProvider } from './contexts/DocumentosContratuaisContext';
 import { ReajusteProvider } from './contexts/ReajusteContext';
 import { InadimplenciaProvider } from './contexts/InadimplenciaContext';
+import { LoteProvider } from './contexts/LoteContext'; // Nova importação
 
 // Componentes de layout e autenticação
 import Layout from './components/common/Layout';
@@ -65,6 +66,12 @@ import ConfiguracaoInadimplenciaPage from './pages/inadimplencia/ConfiguracaoIna
 // Página 404
 import NotFound from './pages/NotFound';
 
+import ImportarLotesPage from './pages/lotes/ImportarLotesPage';
+import ImportarClientesPage from './pages/clientes/ImportarClientesPage';
+import ListaLotes from './pages/lotes/ListaLotes';
+import CadastroLote from './pages/lotes/CadastroLote';
+import EditarLote from './pages/lotes/EditarLote';
+
 // Tema da aplicação
 import theme from './theme';
 
@@ -75,177 +82,211 @@ function App() {
       <AuthProvider>
         <ClienteProvider>
           <ContratoProvider>
-            <BoletoProvider>
-              <DocumentosContratuaisProvider>
-                <ReajusteProvider>
-                  <InadimplenciaProvider>
-                    <Routes>
-                      {/* Rotas públicas */}
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/esqueci-senha" element={<ForgotPassword />} />
-                      <Route path="/acesso-negado" element={<AccessDenied />} />
-                      <Route path="/contato" element={<NotFound />} />
-                      
-                      {/* Rotas privadas */}
-                      <Route path="/" element={
-                        <PrivateRoute>
-                          <Layout />
-                        </PrivateRoute>
-                      }>
-                        <Route index element={<Dashboard />} />
+            <LoteProvider> {/* Novo provider adicionado */}
+              <BoletoProvider>
+                <DocumentosContratuaisProvider>
+                  <ReajusteProvider>
+                    <InadimplenciaProvider>
+                      <Routes>
+                        {/* Rotas públicas */}
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/esqueci-senha" element={<ForgotPassword />} />
+                        <Route path="/acesso-negado" element={<AccessDenied />} />
+                        <Route path="/contato" element={<NotFound />} />
                         
-                        {/* Rotas de Usuários */}
-                        <Route path="usuarios">
-                          <Route index element={
-                            <PrivateRoute permissions={['users:view']}>
-                              <UserList />
-                            </PrivateRoute>
-                          } />
-                          <Route path="novo" element={
-                            <PrivateRoute permissions={['users:create']}>
-                              <UserForm />
-                            </PrivateRoute>
-                          } />
-                          <Route path="editar/:userId" element={
-                            <PrivateRoute permissions={['users:edit']}>
-                              <UserForm />
-                            </PrivateRoute>
-                          } />
-                          <Route path="detalhes/:userId" element={
-                            <PrivateRoute permissions={['users:view']}>
-                              <UserForm />
-                            </PrivateRoute>
-                          } />
-                        </Route>
-                        
-                        {/* Rotas de Clientes */}
-                        <Route path="clientes">
-                          <Route index element={
-                            <PrivateRoute permissions={['clients:view']}>
-                              <ListaClientes />
-                            </PrivateRoute>
-                          } />
-                          <Route path="cadastro" element={
-                            <PrivateRoute permissions={['clients:create']}>
-                              <CadastroCliente />
-                            </PrivateRoute>
-                          } />
-                          <Route path="editar/:id" element={
-                            <PrivateRoute permissions={['clients:edit']}>
-                              <EditarCliente />
-                            </PrivateRoute>
-                          } />
-                        </Route>
-                        
-                        {/* Rotas de Contratos */}
-                        <Route path="contratos">
-                          <Route index element={
-                            <PrivateRoute permissions={['contracts:view']}>
-                              <ListaContratos />
-                            </PrivateRoute>
-                          } />
-                          <Route path="cadastro" element={
-                            <PrivateRoute permissions={['contracts:create']}>
-                              <CadastroContrato />
-                            </PrivateRoute>
-                          } />
-                          <Route path="editar/:id" element={
-                            <PrivateRoute permissions={['contracts:edit']}>
-                              <EditarContrato />
-                            </PrivateRoute>
-                          } />
-                          <Route path="vincular" element={
-                            <PrivateRoute permissions={['contracts:create']}>
-                              <VincularContratosPage />
-                            </PrivateRoute>
-                          } />
+                        {/* Rotas privadas */}
+                        <Route path="/" element={
+                          <PrivateRoute>
+                            <Layout />
+                          </PrivateRoute>
+                        }>
+                          <Route index element={<Dashboard />} />
+                          
+                          {/* Rotas de Usuários */}
+                          <Route path="usuarios">
+                            <Route index element={
+                              <PrivateRoute permissions={['users:view']}>
+                                <UserList />
+                              </PrivateRoute>
+                            } />
+                            <Route path="novo" element={
+                              <PrivateRoute permissions={['users:create']}>
+                                <UserForm />
+                              </PrivateRoute>
+                            } />
+                            <Route path="editar/:userId" element={
+                              <PrivateRoute permissions={['users:edit']}>
+                                <UserForm />
+                              </PrivateRoute>
+                            } />
+                            <Route path="detalhes/:userId" element={
+                              <PrivateRoute permissions={['users:view']}>
+                                <UserForm />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          
+                          {/* Rotas de Clientes */}
+                          <Route path="clientes">
                           <Route path="importar" element={
-                            <PrivateRoute permissions={['contracts:create']}>
-                              <ImportarContratosPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path=":contratoId/documentos" element={
-                            <PrivateRoute permissions={['contracts:view']}>
-                              <DocumentosPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path=":contratoId/aditivos/:aditivoId" element={
-                            <PrivateRoute permissions={['contracts:edit']}>
-                              <AditivoPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path=":contratoId/distratos/:distratoId" element={
-                            <PrivateRoute permissions={['contracts:edit']}>
-                              <DistratoPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path=":contratoId/quitacao/:quitacaoId" element={
-                            <PrivateRoute permissions={['contracts:edit']}>
-                              <QuitacaoPage />
-                            </PrivateRoute>
-                          } />
+                              <PrivateRoute permissions={['clients:create']}>
+                                <ImportarClientesPage />
+                              </PrivateRoute>
+                            } />
+                            <Route index element={
+                              <PrivateRoute permissions={['clients:view']}>
+                                <ListaClientes />
+                              </PrivateRoute>
+                            } />
+                            <Route path="cadastro" element={
+                              <PrivateRoute permissions={['clients:create']}>
+                                <CadastroCliente />
+                              </PrivateRoute>
+                            } />
+                            <Route path="editar/:id" element={
+                              <PrivateRoute permissions={['clients:edit']}>
+                                <EditarCliente />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          
+                          {/* Rotas de Contratos */}
+                          <Route path="contratos">
+                          <Route path="importar" element={
+                              <PrivateRoute permissions={['contracts:create']}>
+                                <ImportarContratosPage />
+                              </PrivateRoute>
+                            } />
+                            <Route index element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <ListaContratos />
+                              </PrivateRoute>
+                            } />
+                            <Route path="cadastro" element={
+                              <PrivateRoute permissions={['contracts:create']}>
+                                <CadastroContrato />
+                              </PrivateRoute>
+                            } />
+                            <Route path="editar/:id" element={
+                              <PrivateRoute permissions={['contracts:edit']}>
+                                <EditarContrato />
+                              </PrivateRoute>
+                            } />
+                            <Route path="vincular" element={
+                              <PrivateRoute permissions={['contracts:create']}>
+                                <VincularContratosPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path="importar" element={
+                              <PrivateRoute permissions={['contracts:create']}>
+                                <ImportarContratosPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path=":contratoId/documentos" element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <DocumentosPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path=":contratoId/aditivos/:aditivoId" element={
+                              <PrivateRoute permissions={['contracts:edit']}>
+                                <AditivoPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path=":contratoId/distratos/:distratoId" element={
+                              <PrivateRoute permissions={['contracts:edit']}>
+                                <DistratoPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path=":contratoId/quitacao/:quitacaoId" element={
+                              <PrivateRoute permissions={['contracts:edit']}>
+                                <QuitacaoPage />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                            {/* Rotas de Lotes */}
+                          <Route path="lotes">
+                            <Route index element={
+                                <PrivateRoute permissions={['lots:view']}>
+                                  <ListaLotes />
+                                </PrivateRoute>
+                              } />
+                              <Route path="cadastro" element={
+                                <PrivateRoute permissions={['lots:create']}>
+                                  <CadastroLote />
+                                </PrivateRoute>
+                              } />
+                              <Route path="editar/:id" element={
+                                <PrivateRoute permissions={['lots:edit']}>
+                                  <EditarLote />
+                                </PrivateRoute>
+                              } />
+                            <Route path="importar" element={
+                              <PrivateRoute permissions={['lots:create']}>
+                                <ImportarLotesPage />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          {/* Rotas de Boletos */}
+                          <Route path="boletos">
+                            <Route index element={
+                              <PrivateRoute permissions={['invoices:view']}>
+                                <GerenciarBoletos />
+                              </PrivateRoute>
+                            } />
+                            <Route path=":id" element={
+                              <PrivateRoute permissions={['invoices:view']}>
+                                <BoletosDetails />
+                              </PrivateRoute>
+                            } />
+                            <Route path="emitir" element={
+                              <PrivateRoute permissions={['invoices:create']}>
+                                <EmitirBoletos />
+                              </PrivateRoute>
+                            } />
+                            <Route path="arquivos" element={
+                              <PrivateRoute permissions={['invoices:manage']}>
+                                <GerenciadorArquivos />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          
+                          {/* Rotas de Reajustes */}
+                          <Route path="reajustes">
+                            <Route index element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <ReajustesPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path="configuracao" element={
+                              <PrivateRoute permissions={['settings:manage']}>
+                                <ConfiguracaoReajustesPage />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          
+                          {/* Rotas de Inadimplência */}
+                          <Route path="inadimplencia">
+                            <Route index element={
+                              <PrivateRoute permissions={['invoices:view']}>
+                                <InadimplenciaPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path="configuracoes" element={
+                              <PrivateRoute permissions={['settings:manage']}>
+                                <ConfiguracaoInadimplenciaPage />
+                              </PrivateRoute>
+                            } />
+                          </Route>
+                          
+                          {/* Rota 404 */}
+                          <Route path="*" element={<NotFound />} />
                         </Route>
-                        
-                        {/* Rotas de Boletos */}
-                        <Route path="boletos">
-                          <Route index element={
-                            <PrivateRoute permissions={['invoices:view']}>
-                              <GerenciarBoletos />
-                            </PrivateRoute>
-                          } />
-                          <Route path=":id" element={
-                            <PrivateRoute permissions={['invoices:view']}>
-                              <BoletosDetails />
-                            </PrivateRoute>
-                          } />
-                          <Route path="emitir" element={
-                            <PrivateRoute permissions={['invoices:create']}>
-                              <EmitirBoletos />
-                            </PrivateRoute>
-                          } />
-                          <Route path="arquivos" element={
-                            <PrivateRoute permissions={['invoices:manage']}>
-                              <GerenciadorArquivos />
-                            </PrivateRoute>
-                          } />
-                        </Route>
-                        
-                        {/* Rotas de Reajustes */}
-                        <Route path="reajustes">
-                          <Route index element={
-                            <PrivateRoute permissions={['contracts:view']}>
-                              <ReajustesPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path="configuracao" element={
-                            <PrivateRoute permissions={['settings:manage']}>
-                              <ConfiguracaoReajustesPage />
-                            </PrivateRoute>
-                          } />
-                        </Route>
-                        
-                        {/* Rotas de Inadimplência */}
-                        <Route path="inadimplencia">
-                          <Route index element={
-                            <PrivateRoute permissions={['invoices:view']}>
-                              <InadimplenciaPage />
-                            </PrivateRoute>
-                          } />
-                          <Route path="configuracoes" element={
-                            <PrivateRoute permissions={['settings:manage']}>
-                              <ConfiguracaoInadimplenciaPage />
-                            </PrivateRoute>
-                          } />
-                        </Route>
-                        
-                        {/* Rota 404 */}
-                        <Route path="*" element={<NotFound />} />
-                      </Route>
-                    </Routes>
-                  </InadimplenciaProvider>
-                </ReajusteProvider>
-              </DocumentosContratuaisProvider>
-            </BoletoProvider>
+                      </Routes>
+                    </InadimplenciaProvider>
+                  </ReajusteProvider>
+                </DocumentosContratuaisProvider>
+              </BoletoProvider>
+            </LoteProvider>
           </ContratoProvider>
         </ClienteProvider>
       </AuthProvider>

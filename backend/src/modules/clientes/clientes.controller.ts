@@ -3,10 +3,16 @@ import { ClientesService } from './clientes.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { QueryClienteDto } from './dto/query-cliente.dto';
+import { ImportClienteDto } from './dto/import-cliente.dto';
 
 @Controller('clientes')
 export class ClientesController {
   constructor(private readonly clientesService: ClientesService) {}
+
+  @Post('import')
+  importClientes(@Body() importClientesDto: ImportClienteDto[]) {
+  return this.clientesService.importClientes(importClientesDto);
+  }
 
   @Post()
   create(@Body() createClienteDto: CreateClienteDto) {

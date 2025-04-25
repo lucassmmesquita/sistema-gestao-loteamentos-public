@@ -1,7 +1,6 @@
-// src/pages/contratos/ImportarContratosPage.jsx
 import React from 'react';
 import { Box, Typography, useTheme, useMediaQuery } from '@mui/material';
-import ImportarContratos from '../../components/documentos/ImportarContratos';
+import ImportarContratos from '../../components/contratos/ImportarContratos';
 
 const ImportarContratosPage = () => {
   const theme = useTheme();
@@ -19,14 +18,14 @@ const ImportarContratosPage = () => {
           mb: 3
         }}
       >
-        Importar Contratos em PDF
+        Importar Contratos de Planilha
       </Typography>
       <Typography 
         variant="subtitle1" 
         color="textSecondary"
         sx={{ mb: 4 }}
       >
-        Extraia automaticamente dados de contratos em formato PDF
+        Importe dados de contratos a partir de uma planilha Excel
       </Typography>
       <ImportarContratos />
     </Box>

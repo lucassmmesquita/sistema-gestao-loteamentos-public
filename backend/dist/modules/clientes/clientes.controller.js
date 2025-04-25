@@ -22,6 +22,9 @@ let ClientesController = class ClientesController {
     constructor(clientesService) {
         this.clientesService = clientesService;
     }
+    importClientes(importClientesDto) {
+        return this.clientesService.importClientes(importClientesDto);
+    }
     create(createClienteDto) {
         return this.clientesService.create(createClienteDto);
     }
@@ -38,6 +41,13 @@ let ClientesController = class ClientesController {
         return this.clientesService.remove(id);
     }
 };
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], ClientesController.prototype, "importClientes", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

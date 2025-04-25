@@ -5,11 +5,98 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { QueryClienteDto } from './dto/query-cliente.dto';
+import { ImportClienteDto } from './dto/import-cliente.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ClientesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async importClientes(importClientesDto: ImportClienteDto[]) {
+    const results = [];
+    
+    for (const clienteDto of importClientesDto) {
+      try {
+        // Verificar se o cliente já existe pelo ID
+        const existingCliente = await this.prisma.cliente.findUnique({
+          where: { id: clienteDto.idCliente }
+        });
+        
+        // Preparar os dados do cliente
+        const clienteData = {
+          nome: clienteDto.nomeComprador,
+          nomeConjuge: clienteDto.nomeConjuge,
+          profissao: clienteDto.profissao,
+          dataNascimento: clienteDto.dataNascimento ? new Date(clienteDto.dataNascimento) : null,
+          // Campo obrigatório
+          cpfCnpj: existingCliente?.cpfCnpj || `IMPORTADO-${clienteDto.idCliente}` 
+        };
+        
+        // Preparar dados de endereço se disponíveis
+        const enderecoData = clienteDto.bairro || clienteDto.estado || clienteDto.cep || clienteDto.enderecoCliente
+          ? {
+              bairro: clienteDto.bairro || '',
+              estado: clienteDto.estado || '',
+              cep: clienteDto.cep || '',
+              logradouro: clienteDto.enderecoCliente || '',
+              numero: '', // Obrigatório mas não temos na importação
+              cidade: '' // Obrigatório mas não temos na importação
+            }
+          : null;
+        
+        if (existingCliente) {
+          // Atualizar o cliente existente
+          const updatedCliente = await this.prisma.cliente.update({
+            where: { id: existingCliente.id },
+            data: {
+              ...clienteData,
+              endereco: enderecoData
+                ? {
+                    upsert: {
+                      create: enderecoData,
+                      update: enderecoData
+                    }
+                  }
+                : undefined
+            },
+            include: {
+              endereco: true
+            }
+          });
+          results.push({ status: 'updated', cliente: updatedCliente });
+        } else {
+          // Criar novo cliente
+          const newCliente = await this.prisma.cliente.create({
+            data: {
+              ...clienteData,
+              id: clienteDto.idCliente, // Definir ID específico
+              endereco: enderecoData 
+                ? {
+                    create: enderecoData
+                  } 
+                : undefined
+            },
+            include: {
+              endereco: true
+            }
+          });
+          results.push({ status: 'created', cliente: newCliente });
+        }
+      } catch (error) {
+        results.push({ 
+          status: 'error', 
+          idCliente: clienteDto.idCliente, 
+          error: error.message 
+        });
+      }
+    }
+    
+    return {
+      total: importClientesDto.length,
+      processed: results.length,
+      results
+    };
+  }
 
   async create(createClienteDto: CreateClienteDto) {
     const { endereco, contatos, ...clienteData } = createClienteDto;

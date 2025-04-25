@@ -3,6 +3,16 @@
 import api from './api';
 
 const clienteService = {
+
+  /**
+   * Importa clientes de uma planilha
+   * @param {Array} clientes - Lista de clientes a serem importados
+   * @returns {Promise} Promise com o resultado da importação
+   */
+  importarClientes: async (clientes) => {
+    const response = await api.post('/clientes/import', clientes);
+    return response.data;
+  },
   /**
    * Busca todos os clientes
    * @returns {Promise} Promise com a lista de clientes
