@@ -7,6 +7,7 @@ import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { QueryClienteDto } from './dto/query-cliente.dto';
 import { ImportClienteDto } from './dto/import-cliente.dto';
 import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
 @Injectable()
 export class ClientesService {
@@ -138,7 +139,7 @@ export class ClientesService {
       if (error instanceof ConflictException) {
         throw error;
       }
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof PrismaClientKnownRequestError) {
         // Erro de unicidade (código P2002)
         if (error.code === 'P2002') {
           throw new ConflictException(`Cliente com CPF/CNPJ ${clienteData.cpfCnpj} já existe`);
@@ -257,7 +258,7 @@ export class ClientesService {
       if (error instanceof ConflictException) {
         throw error;
       }
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error instanceof PrismaClientKnownRequestError) {
         // Erro de unicidade (código P2002)
         if (error.code === 'P2002') {
           throw new ConflictException('Já existe um cliente com o CPF/CNPJ fornecido');

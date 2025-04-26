@@ -23,7 +23,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const client_1 = require("@prisma/client");
+const runtime_1 = require("@prisma/client/runtime");
 let ClientesService = class ClientesService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -125,7 +125,7 @@ let ClientesService = class ClientesService {
             if (error instanceof common_1.ConflictException) {
                 throw error;
             }
-            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            if (error instanceof runtime_1.PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
                     throw new common_1.ConflictException(`Cliente com CPF/CNPJ ${clienteData.cpfCnpj} já existe`);
                 }
@@ -218,7 +218,7 @@ let ClientesService = class ClientesService {
             if (error instanceof common_1.ConflictException) {
                 throw error;
             }
-            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            if (error instanceof runtime_1.PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
                     throw new common_1.ConflictException('Já existe um cliente com o CPF/CNPJ fornecido');
                 }
