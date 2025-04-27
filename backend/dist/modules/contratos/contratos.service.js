@@ -78,6 +78,26 @@ let ContratosService = class ContratosService {
             results
         };
     }
+    async getByLoteId(loteId) {
+        const lote = await this.prisma.lote.findUnique({
+            where: { id: loteId }
+        });
+        if (!lote) {
+            throw new common_1.NotFoundException(`Lote ID ${loteId} não encontrado`);
+        }
+        return this.prisma.contrato.findMany({
+            where: { loteId },
+            include: {
+                cliente: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        cpfCnpj: true
+                    }
+                }
+            }
+        });
+    }
     async create(createContratoDto) {
         const cliente = await this.prisma.cliente.findUnique({
             where: { id: createContratoDto.clienteId }

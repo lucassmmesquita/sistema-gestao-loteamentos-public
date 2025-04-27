@@ -144,6 +144,22 @@ export const ContratoProvider = ({ children }) => {
       setLoading(false);
     }
   }, [currentContrato, loadLotesDisponiveis]);
+  
+  const loadContratosByLote = useCallback(async (loteId) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await contratoService.getByLoteId(loteId);
+      return data;
+    } catch (err) {
+      setError('Erro ao carregar contratos do lote: ' + (err.message || 'Erro desconhecido'));
+      console.error('Erro ao carregar contratos do lote:', err);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // Gera uma prévia do contrato
   const gerarPreviaContrato = useCallback(async (contrato) => {
@@ -178,6 +194,7 @@ export const ContratoProvider = ({ children }) => {
     loadContrato,
     loadContratosByCliente,
     loadLotesDisponiveis,
+    loadContratosByLote,
     saveContrato,
     deleteContrato,
     gerarPreviaContrato,

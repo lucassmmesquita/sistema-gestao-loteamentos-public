@@ -565,6 +565,20 @@ const ClienteList = () => {
                             borderColor: 'divider'
                           }}
                         >
+                          <Tooltip title="Visualizar">
+                              <IconButton 
+                                aria-label="visualizar"
+                                onClick={() => navigate(`/clientes/visualizar/${cliente.id}`)}
+                                sx={{ 
+                                  '&:hover': { 
+                                    transform: 'translateY(-2px)',
+                                    transition: 'transform 0.2s ease' 
+                                  } 
+                                }}
+                              >
+                                
+                              </IconButton>
+                            </Tooltip>
                           <Tooltip title="Editar">
                             <IconButton 
                               aria-label="editar" 

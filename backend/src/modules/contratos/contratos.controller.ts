@@ -18,6 +18,11 @@ export class ContratosController {
     return this.contratosService.create(createContratoDto);
   }
 
+  @Get('lote/:loteId')
+  getByLoteId(@Param('loteId', ParseIntPipe) loteId: number) {
+    return this.contratosService.getByLoteId(loteId);
+  }
+
   @Get()
   findAll(@Query() query: QueryContratoDto) {
     return this.contratosService.findAll(query);

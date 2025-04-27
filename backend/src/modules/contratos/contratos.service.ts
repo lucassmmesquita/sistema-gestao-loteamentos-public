@@ -82,6 +82,30 @@ export class ContratosService {
     };
   }
 
+  async getByLoteId(loteId: number) {
+    // Verificando se o lote existe
+    const lote = await this.prisma.lote.findUnique({
+      where: { id: loteId }
+    });
+    
+    if (!lote) {
+      throw new NotFoundException(`Lote ID ${loteId} não encontrado`);
+    }
+    
+    return this.prisma.contrato.findMany({
+      where: { loteId },
+      include: {
+        cliente: {
+          select: {
+            id: true,
+            nome: true,
+            cpfCnpj: true
+          }
+        }
+      }
+    });
+  }
+
   async create(createContratoDto: CreateContratoDto) {
     // Verificando se o cliente existe
     const cliente = await this.prisma.cliente.findUnique({

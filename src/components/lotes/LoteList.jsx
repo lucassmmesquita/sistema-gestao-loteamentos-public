@@ -565,21 +565,46 @@ const LoteList = () => {
                       
                       {visibleColumns.includes('contratos') && (
                         <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
+                        sx={{ 
+                          borderBottom: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        {contratos.length > 0 ? (
+                          <Box>
+                            {contratos.map((contrato) => (
+                              <Chip 
+                                key={contrato.id}
+                                label={`Contrato #${contrato.id}`} 
+                                color="primary"
+                                size="small"
+                                onClick={() => navigate(`/contratos/visualizar/${contrato.id}`)}
+                                sx={{ 
+                                  fontWeight: 500,
+                                  borderRadius: 4,
+                                  cursor: 'pointer',
+                                  mr: 1,
+                                  mb: 1,
+                                  '&:hover': {
+                                    transform: 'translateY(-2px)',
+                                    transition: 'transform 0.2s ease'
+                                  }
+                                }}
+                              />
+                            ))}
+                          </Box>
+                        ) : (
                           <Chip 
-                            label={`${contratos.length} contrato(s)`} 
-                            color={contratos.length > 0 ? "primary" : "default"}
+                            label="Sem contratos" 
+                            color="default"
                             size="small"
                             sx={{ 
                               fontWeight: 500,
                               borderRadius: 4
                             }}
                           />
-                        </TableCell>
+                        )}
+                      </TableCell>
                       )}
                       
                       {visibleColumns.includes('chave') && (

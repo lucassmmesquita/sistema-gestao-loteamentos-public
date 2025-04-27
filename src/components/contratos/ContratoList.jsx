@@ -1,3 +1,5 @@
+// src/components/contratos/ContratoList.jsx - Solução alternativa para loadContratosByCliente
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -40,17 +42,26 @@ import {
 } from '@mui/icons-material';
 import useContratos from '../../hooks/useContratos';
 import useClientes from '../../hooks/useClientes';
+import contratoService from '../../services/contratoService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import Loading from '../common/Loading';
 import ContratoPreview from './ContratoPreview';
 
-const ContratoList = () => {
+const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   
-  const { contratos, lotes, loading, error, loadContratos, deleteContrato, gerarPreviaContrato } = useContratos();
+  const { 
+    contratos, 
+    lotes,
+    loading, 
+    error, 
+    loadContratos, 
+    deleteContrato, 
+    gerarPreviaContrato
+  } = useContratos();
   const { clientes, loadClientes } = useClientes();
   
   // Estados locais
@@ -58,6 +69,7 @@ const ContratoList = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredContratos, setFilteredContratos] = useState([]);
+  const [contratosLocais, setContratosLocais] = useState([]);
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
     contratoId: null,
@@ -71,26 +83,57 @@ const ContratoList = () => {
   });
   const [loading2, setLoading2] = useState(false);
   
+  // Função para carregar contratos de um cliente específico
+  const carregarContratosPorCliente = async (id) => {
+    setLoading2(true);
+    try {
+      // Usar o serviço diretamente em vez do contexto
+      const clienteContratos = await contratoService.getByClienteId(id);
+      setContratosLocais(clienteContratos || []);
+      return clienteContratos;
+    } catch (error) {
+      console.error(`Erro ao carregar contratos do cliente ${id}:`, error);
+      return [];
+    } finally {
+      setLoading2(false);
+    }
+  };
+  
   // Carrega os contratos ao montar o componente
   useEffect(() => {
-    loadContratos();
+    const loadContratosData = async () => {
+      if (clienteId) {
+        await carregarContratosPorCliente(clienteId);
+      } else {
+        loadContratos();
+      }
+    };
+    
+    loadContratosData();
     loadClientes();
-  }, [loadContratos, loadClientes]);
+  }, [clienteId, loadContratos, loadClientes]);
+
+  // Atualiza os contratos locais quando os contratos do contexto são atualizados
+  useEffect(() => {
+    if (!clienteId && contratos) {
+      setContratosLocais(contratos);
+    }
+  }, [clienteId, contratos]);
   
   // Filtra os contratos com base no termo de busca
   useEffect(() => {
-    if (!contratos) {
+    if (!contratosLocais) {
       setFilteredContratos([]);
       return;
     }
     
     if (!searchTerm.trim()) {
-      setFilteredContratos(contratos);
+      setFilteredContratos(contratosLocais);
       return;
     }
     
     const lowercasedSearch = searchTerm.toLowerCase();
-    const filtered = contratos.filter((contrato) => {
+    const filtered = contratosLocais.filter((contrato) => {
       // Encontra o cliente correspondente
       const cliente = clientes.find(c => c.id === contrato.clienteId);
       const clienteNome = cliente ? cliente.nome.toLowerCase() : '';
@@ -109,7 +152,9 @@ const ContratoList = () => {
     });
     
     setFilteredContratos(filtered);
-  }, [searchTerm, contratos, clientes, lotes]);
+  }, [searchTerm, contratosLocais, clientes, lotes]);
+  
+  // Resto do componente permanece igual...
   
   // Manipuladores de eventos
   const handleChangePage = (event, newPage) => {
@@ -220,8 +265,10 @@ const ContratoList = () => {
   
   const visibleColumns = getVisibleColumns();
   
-  // Renderiza a tabela de contratos
+  // Renderização da UI permanece igual...
+  
   return (
+    // Código JSX...
     <>
       <Loading open={loading || loading2} />
       
@@ -234,87 +281,89 @@ const ContratoList = () => {
           boxShadow: 2
         }}
       >
-        <Toolbar
-          sx={{
-            p: 2,
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            alignItems: isMobile ? 'stretch' : 'center',
-            gap: isMobile ? 2 : 0,
-            borderBottom: '1px solid',
-            borderColor: 'divider'
-          }}
-        >
-          <Typography
-            sx={{ flex: isMobile ? 'none' : '1 1 100%', fontWeight: 600 }}
-            variant="h6"
-            id="tableTitle"
-            component="div"
+        {mode === 'normal' && (
+          <Toolbar
+            sx={{
+              p: 2,
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              alignItems: isMobile ? 'stretch' : 'center',
+              gap: isMobile ? 2 : 0,
+              borderBottom: '1px solid',
+              borderColor: 'divider'
+            }}
           >
-            Contratos
-          </Typography>
-          
-          <Box sx={{ 
-            display: 'flex', 
-            gap: 2, 
-            width: isMobile ? '100%' : 'auto',
-            flexDirection: isMobile ? 'column' : 'row'
-          }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Buscar contrato..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              sx={{ 
-                width: isMobile ? '100%' : '300px',
-                '& .MuiOutlinedInput-root': { borderRadius: 2 }
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: searchTerm && (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      aria-label="clear search"
-                      onClick={handleClearSearch}
-                      edge="end"
-                    >
-                      <ClearIcon />
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-            
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleAddContrato}
-              sx={{
-                textTransform: 'none',
-                borderRadius: 2,
-                fontWeight: 500,
-                px: 2,
-                py: 1,
-                height: isMobile ? 'auto' : 40,
-                whiteSpace: 'nowrap', // Impede quebra de linha
-                minWidth: isMobile ? '100%' : 'auto',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  transition: 'transform 0.2s ease'
-                }
-              }}
+            <Typography
+              sx={{ flex: isMobile ? 'none' : '1 1 100%', fontWeight: 600 }}
+              variant="h6"
+              id="tableTitle"
+              component="div"
             >
-              Novo Contrato
-            </Button>
-          </Box>
-        </Toolbar>
+              Contratos
+            </Typography>
+            
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 2, 
+              width: isMobile ? '100%' : 'auto',
+              flexDirection: isMobile ? 'column' : 'row'
+            }}>
+              <TextField
+                variant="outlined"
+                size="small"
+                placeholder="Buscar contrato..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                sx={{ 
+                  width: isMobile ? '100%' : '300px',
+                  '& .MuiOutlinedInput-root': { borderRadius: 2 }
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchTerm && (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        aria-label="clear search"
+                        onClick={handleClearSearch}
+                        edge="end"
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+              
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddContrato}
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: 2,
+                  fontWeight: 500,
+                  px: 2,
+                  py: 1,
+                  height: isMobile ? 'auto' : 40,
+                  whiteSpace: 'nowrap', // Impede quebra de linha
+                  minWidth: isMobile ? '100%' : 'auto',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    transition: 'transform 0.2s ease'
+                  }
+                }}
+              >
+                Novo Contrato
+              </Button>
+            </Box>
+          </Toolbar>
+        )}
         
         <TableContainer sx={{ maxWidth: '100%', overflowX: 'auto' }}>
           <Table 
@@ -419,255 +468,255 @@ const ContratoList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredContratos
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((contrato) => {
-                  const cliente = getClienteInfo(contrato.clienteId);
-                  const lote = getLoteInfo(contrato.loteId);
-                  
-                  return (
-                    <TableRow
-                      hover
-                      key={contrato.id}
-                      sx={{ 
-                        '&:last-child td, &:last-child th': { border: 0 },
-                        '&:hover': { 
-                          backgroundColor: theme => theme.palette.mode === 'light' 
-                            ? 'rgba(0, 0, 0, 0.04)' 
-                            : 'rgba(255, 255, 255, 0.08)' 
-                        }
-                      }}
-                    >
-                      {visibleColumns.includes('cliente') && (
-                        <TableCell 
-                        component="th" 
-                        scope="row"
+              {filteredContratos.length > 0 ? (
+                filteredContratos
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((contrato) => {
+                    const cliente = getClienteInfo(contrato.clienteId);
+                    const lote = getLoteInfo(contrato.loteId);
+                    
+                    return (
+                      <TableRow
+                        hover
+                        key={contrato.id}
                         sx={{ 
-                          borderBottom: '1px solid',
-                          borderColor: 'divider'
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          '&:hover': { 
+                            backgroundColor: theme => theme.palette.mode === 'light' 
+                              ? 'rgba(0, 0, 0, 0.04)' 
+                              : 'rgba(255, 255, 255, 0.08)' 
+                          }
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                          <Tooltip title={cliente.nome}>
-                            <Box>
-                              <Typography 
-                                variant="body1"
-                                sx={{ 
-                                  fontWeight: 500,
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  maxWidth: isMobile ? '120px' : '180px' // Limita largura
-                                }}
-                              >
-                                {cliente.nome}
-                              </Typography>
-                              <Typography 
-                                variant="caption" 
-                                color="textSecondary"
-                                sx={{ 
-                                  display: 'block',
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}
-                              >
-                                {cliente.cpfCnpj}
-                              </Typography>
-                            </Box>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('lote') && (
-                        <TableCell
+                        {visibleColumns.includes('cliente') && (
+                          <TableCell 
+                          component="th" 
+                          scope="row"
                           sx={{ 
                             borderBottom: '1px solid',
                             borderColor: 'divider'
                           }}
                         >
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <LandscapeIcon sx={{ mr: 1, color: 'secondary.main' }} />
-                            <Box>
-                              <Typography 
-                                variant="body2"
-                                sx={{ 
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}
-                              >
-                                {lote.loteamento}
-                              </Typography>
-                              <Typography 
-                                variant="caption" 
-                                color="textSecondary"
-                                sx={{ 
-                                  display: 'block',
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}
-                              >
-                                {`Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
-                              </Typography>
-                            </Box>
+                            <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                            <Tooltip title={cliente.nome}>
+                              <Box>
+                                <Typography 
+                                  variant="body1"
+                                  sx={{ 
+                                    fontWeight: 500,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: isMobile ? '120px' : '180px' // Limita largura
+                                  }}
+                                >
+                                  {cliente.nome}
+                                </Typography>
+                                <Typography 
+                                  variant="caption" 
+                                  color="textSecondary"
+                                  sx={{ 
+                                    display: 'block',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {cliente.cpfCnpj}
+                                </Typography>
+                              </Box>
+                            </Tooltip>
                           </Box>
                         </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('valor') && (
-                        <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Typography 
-                            variant="body2" 
-                            fontWeight="bold"
+                        )}
+                        
+                        {visibleColumns.includes('lote') && (
+                          <TableCell
                             sx={{ 
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
                             }}
                           >
-                            {formatCurrency(contrato.valorTotal)}
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            color="textSecondary"
-                            sx={{ 
-                              display: 'block',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            Entrada: {formatCurrency(contrato.valorEntrada)}
-                          </Typography>
-                        </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('periodo') && (
-                        <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
-                            <Box>
-                              <Typography variant="body2">
-                                {formatDate(contrato.dataInicio)}
-                              </Typography>
-                              <Typography variant="body2">
-                                {formatDate(contrato.dataFim)}
-                              </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <LandscapeIcon sx={{ mr: 1, color: 'secondary.main' }} />
+                              <Box>
+                                <Typography 
+                                  variant="body2"
+                                  sx={{ 
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {lote.loteamento}
+                                </Typography>
+                                <Typography 
+                                  variant="caption" 
+                                  color="textSecondary"
+                                  sx={{ 
+                                    display: 'block',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {`Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
+                                </Typography>
+                              </Box>
                             </Box>
-                          </Box>
-                        </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('parcelas') && (
-                        <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Typography variant="body2">
-                            {contrato.numeroParcelas}x de
-                          </Typography>
-                          <Typography variant="body2" fontWeight="bold">
-                            {formatCurrency((contrato.valorTotal - contrato.valorEntrada) / contrato.numeroParcelas)}
-                          </Typography>
-                        </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('status') && (
-                        <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Chip 
-                            label={contrato.status || 'Ativo'} 
-                            color={
-                              contrato.status === 'cancelado' ? 'error' : 
-                              contrato.status === 'concluído' ? 'success' : 
-                              'primary'
-                            }
-                            size="small"
+                          </TableCell>
+                        )}
+                        
+                        {visibleColumns.includes('valor') && (
+                          <TableCell
                             sx={{ 
-                              fontWeight: 500,
-                              borderRadius: 4
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
                             }}
-                          />
-                        </TableCell>
-                      )}
-                      
-                      {visibleColumns.includes('acoes') && (
-                        <TableCell 
-                          align="right"
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
-                          }}
-                        >
-                          <Tooltip title="Visualizar">
-                            <IconButton 
-                              aria-label="visualizar" 
-                              onClick={() => handlePreviewContrato(contrato)}
+                          >
+                            <Typography 
+                              variant="body2" 
+                              fontWeight="bold"
                               sx={{ 
-                                '&:hover': { 
-                                  transform: 'translateY(-2px)',
-                                  transition: 'transform 0.2s ease' 
-                                } 
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
                               }}
                             >
-                              <VisibilityIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Editar">
-                            <IconButton 
-                              aria-label="editar" 
-                              onClick={() => handleEditContrato(contrato.id)}
+                              {formatCurrency(contrato.valorTotal)}
+                            </Typography>
+                            <Typography 
+                              variant="caption" 
+                              color="textSecondary"
                               sx={{ 
-                                '&:hover': { 
-                                  transform: 'translateY(-2px)',
-                                  transition: 'transform 0.2s ease' 
-                                } 
+                                display: 'block',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
                               }}
                             >
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Excluir">
-                            <IconButton 
-                              aria-label="excluir" 
-                              onClick={() => handleDeleteClick(contrato)}
+                              Entrada: {formatCurrency(contrato.valorEntrada)}
+                            </Typography>
+                          </TableCell>
+                        )}
+                        
+                        {visibleColumns.includes('periodo') && (
+                          <TableCell
+                            sx={{ 
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <CalendarIcon sx={{ mr: 1, fontSize: 'small', color: 'text.secondary' }} />
+                              <Box>
+                                <Typography variant="body2">
+                                  {formatDate(contrato.dataInicio)}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {formatDate(contrato.dataFim)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                        )}
+                        
+                        {visibleColumns.includes('parcelas') && (
+                          <TableCell
+                            sx={{ 
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
+                            }}
+                          >
+                            <Typography variant="body2">
+                              {contrato.numeroParcelas}x de
+                            </Typography>
+                            <Typography variant="body2" fontWeight="bold">
+                              {formatCurrency((contrato.valorTotal - contrato.valorEntrada) / contrato.numeroParcelas)}
+                            </Typography>
+                          </TableCell>
+                        )}
+                        
+                        {visibleColumns.includes('status') && (
+                          <TableCell
+                            sx={{ 
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
+                            }}
+                          >
+                            <Chip 
+                              label={contrato.status || 'Ativo'} 
+                              color={
+                                contrato.status === 'cancelado' ? 'error' : 
+                                contrato.status === 'concluído' ? 'success' : 
+                                'primary'
+                              }
+                              size="small"
                               sx={{ 
-                                '&:hover': { 
-                                  transform: 'translateY(-2px)',
-                                  transition: 'transform 0.2s ease' 
-                                } 
+                                fontWeight: 500,
+                                borderRadius: 4
                               }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  );
-                })}
-                
-              {filteredContratos.length === 0 && (
+                            />
+                          </TableCell>
+                        )}
+                        
+                        {visibleColumns.includes('acoes') && (
+                          <TableCell 
+                            align="right"
+                            sx={{ 
+                              borderBottom: '1px solid',
+                              borderColor: 'divider'
+                            }}
+                          >
+                            <Tooltip title="Visualizar">
+                              <IconButton 
+                                aria-label="visualizar" 
+                                onClick={() => navigate(`/contratos/visualizar/${contrato.id}`)}
+                                sx={{ 
+                                  '&:hover': { 
+                                    transform: 'translateY(-2px)',
+                                    transition: 'transform 0.2s ease' 
+                                  } 
+                                }}
+                              >
+                                <VisibilityIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Editar">
+                              <IconButton 
+                                aria-label="editar" 
+                                onClick={() => handleEditContrato(contrato.id)}
+                                sx={{ 
+                                  '&:hover': { 
+                                    transform: 'translateY(-2px)',
+                                    transition: 'transform 0.2s ease' 
+                                  } 
+                                }}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Excluir">
+                              <IconButton 
+                                aria-label="excluir" 
+                                onClick={() => handleDeleteClick(contrato)}
+                                sx={{ 
+                                  '&:hover': { 
+                                    transform: 'translateY(-2px)',
+                                    transition: 'transform 0.2s ease' 
+                                  } 
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })
+              ) : (
                 <TableRow>
                   <TableCell 
                     colSpan={visibleColumns.length} 

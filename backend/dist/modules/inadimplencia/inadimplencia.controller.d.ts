@@ -109,6 +109,7 @@ export declare class InadimplenciaController {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {}>;
     obterGatilhos(): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;

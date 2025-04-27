@@ -23,6 +23,7 @@ export declare class BoletosService {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {}>;
     findAll(query: any): Promise<({
         cliente: {
@@ -55,6 +56,7 @@ export declare class BoletosService {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {})[]>;
     findOne(id: number): Promise<{
         cliente: import("@prisma/client/runtime").GetResult<{
@@ -107,6 +109,7 @@ export declare class BoletosService {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {}>;
     cancel(id: number): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -128,6 +131,7 @@ export declare class BoletosService {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {}>;
     registrarPagamento(id: number, dadosPagamento: any): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
@@ -149,6 +153,7 @@ export declare class BoletosService {
         formaPagamento: string;
         dataCancelamento: Date;
         comprovante: string;
+        parcelaId: number;
     }, unknown, never> & {}>;
     private gerarNossoNumero;
     private gerarLinhaDigitavel;

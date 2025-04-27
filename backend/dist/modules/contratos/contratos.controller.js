@@ -28,6 +28,9 @@ let ContratosController = class ContratosController {
     create(createContratoDto) {
         return this.contratosService.create(createContratoDto);
     }
+    getByLoteId(loteId) {
+        return this.contratosService.getByLoteId(loteId);
+    }
     findAll(query) {
         return this.contratosService.findAll(query);
     }
@@ -64,6 +67,13 @@ __decorate([
     __metadata("design:paramtypes", [create_contrato_dto_1.CreateContratoDto]),
     __metadata("design:returntype", void 0)
 ], ContratosController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('lote/:loteId'),
+    __param(0, (0, common_1.Param)('loteId', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ContratosController.prototype, "getByLoteId", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),

@@ -11,6 +11,33 @@ export declare class ContratosService {
         processed: number;
         results: any[];
     }>;
+    getByLoteId(loteId: number): Promise<({
+        cliente: {
+            id: number;
+            nome: string;
+            cpfCnpj: string;
+        };
+    } & import("@prisma/client/runtime").GetResult<{
+        id: number;
+        clienteId: number;
+        loteId: number;
+        chave: string;
+        numeroContrato: string;
+        dataEmissao: Date;
+        dataPrimeiraPrestacao: Date;
+        valorPrestacao: import("@prisma/client/runtime").Decimal;
+        dataInicio: Date;
+        dataFim: Date;
+        valorTotal: import("@prisma/client/runtime").Decimal;
+        valorEntrada: import("@prisma/client/runtime").Decimal;
+        numeroParcelas: number;
+        dataVencimento: number;
+        clausulas: string;
+        status: string;
+        dataCriacao: Date;
+        parcelasPagas: number;
+        ultimoReajuste: import(".prisma/client").Prisma.JsonValue;
+    }, unknown, never> & {})[]>;
     create(createContratoDto: CreateContratoDto): Promise<import("@prisma/client/runtime").GetResult<{
         id: number;
         clienteId: number;
@@ -127,6 +154,7 @@ export declare class ContratosService {
             formaPagamento: string;
             dataCancelamento: Date;
             comprovante: string;
+            parcelaId: number;
         }, unknown, never> & {})[];
         reajustes: (import("@prisma/client/runtime").GetResult<{
             id: number;

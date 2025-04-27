@@ -97,6 +97,15 @@ const contratoService = {
     
     return response.data;
   },
+  /**
+   * Busca contratos de um lote específico
+   * @param {number} loteId - ID do lote
+   * @returns {Promise} Promise com a lista de contratos do lote
+   */
+  getByLoteId: async (loteId) => {
+    const response = await api.get(`/contratos?loteId=${loteId}`);
+    return response.data;
+  },
 
   /**
    * Busca todos os lotes disponíveis

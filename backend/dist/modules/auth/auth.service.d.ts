@@ -21,10 +21,10 @@ export declare class AuthService {
     getProfile(userId: number): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -32,10 +32,10 @@ export declare class AuthService {
     register(createUserDto: CreateUserDto): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -43,10 +43,10 @@ export declare class AuthService {
     updateUser(id: number, updateUserDto: UpdateUserDto): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -57,10 +57,10 @@ export declare class AuthService {
     getAllUsers(): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -68,10 +68,10 @@ export declare class AuthService {
     getUserById(id: number): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -91,10 +91,10 @@ export declare class AuthService {
         user: {
             permissions: any;
             id: number;
-            status: boolean;
-            name: string;
             email: string;
+            name: string;
             role: string;
+            status: boolean;
             lastLogin: Date;
             createdAt: Date;
             updatedAt: Date;

@@ -72,6 +72,11 @@ import ListaLotes from './pages/lotes/ListaLotes';
 import CadastroLote from './pages/lotes/CadastroLote';
 import EditarLote from './pages/lotes/EditarLote';
 
+import { ParcelaProvider } from './contexts/ParcelaContext';
+
+import VisualizarCliente from './pages/clientes/VisualizarCliente';
+import VisualizarContrato from './pages/contratos/VisualizarContrato';
+
 // Tema da aplicação
 import theme from './theme';
 
@@ -84,6 +89,7 @@ function App() {
           <ContratoProvider>
             <LoteProvider> {/* Novo provider adicionado */}
               <BoletoProvider>
+              <ParcelaProvider>
                 <DocumentosContratuaisProvider>
                   <ReajusteProvider>
                     <InadimplenciaProvider>
@@ -148,6 +154,11 @@ function App() {
                                 <EditarCliente />
                               </PrivateRoute>
                             } />
+                            <Route path="visualizar/:id" element={
+                              <PrivateRoute permissions={['clients:view']}>
+                                <VisualizarCliente />
+                              </PrivateRoute>
+                            } />
                           </Route>
                           
                           {/* Rotas de Contratos */}
@@ -200,6 +211,11 @@ function App() {
                             <Route path=":contratoId/quitacao/:quitacaoId" element={
                               <PrivateRoute permissions={['contracts:edit']}>
                                 <QuitacaoPage />
+                              </PrivateRoute>
+                            } />
+                            <Route path="visualizar/:id" element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <VisualizarContrato />
                               </PrivateRoute>
                             } />
                           </Route>
@@ -285,6 +301,7 @@ function App() {
                     </InadimplenciaProvider>
                   </ReajusteProvider>
                 </DocumentosContratuaisProvider>
+                </ParcelaProvider>
               </BoletoProvider>
             </LoteProvider>
           </ContratoProvider>

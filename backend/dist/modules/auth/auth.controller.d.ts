@@ -20,10 +20,10 @@ export declare class AuthController {
     register(createUserDto: CreateUserDto): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -31,10 +31,10 @@ export declare class AuthController {
     getProfile(req: any): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -49,10 +49,10 @@ export declare class AuthController {
     getAllUsers(): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -60,10 +60,10 @@ export declare class AuthController {
     getUserById(id: number): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;
@@ -71,10 +71,10 @@ export declare class AuthController {
     updateUser(id: number, updateUserDto: UpdateUserDto): Promise<{
         permissions: any;
         id: number;
-        status: boolean;
-        name: string;
         email: string;
+        name: string;
         role: string;
+        status: boolean;
         lastLogin: Date;
         createdAt: Date;
         updatedAt: Date;

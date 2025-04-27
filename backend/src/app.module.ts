@@ -13,6 +13,7 @@ import { InadimplenciaModule } from './modules/inadimplencia/inadimplencia.modul
 import { ReajustesModule } from './modules/reajustes/reajustes.module';
 import { DocumentosModule } from './modules/documentos/documentos.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ParcelasModule } from './modules/parcelas/parcelas.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
@@ -34,6 +35,7 @@ import { AuthModule } from './modules/auth/auth.module';
     DocumentosModule,
     DashboardModule,
     AuthModule,
+    ParcelasModule
   ],
 })
 export class AppModule {}
