@@ -32,6 +32,7 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
+  Visibility as VisibilityIcon,
   Person as PersonIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
@@ -576,7 +577,7 @@ const ClienteList = () => {
                                   } 
                                 }}
                               >
-                                
+                              <VisibilityIcon />
                               </IconButton>
                             </Tooltip>
                           <Tooltip title="Editar">
