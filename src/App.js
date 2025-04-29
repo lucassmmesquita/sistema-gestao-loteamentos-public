@@ -12,7 +12,7 @@ import { BoletoProvider } from './contexts/BoletoContext';
 import { DocumentosContratuaisProvider } from './contexts/DocumentosContratuaisContext';
 import { ReajusteProvider } from './contexts/ReajusteContext';
 import { InadimplenciaProvider } from './contexts/InadimplenciaContext';
-import { LoteProvider } from './contexts/LoteContext'; // Nova importação
+import { LoteProvider } from './contexts/LoteContext';
 
 // Componentes de layout e autenticação
 import Layout from './components/common/Layout';
@@ -42,6 +42,8 @@ import CadastroContrato from './pages/contratos/CadastroContrato';
 import EditarContrato from './pages/contratos/EditarContrato';
 import VincularContratosPage from './pages/contratos/VincularContratosPage';
 import ImportarContratosPage from './pages/contratos/ImportarContratosPage';
+import MeusContratosVendedor from './pages/contratos/MeusContratosVendedor';
+import MeusContratosProprietario from './pages/contratos/MeusContratosProprietario';
 
 // Páginas de documentos
 import DocumentosPage from './pages/documentos/DocumentosPage';
@@ -87,7 +89,7 @@ function App() {
       <AuthProvider>
         <ClienteProvider>
           <ContratoProvider>
-            <LoteProvider> {/* Novo provider adicionado */}
+            <LoteProvider>
               <BoletoProvider>
               <ParcelaProvider>
                 <DocumentosContratuaisProvider>
@@ -163,7 +165,7 @@ function App() {
                           
                           {/* Rotas de Contratos */}
                           <Route path="contratos">
-                          <Route path="importar" element={
+                            <Route path="importar" element={
                               <PrivateRoute permissions={['contracts:create']}>
                                 <ImportarContratosPage />
                               </PrivateRoute>
@@ -186,11 +188,6 @@ function App() {
                             <Route path="vincular" element={
                               <PrivateRoute permissions={['contracts:create']}>
                                 <VincularContratosPage />
-                              </PrivateRoute>
-                            } />
-                            <Route path="importar" element={
-                              <PrivateRoute permissions={['contracts:create']}>
-                                <ImportarContratosPage />
                               </PrivateRoute>
                             } />
                             <Route path=":contratoId/documentos" element={
@@ -218,8 +215,20 @@ function App() {
                                 <VisualizarContrato />
                               </PrivateRoute>
                             } />
+                            {/* Novas rotas para contratos por perfil */}
+                            <Route path="vendedor" element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <MeusContratosVendedor />
+                              </PrivateRoute>
+                            } />
+                            <Route path="proprietario" element={
+                              <PrivateRoute permissions={['contracts:view']}>
+                                <MeusContratosProprietario />
+                              </PrivateRoute>
+                            } />
                           </Route>
-                            {/* Rotas de Lotes */}
+                          
+                          {/* Rotas de Lotes */}
                           <Route path="lotes">
                             <Route index element={
                                 <PrivateRoute permissions={['lots:view']}>
@@ -242,6 +251,7 @@ function App() {
                               </PrivateRoute>
                             } />
                           </Route>
+                          
                           {/* Rotas de Boletos */}
                           <Route path="boletos">
                             <Route index element={

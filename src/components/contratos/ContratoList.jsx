@@ -1,4 +1,4 @@
-// src/components/contratos/ContratoList.jsx - Solução alternativa para loadContratosByCliente
+// src/components/contratos/ContratoList.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +42,7 @@ import {
 } from '@mui/icons-material';
 import useContratos from '../../hooks/useContratos';
 import useClientes from '../../hooks/useClientes';
+import useAuth from '../../hooks/useAuth'; // Novo hook para verificar permissões
 import contratoService from '../../services/contratoService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import Loading from '../common/Loading';
@@ -63,6 +64,7 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
     gerarPreviaContrato
   } = useContratos();
   const { clientes, loadClientes } = useClientes();
+  const { canEditContrato } = useAuth(); // Usar o hook de autenticação para verificar permissões
   
   // Estados locais
   const [page, setPage] = useState(0);
@@ -147,14 +149,13 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
         clienteNome.includes(lowercasedSearch) ||
         loteInfo.includes(lowercasedSearch) ||
         contrato.status?.toLowerCase().includes(lowercasedSearch) ||
+        contrato.estado?.toLowerCase().includes(lowercasedSearch) || // Adicionado estado
         formatCurrency(contrato.valorTotal).includes(lowercasedSearch)
       );
     });
     
     setFilteredContratos(filtered);
   }, [searchTerm, contratosLocais, clientes, lotes]);
-  
-  // Resto do componente permanece igual...
   
   // Manipuladores de eventos
   const handleChangePage = (event, newPage) => {
@@ -184,6 +185,12 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
   };
   
   const handleDeleteClick = (contrato) => {
+    // Verificar se o contrato já foi oficializado
+    if (contrato.estado === 'oficializado') {
+      alert('Contratos oficializados não podem ser excluídos. Utilize distratos para cancelar o contrato.');
+      return;
+    }
+    
     const cliente = clientes.find(c => c.id === contrato.clienteId) || { nome: 'Cliente não encontrado' };
     const lote = lotes.find(l => l.id === contrato.loteId) || { loteamento: 'Loteamento não encontrado', quadra: '-', numero: '-' };
     
@@ -238,12 +245,25 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
   
   // Função para obter informações do cliente
   const getClienteInfo = (clienteId) => {
+    if (!clientes || !Array.isArray(clientes)) {
+      return { nome: 'Cliente não encontrado', cpfCnpj: '' };
+    }
+    
     const cliente = clientes.find(c => c.id === clienteId);
     return cliente ? cliente : { nome: 'Cliente não encontrado', cpfCnpj: '' };
   };
   
-  // Função para obter informações do lote
+  // Função para obter informações do lote (corrigida)
   const getLoteInfo = (loteId) => {
+    if (!lotes || !Array.isArray(lotes)) {
+      return { 
+        loteamento: 'Loteamento não encontrado', 
+        quadra: '-', 
+        numero: '-', 
+        area: 0 
+      };
+    }
+    
     const lote = lotes.find(l => l.id === loteId);
     return lote ? lote : { 
       loteamento: 'Loteamento não encontrado', 
@@ -258,17 +278,30 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
     if (isMobile) {
       return ['cliente', 'lote', 'acoes'];
     } else if (isTablet) {
-      return ['cliente', 'lote', 'valor', 'parcelas', 'acoes'];
+      return ['cliente', 'lote', 'valor', 'parcelas', 'status', 'acoes'];
     }
     return ['cliente', 'lote', 'valor', 'periodo', 'parcelas', 'status', 'acoes'];
   };
   
+  // Função para obter label e cor do chip de estado do contrato
+  const getEstadoChipProps = (estado) => {
+    switch (estado) {
+      case 'pre_contrato':
+        return { label: 'Pré-Contrato', color: 'default' };
+      case 'em_aprovacao':
+        return { label: 'Em Aprovação', color: 'warning' };
+      case 'aprovado':
+        return { label: 'Aprovado', color: 'info' };
+      case 'oficializado':
+        return { label: 'Oficializado', color: 'success' };
+      default:
+        return { label: estado || 'Desconhecido', color: 'default' };
+    }
+  };
+  
   const visibleColumns = getVisibleColumns();
   
-  // Renderização da UI permanece igual...
-  
   return (
-    // Código JSX...
     <>
       <Loading open={loading || loading2} />
       
@@ -468,12 +501,13 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredContratos.length > 0 ? (
+            {Array.isArray(filteredContratos) && filteredContratos.length > 0 ? (
                 filteredContratos
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((contrato) => {
                     const cliente = getClienteInfo(contrato.clienteId);
                     const lote = getLoteInfo(contrato.loteId);
+                    const isEditavel = canEditContrato(contrato);
                     
                     return (
                       <TableRow
@@ -645,19 +679,35 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
                               borderColor: 'divider'
                             }}
                           >
-                            <Chip 
-                              label={contrato.status || 'Ativo'} 
-                              color={
-                                contrato.status === 'cancelado' ? 'error' : 
-                                contrato.status === 'concluído' ? 'success' : 
-                                'primary'
-                              }
-                              size="small"
-                              sx={{ 
-                                fontWeight: 500,
-                                borderRadius: 4
-                              }}
-                            />
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                              <Chip 
+                                label={contrato.status || 'Ativo'} 
+                                color={
+                                  contrato.status === 'cancelado' ? 'error' : 
+                                  contrato.status === 'concluído' ? 'success' : 
+                                  'primary'
+                                }
+                                size="small"
+                                sx={{ 
+                                  fontWeight: 500,
+                                  borderRadius: 4
+                                }}
+                              />
+                              
+                              {/* Chip para estado do fluxo de aprovação */}
+                              {contrato.estado && (
+                                <Chip 
+                                  label={getEstadoChipProps(contrato.estado).label} 
+                                  color={getEstadoChipProps(contrato.estado).color}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{ 
+                                    fontWeight: 500,
+                                    borderRadius: 4
+                                  }}
+                                />
+                              )}
+                            </Box>
                           </TableCell>
                         )}
                         
@@ -683,34 +733,38 @@ const ContratoList = ({ clienteId = null, mode = 'normal' }) => {
                                 <VisibilityIcon />
                               </IconButton>
                             </Tooltip>
-                            <Tooltip title="Editar">
-                              <IconButton 
-                                aria-label="editar" 
-                                onClick={() => handleEditContrato(contrato.id)}
-                                sx={{ 
-                                  '&:hover': { 
-                                    transform: 'translateY(-2px)',
-                                    transition: 'transform 0.2s ease' 
-                                  } 
-                                }}
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Excluir">
-                              <IconButton 
-                                aria-label="excluir" 
-                                onClick={() => handleDeleteClick(contrato)}
-                                sx={{ 
-                                  '&:hover': { 
-                                    transform: 'translateY(-2px)',
-                                    transition: 'transform 0.2s ease' 
-                                  } 
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
+                            {isEditavel && (
+                              <Tooltip title="Editar">
+                                <IconButton 
+                                  aria-label="editar" 
+                                  onClick={() => handleEditContrato(contrato.id)}
+                                  sx={{ 
+                                    '&:hover': { 
+                                      transform: 'translateY(-2px)',
+                                      transition: 'transform 0.2s ease' 
+                                    } 
+                                  }}
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                            {isEditavel && (
+                              <Tooltip title="Excluir">
+                                <IconButton 
+                                  aria-label="excluir" 
+                                  onClick={() => handleDeleteClick(contrato)}
+                                  sx={{ 
+                                    '&:hover': { 
+                                      transform: 'translateY(-2px)',
+                                      transition: 'transform 0.2s ease' 
+                                    } 
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
                           </TableCell>
                         )}
                       </TableRow>

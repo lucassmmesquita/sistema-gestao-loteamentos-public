@@ -1,13 +1,188 @@
+// backend/src/modules/contratos/contratos.service.ts
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { QueryContratoDto } from './dto/query-contrato.dto';
 import { ImportContratoDto } from './dto/import-contrato.dto';
+import { AprovarContratoDto, NivelAprovacao } from './dto/aprovar-contrato.dto';
+import { OficializarContratoDto } from './dto/oficializar-contrato.dto';
 
 @Injectable()
 export class ContratosService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async aprovarContrato(id: number, userId: number, aprovarContratoDto: AprovarContratoDto) {
+    // Verificar se o contrato existe
+    const contrato = await this.findOne(id);
+    
+    if (!contrato) {
+      throw new NotFoundException(`Contrato ID ${id} não encontrado`);
+    }
+    
+    // Verificar se o contrato está em estado apropriado para aprovação
+    if (contrato.estado === 'oficializado') {
+      throw new Error('Contrato já foi oficializado e não pode ser alterado');
+    }
+    
+    // Verificar se o usuário tem permissão para aprovar neste nível
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!user) {
+      throw new NotFoundException(`Usuário ID ${userId} não encontrado`);
+    }
+    
+    // Verificar permissões por nível
+    let updateData = {};
+    
+    switch (aprovarContratoDto.nivel) {
+      case NivelAprovacao.VENDEDOR:
+        if (user.perfil !== 'vendedor' && user.perfil !== 'loteadora') {
+          throw new Error('Usuário não tem permissão para aprovar como vendedor');
+        }
+        if (contrato.vendedorId !== userId && user.perfil !== 'loteadora') {
+          throw new Error('Apenas o vendedor responsável pelo contrato pode aprová-lo');
+        }
+        updateData = { 
+          aprovadoVendedor: aprovarContratoDto.aprovado,
+          estado: aprovarContratoDto.aprovado ? 'em_aprovacao' : 'pre_contrato'
+        };
+        break;
+      
+      case NivelAprovacao.DIRETOR:
+        if (user.perfil !== 'loteadora') {
+          throw new Error('Apenas diretores podem realizar essa aprovação');
+        }
+        updateData = { 
+          aprovadoDiretor: aprovarContratoDto.aprovado,
+          estado: aprovarContratoDto.aprovado && contrato.aprovadoVendedor ? 'em_aprovacao' : 'pre_contrato'
+        };
+        break;
+      
+      case NivelAprovacao.PROPRIETARIO:
+        if (user.perfil !== 'dono_terreno' && user.perfil !== 'loteadora') {
+          throw new Error('Usuário não tem permissão para aprovar como proprietário');
+        }
+        if (contrato.proprietarioId !== userId && user.perfil !== 'loteadora') {
+          throw new Error('Apenas o proprietário do loteamento pode aprová-lo');
+        }
+        updateData = { 
+          aprovadoProprietario: aprovarContratoDto.aprovado,
+          estado: aprovarContratoDto.aprovado && contrato.aprovadoVendedor && contrato.aprovadoDiretor ? 'aprovado' : 'em_aprovacao'
+        };
+        break;
+      
+      default:
+        throw new Error('Nível de aprovação inválido');
+    }
+    
+    // Registrar a aprovação
+    const contratoAtualizado = await this.prisma.contrato.update({
+      where: { id },
+      data: updateData,
+      include: {
+        cliente: true,
+        lote: true,
+        vendedor: true,
+        proprietario: true
+      }
+    });
+    
+    // Se todas as aprovações foram concluídas, atualizar o estado para 'aprovado'
+    if (contratoAtualizado.aprovadoVendedor && 
+        contratoAtualizado.aprovadoDiretor && 
+        contratoAtualizado.aprovadoProprietario) {
+      await this.prisma.contrato.update({
+        where: { id },
+        data: { estado: 'aprovado' }
+      });
+    }
+    
+    return contratoAtualizado;
+  }
+
+  async oficializarContrato(id: number, userId: number, oficializarContratoDto: OficializarContratoDto) {
+    // Verificar se o contrato existe
+    const contrato = await this.findOne(id);
+    
+    if (!contrato) {
+      throw new NotFoundException(`Contrato ID ${id} não encontrado`);
+    }
+    
+    // Verificar se o contrato está aprovado
+    if (contrato.estado !== 'aprovado') {
+      throw new Error('Contrato deve estar aprovado para ser oficializado');
+    }
+    
+    // Verificar se o usuário tem permissão (apenas loteadora ou diretor)
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!user || user.perfil !== 'loteadora') {
+      throw new Error('Apenas administradores podem oficializar contratos');
+    }
+    
+    // Atualizar o contrato para oficializado
+    const contratoOficializado = await this.prisma.contrato.update({
+      where: { id },
+      data: {
+        estado: 'oficializado',
+        contratoOficialUrl: oficializarContratoDto.contratoOficialUrl,
+        dataOficializacao: new Date()
+      },
+      include: {
+        cliente: true,
+        lote: true,
+        vendedor: true,
+        proprietario: true
+      }
+    });
+    
+    // Atualizar o status do lote para "vendido"
+    await this.prisma.lote.update({
+      where: { id: contrato.loteId },
+      data: { status: 'vendido' }
+    });
+    
+    return contratoOficializado;
+  }
+
+  async getContratosByVendedor(vendedorId: number) {
+    return this.prisma.contrato.findMany({
+      where: { vendedorId },
+      include: {
+        cliente: true,
+        lote: true
+      }
+    });
+  }
+
+  async getContratosByProprietario(proprietarioId: number) {
+    // Buscar lotes do proprietário
+    const loteamentos = await this.prisma.loteamento.findMany({
+      where: { proprietarioId },
+      include: { lotes: true }
+    });
+    
+    const lotesIds = loteamentos.flatMap(loteamento => 
+      loteamento.lotes.map(lote => lote.id)
+    );
+    
+    // Buscar contratos vinculados a esses lotes
+    return this.prisma.contrato.findMany({
+      where: { 
+        loteId: { in: lotesIds }
+      },
+      include: {
+        cliente: true,
+        lote: true
+      }
+    });
+  }
 
   async importContratos(importContratosDto: ImportContratoDto[]) {
     const results = [];
@@ -111,7 +286,6 @@ export class ContratosService {
     const cliente = await this.prisma.cliente.findUnique({
       where: { id: createContratoDto.clienteId }
     });
-
     
     if (!cliente) {
       throw new NotFoundException(`Cliente ID ${createContratoDto.clienteId} não encontrado`);
@@ -130,11 +304,15 @@ export class ContratosService {
       throw new Error(`Lote ID ${createContratoDto.loteId} não está disponível`);
     }
     
-    // Criando o contrato
+    // Criando o contrato com estado inicial "pre_contrato"
     const contrato = await this.prisma.contrato.create({
       data: {
         ...createContratoDto,
-        dataCriacao: new Date()
+        dataCriacao: new Date(),
+        estado: 'pre_contrato',
+        aprovadoVendedor: false,
+        aprovadoDiretor: false,
+        aprovadoProprietario: false
       }
     });
     
@@ -184,7 +362,19 @@ export class ContratosService {
             cpfCnpj: true
           }
         },
-        lote: true
+        lote: true,
+        vendedor: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        proprietario: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       }
     });
   }
@@ -201,7 +391,21 @@ export class ContratosService {
         },
         lote: true,
         boletos: true,
-        reajustes: true
+        reajustes: true,
+        vendedor: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        proprietario: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
       }
     });
     
@@ -214,7 +418,12 @@ export class ContratosService {
 
   async update(id: number, updateContratoDto: UpdateContratoDto) {
     // Verificando se o contrato existe
-    await this.findOne(id);
+    const contrato = await this.findOne(id);
+    
+    // Verificar se o contrato pode ser editado
+    if (contrato.estado === 'oficializado') {
+      throw new Error('Contrato já foi oficializado e não pode ser alterado diretamente. Utilize aditivos contratuais para alterações.');
+    }
     
     // Se estiver atualizando o loteId, precisa verificar disponibilidade
     if (updateContratoDto.loteId) {
@@ -265,6 +474,11 @@ export class ContratosService {
   async remove(id: number) {
     // Verificando se o contrato existe
     const contrato = await this.findOne(id);
+    
+    // Verificar se o contrato pode ser removido
+    if (contrato.estado === 'oficializado') {
+      throw new Error('Contrato já foi oficializado e não pode ser removido. Utilize distratos para cancelar o contrato.');
+    }
     
     // Liberando o lote
     await this.prisma.lote.update({

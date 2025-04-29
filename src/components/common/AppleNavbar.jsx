@@ -26,6 +26,7 @@ import {
 import { styled, useTheme, alpha } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../../ThemeProvider';
+import useAuth from '../../hooks/useAuth'; // Importação do novo hook
 import {
   Menu as MenuIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -52,7 +53,8 @@ import {
   Link as LinkIcon,
   ImportExport as ImportExportIcon,
   FileCopy as FileCopyIcon,
-  Landscape as LandscapeIcon
+  Landscape as LandscapeIcon,
+  AssignmentOutlined
 } from '@mui/icons-material';
 
 // Custom styled components
@@ -142,6 +144,7 @@ const AppleNavbar = ({
   const navigate = useNavigate();
   const { mode, toggleMode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, isLoteadora, isVendedor, isDonoTerreno } = useAuth(); // Usar o hook de autenticação
   
   const [scrolled, setScrolled] = useState(false);
   const [subMenus, setSubMenus] = useState({
@@ -185,7 +188,18 @@ const AppleNavbar = ({
     { text: 'Importar Lotes', icon: <ImportExportIcon />, path: '/lotes/importar' },
   ];
   
-  const contratosSubMenuItems = [
+  const contratosSubMenuItems = isLoteadora() ? [
+    { text: 'Listar Contratos', icon: <DescriptionIcon />, path: '/contratos' },
+    { text: 'Novo Contrato', icon: <AddIcon />, path: '/contratos/cadastro' },
+    { text: 'Vincular Contratos', icon: <LinkIcon />, path: '/contratos/vincular' },
+    { text: 'Importar Contratos', icon: <ImportExportIcon />, path: '/contratos/importar' },
+  ] : isVendedor() ? [
+    { text: 'Listar Contratos', icon: <DescriptionIcon />, path: '/contratos' },
+    { text: 'Meus Contratos', icon: <AssignmentOutlined />, path: '/contratos/vendedor' },
+    { text: 'Novo Contrato', icon: <AddIcon />, path: '/contratos/cadastro' },
+  ] : isDonoTerreno() ? [
+    { text: 'Meus Contratos', icon: <AssignmentOutlined />, path: '/contratos/proprietario' },
+  ] : [
     { text: 'Listar Contratos', icon: <DescriptionIcon />, path: '/contratos' },
     { text: 'Novo Contrato', icon: <AddIcon />, path: '/contratos/cadastro' },
     { text: 'Vincular Contratos', icon: <LinkIcon />, path: '/contratos/vincular' },
@@ -442,7 +456,7 @@ const AppleNavbar = ({
                     : theme.palette.text.secondary,
                   minWidth: 40
                 }}
-              >
+                >
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText 

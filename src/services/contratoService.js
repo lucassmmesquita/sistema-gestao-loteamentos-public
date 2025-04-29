@@ -72,7 +72,7 @@ const contratoService = {
    * @returns {Promise} Promise com o contrato atualizado
    */
   update: async (id, contrato) => {
-    const response = await api.put(`/contratos/${id}`, contrato);
+    const response = await api.patch(`/contratos/${id}`, contrato);
     return response.data;
   },
 
@@ -97,6 +97,7 @@ const contratoService = {
     
     return response.data;
   },
+  
   /**
    * Busca contratos de um lote específico
    * @param {number} loteId - ID do lote
@@ -167,6 +168,66 @@ COMPRADOR
     `;
     
     return textoContrato;
+  },
+  
+  /**
+   * Aprova um contrato em um determinado nível
+   * @param {number} id - ID do contrato
+   * @param {Object} dados - Dados de aprovação
+   * @returns {Promise} Promise com o contrato atualizado
+   */
+  aprovarContrato: async (id, dados) => {
+    try {
+      const response = await api.patch(`/contratos/${id}/aprovar`, dados);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao aprovar contrato ${id}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Oficializa um contrato com contrato assinado
+   * @param {number} id - ID do contrato
+   * @param {Object} dados - Dados da oficialização
+   * @returns {Promise} Promise com o contrato atualizado
+   */
+  oficializarContrato: async (id, dados) => {
+    try {
+      const response = await api.patch(`/contratos/${id}/oficializar`, dados);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao oficializar contrato ${id}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Busca contratos do vendedor logado
+   * @returns {Promise} Promise com a lista de contratos
+   */
+  getContratosByVendedor: async () => {
+    try {
+      const response = await api.get('/contratos/vendedor/meus');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar contratos do vendedor:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Busca contratos do proprietário logado
+   * @returns {Promise} Promise com a lista de contratos
+   */
+  getContratosByProprietario: async () => {
+    try {
+      const response = await api.get('/contratos/proprietario/meus');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar contratos do proprietário:', error);
+      throw error;
+    }
   }
 };
 

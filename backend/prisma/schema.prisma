@@ -72,6 +72,20 @@ model Documento {
   @@map("documentos")
 }
 
+model Loteamento {
+  id                  Int       @id @default(autoincrement())
+  nome                String
+  descricao           String?
+  localizacao         String?
+  area                Float?
+  proprietarioId      Int?
+  lotes               Lote[]
+  proprietario        User?     @relation("ProprietarioLoteamentos", fields: [proprietarioId], references: [id])
+
+  @@index([proprietarioId])
+  @@map("loteamentos")
+}
+
 model Lote {
   id         Int        @id @default(autoincrement())
   numero     String
@@ -82,10 +96,14 @@ model Lote {
   status     String     @default("disponivel")
   chave      String? // Novo campo
   contratos  Contrato[]
+  loteamentoId        Int?
+  
+  loteamentoRef       Loteamento? @relation(fields: [loteamentoId], references: [id])
 
   @@index([status])
   @@index([quadra, numero])
   @@index([chave]) // Novo índice
+  @@index([loteamentoId])
   @@map("lotes")
 }
 
@@ -109,21 +127,37 @@ model Contrato {
   dataCriacao           DateTime  @default(now())
   parcelasPagas         Int       @default(0)
   ultimoReajuste        Json?
+  
+  // Campos para o fluxo de aprovação
+  estado                String    @default("pre_contrato") // pre_contrato, em_aprovacao, aprovado, oficializado
+  aprovadoVendedor      Boolean   @default(false)
+  aprovadoDiretor       Boolean   @default(false)
+  aprovadoProprietario  Boolean   @default(false)
+  contratoOficialUrl    String?   // URL do contrato oficial digitalizado
+  dataOficializacao     DateTime?
+  vendedorId            Int?      // ID do vendedor que criou o contrato
+  proprietarioId        Int?      // ID do proprietário do loteamento
 
   cliente   Cliente    @relation(fields: [clienteId], references: [id])
   lote      Lote       @relation(fields: [loteId], references: [id])
+  vendedor  User?      @relation("VendedorContratos", fields: [vendedorId], references: [id])
+  proprietario User?   @relation("ProprietarioContratos", fields: [proprietarioId], references: [id])
+  
   boletos   Boleto[]
   reajustes Reajuste[]
   aditivos  Aditivo[]
   distratos Distrato[]
   quitacoes Quitacao[]
-  parcelas  Parcela[] // Adicione esta linha para a relação inversa
+  parcelas  Parcela[]
 
   @@index([clienteId])
   @@index([loteId])
   @@index([status])
-  @@index([chave]) // Novo índice
-  @@index([numeroContrato]) // Novo índice
+  @@index([chave])
+  @@index([numeroContrato])
+  @@index([estado])
+  @@index([vendedorId])
+  @@index([proprietarioId])
   @@map("contratos")
 }
 
@@ -151,7 +185,7 @@ model Boleto {
 
   cliente  Cliente  @relation(fields: [clienteId], references: [id])
   contrato Contrato @relation(fields: [contratoId], references: [id])
-  parcela  Parcela? // Adicione esta linha para a relação inversa
+  parcela  Parcela? @relation(fields: [parcelaId], references: [id])
 
   @@index([clienteId])
   @@index([contratoId])
@@ -353,6 +387,12 @@ model User {
   lastLogin   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  perfil      String    @default("vendedor") // loteadora, vendedor, dono_terreno
+  
+  // Relações para os diferentes papéis
+  contratosComoVendedor     Contrato[] @relation("VendedorContratos")
+  contratosComoProprietario Contrato[] @relation("ProprietarioContratos")
+  loteamentosComoProprietario Loteamento[] @relation("ProprietarioLoteamentos")
 
   @@map("users")
 }
@@ -369,10 +409,10 @@ model Parcela {
   formaPagamento String?
   observacoes    String?   @db.Text
   dataCriacao    DateTime  @default(now())
-  boletoId       Int?      @unique
+  boletoId       Int?      
 
   contrato Contrato @relation(fields: [contratoId], references: [id], onDelete: Cascade)
-  boleto   Boleto?  @relation(fields: [boletoId], references: [id])
+  boleto   Boleto?
 
   @@index([contratoId])
   @@index([status])
