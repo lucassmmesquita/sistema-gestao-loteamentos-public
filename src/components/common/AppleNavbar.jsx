@@ -27,6 +27,7 @@ import { styled, useTheme, alpha } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../../ThemeProvider';
 import useAuth from '../../hooks/useAuth'; // Importação do novo hook
+
 import {
   Menu as MenuIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -145,6 +146,7 @@ const AppleNavbar = ({
   const { mode, toggleMode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, isLoteadora, isVendedor, isDonoTerreno } = useAuth(); // Usar o hook de autenticação
+
   
   const [scrolled, setScrolled] = useState(false);
   const [subMenus, setSubMenus] = useState({

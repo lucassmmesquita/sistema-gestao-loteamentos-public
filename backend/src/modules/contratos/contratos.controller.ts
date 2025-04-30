@@ -1,5 +1,3 @@
-// backend/src/modules/contratos/contratos.controller.ts
-
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, UseGuards, Request } from '@nestjs/common';
 import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
@@ -20,8 +18,9 @@ export class ContratosController {
   }
 
   @Post()
-  create(@Body() createContratoDto: CreateContratoDto) {
-    return this.contratosService.create(createContratoDto);
+  @UseGuards(JwtAuthGuard)
+  create(@Body() createContratoDto: CreateContratoDto, @Request() req) {
+    return this.contratosService.create(createContratoDto, req.user.id);
   }
 
   @Get('lote/:loteId')

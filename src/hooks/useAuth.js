@@ -1,4 +1,4 @@
-// src/hooks/useAuth.js (modificado)
+// src/hooks/useAuth.js
 
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
@@ -21,6 +21,7 @@ const useAuth = () => {
   const isVendedor = () => isPerfil('vendedor');
   const isDonoTerreno = () => isPerfil('dono_terreno');
   
+  // Verificações específicas por tipo de recurso
   const canCreateContrato = () => {
     return isLoteadora() || isVendedor();
   };
@@ -41,6 +42,40 @@ const useAuth = () => {
     return false;
   };
   
+  const canCreateCliente = () => {
+    return isLoteadora() || isVendedor();
+  };
+  
+  const canViewCliente = (cliente) => {
+    if (!cliente) return false;
+    if (isLoteadora()) return true;
+    if (isVendedor() && cliente.vendedorId === user?.id) return true;
+    return false;
+  };
+  
+  const canEditCliente = (cliente) => {
+    if (!cliente) return false;
+    if (isLoteadora()) return true;
+    if (isVendedor() && cliente.vendedorId === user?.id) return true;
+    return false;
+  };
+  
+  const canViewLote = (lote) => {
+    if (!lote) return false;
+    if (isLoteadora()) return true;
+    if (isDonoTerreno() && lote.loteamentoId) {
+      const loteamento = lote.loteamentoRef;
+      return loteamento && loteamento.proprietarioId === user?.id;
+    }
+    return true; // Vendedores podem ver todos os lotes para venda
+  };
+  
+  const canEditLote = (lote) => {
+    if (!lote) return false;
+    if (isLoteadora()) return true;
+    return false; // Apenas loteadora pode editar lotes
+  };
+  
   return {
     ...context,
     user: user || {}, // Garantir que user não seja undefined
@@ -50,7 +85,12 @@ const useAuth = () => {
     isDonoTerreno,
     canCreateContrato,
     canViewContrato,
-    canEditContrato
+    canEditContrato,
+    canCreateCliente,
+    canViewCliente,
+    canEditCliente,
+    canViewLote,
+    canEditLote
   };
 };
 

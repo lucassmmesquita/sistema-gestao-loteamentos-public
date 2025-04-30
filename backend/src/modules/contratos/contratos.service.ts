@@ -160,7 +160,7 @@ export class ContratosService {
       }
     });
   }
-
+  
   async getContratosByProprietario(proprietarioId: number) {
     // Buscar lotes do proprietário
     const loteamentos = await this.prisma.loteamento.findMany({
@@ -281,7 +281,7 @@ export class ContratosService {
     });
   }
 
-  async create(createContratoDto: CreateContratoDto) {
+  async create(createContratoDto: CreateContratoDto, userId: number) {
     // Verificando se o cliente existe
     const cliente = await this.prisma.cliente.findUnique({
       where: { id: createContratoDto.clienteId }
@@ -304,6 +304,11 @@ export class ContratosService {
       throw new Error(`Lote ID ${createContratoDto.loteId} não está disponível`);
     }
     
+    // Buscar o loteamento para identificar o proprietário
+    const loteamento = lote.loteamentoId ? await this.prisma.loteamento.findUnique({
+      where: { id: lote.loteamentoId }
+    }) : null;
+    
     // Criando o contrato com estado inicial "pre_contrato"
     const contrato = await this.prisma.contrato.create({
       data: {
@@ -312,7 +317,9 @@ export class ContratosService {
         estado: 'pre_contrato',
         aprovadoVendedor: false,
         aprovadoDiretor: false,
-        aprovadoProprietario: false
+        aprovadoProprietario: false,
+        vendedorId: userId, // Associa o vendedor atual
+        proprietarioId: loteamento?.proprietarioId || null // Associa o proprietário do loteamento
       }
     });
     

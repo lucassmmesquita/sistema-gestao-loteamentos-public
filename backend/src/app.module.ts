@@ -4,7 +4,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { PrismaModule } from './prisma/prisma.module';
+// Correção do caminho de importação - uso de caminho relativo explícito
+import { PrismaModule } from './prisma/prisma.module';  
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { ContratosModule } from './modules/contratos/contratos.module';
 import { BoletosModule } from './modules/boletos/boletos.module';
