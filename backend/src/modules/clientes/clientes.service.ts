@@ -158,34 +158,50 @@ export class ClientesService {
         mode: 'insensitive'
       };
     }
-
+  
     if (query.cpfCnpj) {
       filters['cpfCnpj'] = {
         contains: query.cpfCnpj
       };
     }
-
+  
     if (query.cidade || query.estado) {
       filters['endereco'] = {};
-
+  
       if (query.cidade) {
         filters['endereco']['cidade'] = {
           contains: query.cidade,
           mode: 'insensitive'
         };
       }
-
+  
       if (query.estado) {
         filters['endereco']['estado'] = query.estado;
       }
     }
-
-    return this.prisma.cliente.findMany({
+  
+    const clientes = await this.prisma.cliente.findMany({
       where: filters,
       include: {
         endereco: true,
-        contatos: true
+        contatos: true,
+        // Incluir os contratos para contagem
+        contratos: {
+          select: {
+            id: true  // Apenas o ID é suficiente para contagem
+          }
+        }
       }
+    });
+    
+    // Mapear para incluir contagem de contratos
+    return clientes.map(cliente => {
+      const { contratos, ...clienteData } = cliente;
+      return {
+        ...clienteData,
+        contratosCount: contratos.length, // Adicionar contagem
+        // Não enviamos a lista completa de contratos para economizar largura de banda
+      };
     });
   }
 

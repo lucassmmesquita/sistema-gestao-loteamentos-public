@@ -97,4 +97,22 @@ export class ContratosController {
   getContratosByProprietario(@Request() req) {
     return this.contratosService.getContratosByProprietario(req.user.id);
   }
+  
+  @Post('processar-documento')
+  @UseGuards(JwtAuthGuard)
+  async processarDocumento(@Body() data: { fileUrl: string, contratoId: number }) {
+    // Em um sistema real, você chamaria um serviço de OCR aqui
+    // Por simplicidade, vamos apenas simular o processamento
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Simula processamento
+    
+    return {
+      success: true,
+      message: 'Documento processado com sucesso. Dados extraídos automaticamente.',
+      dados: {
+        dataEmissao: new Date(),
+        numeroContrato: `AUTO-${Math.floor(Math.random() * 10000)}`
+      }
+    };
+  }
+
 }

@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, NotFoundException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs'; 
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     // Verifica se a senha corresponde ao hash
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcryptjs.compare(password, user.password);
 
     if (isPasswordValid) {
       // Remove a senha do objeto retornado
@@ -60,6 +60,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
+      perfil: user.perfil 
     };
 
     // Gera o token JWT
@@ -78,6 +79,7 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
+        erfil: user.perfil,
         permissions: user.permissions ? JSON.parse(user.permissions as string) : [],
       },
       token,
@@ -124,7 +126,7 @@ export class AuthService {
     }
 
     // Gera o hash da senha
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
     // Cria o novo usuário
     const newUser = await this.prisma.user.create({
@@ -183,7 +185,7 @@ export class AuthService {
 
     // Se estiver atualizando a senha, gera o hash
     if (updateUserDto.password) {
-      data.password = await bcrypt.hash(updateUserDto.password, 10);
+      data.password = await bcryptjs.hash(updateUserDto.password, 10);
     }
 
     // Atualiza o usuário
@@ -306,7 +308,7 @@ export class AuthService {
     }
 
     // Gera o hash da nova senha
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
 
     // Atualiza a senha do usuário
     await this.prisma.user.update({
@@ -343,7 +345,7 @@ export class AuthService {
     ];
 
     // Cria o usuário admin
-    const password = await bcrypt.hash('admin123', 10);
+    const password = await bcryptjs.hash('admin123', 10);
     const admin = await this.prisma.user.create({
       data: {
         name: 'Administrador',
