@@ -33,6 +33,9 @@ import Loading from '../../components/common/Loading';
 import ParcelasContrato from '../../components/parcelas/ParcelasContrato';
 import DocumentosContrato from '../../components/documentos/DocumentosContrato';
 import ContratoPreview from '../../components/contratos/ContratoPreview';
+import AditivoContratual from '../../components/contratos/AditivoContratual';
+import FluxoAprovacao from '../../components/contratos/FluxoAprovacao';
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -218,6 +221,8 @@ const VisualizarContrato = () => {
                 <Tab label="Informações Gerais" />
                 <Tab label="Parcelas" />
                 <Tab label="Documentos" />
+                <Tab label="Fluxo de Aprovação" />
+                <Tab label="Aditivos" /> {/* Nova tab */}
               </Tabs>
 
               <TabPanel value={tabValue} index={0}>
@@ -380,9 +385,12 @@ const VisualizarContrato = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={2}>
-                <DocumentosContrato contratoId={currentContrato.id} />
-              </TabPanel>
+              <TabPanel value={tabValue} index={3}>
+              <FluxoAprovacao contrato={currentContrato} />
+            </TabPanel>
+              <TabPanel value={tabValue} index={4}>
+              <AditivoContratual contratoId={currentContrato.id} />
+            </TabPanel>
             </CardContent>
           </Card>
 

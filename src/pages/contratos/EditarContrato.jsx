@@ -32,7 +32,7 @@ const EditarContrato = () => {
   };
   
   return (
-    <Container maxWidth="lg">
+    <Container>
       <Loading open={loading && !loaded} />
       
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>

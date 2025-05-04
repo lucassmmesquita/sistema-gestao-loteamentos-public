@@ -39,7 +39,6 @@ import {
   Description as DocumentIcon
 } from '@mui/icons-material';
 import useClientes from '../../hooks/useClientes';
-import useContratos from '../../hooks/useContratos';
 import { formatCPFouCNPJ, formatDate } from '../../utils/formatters';
 import Loading from '../common/Loading';
 
@@ -50,14 +49,14 @@ const ClienteList = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   
   const { clientes, loading, error, loadClientes, deleteCliente } = useClientes();
-  const { loadContratosByCliente } = useContratos();
+  // const { loadContratosByCliente } = useContratos(); // Removido
   
   // Estados locais
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredClientes, setFilteredClientes] = useState([]);
-  const [clienteContratos, setClienteContratos] = useState({});
+  // const [clienteContratos, setClienteContratos] = useState({}); // Removido
   const [deleteDialog, setDeleteDialog] = useState({
     open: false,
     clienteId: null,
@@ -98,29 +97,6 @@ const ClienteList = () => {
     
     setFilteredClientes(filtered);
   }, [searchTerm, clientes]);
-  
-  // Carrega os contratos de cada cliente
-  useEffect(() => {
-    const loadClientesContratos = async () => {
-      const contratosMap = {};
-      
-      for (const cliente of filteredClientes) {
-        try {
-          const contratos = await loadContratosByCliente(cliente.id);
-          contratosMap[cliente.id] = contratos;
-        } catch (err) {
-          console.error(`Erro ao carregar contratos do cliente ${cliente.id}:`, err);
-          contratosMap[cliente.id] = [];
-        }
-      }
-      
-      setClienteContratos(contratosMap);
-    };
-    
-    if (filteredClientes.length > 0) {
-      loadClientesContratos();
-    }
-  }, [filteredClientes, loadContratosByCliente]);
   
   // Manipuladores de eventos
   const handleChangePage = (event, newPage) => {
@@ -365,6 +341,7 @@ const ClienteList = () => {
                     Contratos
                   </TableCell>
                 )}
+                
                 {visibleColumns.includes('documentos') && (
                   <TableCell 
                     sx={{ 
@@ -396,7 +373,7 @@ const ClienteList = () => {
               {filteredClientes
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((cliente) => {
-                  const contratos = clienteContratos[cliente.id] || [];
+                  // const contratos = clienteContratos[cliente.id] || []; // Removido
                   
                   return (
                     <TableRow
@@ -523,42 +500,41 @@ const ClienteList = () => {
                         </TableCell>
                       )}
                       
-                      {visibleColumns.includes('contratos') && (
+                      {visibleColumns.includes("contratos") && (
                         <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
+                          align="center"
+                          sx={{
+                            borderBottom: "1px solid",
+                            borderColor: "divider"
                           }}
                         >
-                          <Chip 
-                            label={`${contratos.length} contrato(s)`} 
-                            color={contratos.length > 0 ? "primary" : "default"}
+                          <Chip
+                            label={cliente.contratosCount || 0} // Use documentosCount from backend
                             size="small"
-                            sx={{ 
-                              fontWeight: 500,
-                              borderRadius: 4
-                            }}
+                            color={cliente.contratosCount > 0 ? "info" : "default"}
+                            icon={<DocumentIcon fontSize="small" />}
+                            sx={{ fontWeight: 500 }}
                           />
                         </TableCell>
                       )}
-                      
-                      {visibleColumns.includes('documentos') && (
+                      {visibleColumns.includes("documentos") && (
                         <TableCell
-                          sx={{ 
-                            borderBottom: '1px solid',
-                            borderColor: 'divider'
+                          align="center"
+                          sx={{
+                            borderBottom: "1px solid",
+                            borderColor: "divider"
                           }}
                         >
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <DocumentIcon fontSize="small" sx={{ mr: 0.5 }} />
-                            <Typography variant="body2">
-                              {cliente.documentos?.length || 0}
-                            </Typography>
-                          </Box>
+                          <Chip
+                            label={cliente.documentosCount || 0} // Use documentosCount from backend
+                            size="small"
+                            color={cliente.documentosCount > 0 ? "info" : "default"}
+                            icon={<DocumentIcon fontSize="small" />}
+                            sx={{ fontWeight: 500 }}
+                          />
                         </TableCell>
                       )}
-                      
-                      {visibleColumns.includes('acoes') && (
+                      {visibleColumns.includes("acoes") && (
                         <TableCell 
                           align="right"
                           sx={{ 
@@ -599,7 +575,7 @@ const ClienteList = () => {
                               <IconButton 
                                 aria-label="excluir" 
                                 onClick={() => handleDeleteClick(cliente)}
-                                disabled={contratos.length > 0}
+                                disabled={(cliente.contratosCount || 0) > 0}
                                 sx={{ 
                                   '&:hover': { 
                                     transform: 'translateY(-2px)',

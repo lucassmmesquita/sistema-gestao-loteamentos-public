@@ -144,6 +144,8 @@ const clienteService = {
     const response = await api.put(`/clientes/${clienteId}`, cliente);
     return response.data;
   }
+
+  
 };
 
 export default clienteService;

@@ -23,6 +23,7 @@ import {
   ArrowBack as ArrowBackIcon,
   Print as PrintIcon,
   CloudDownload as DownloadIcon,
+  Lock as LockIcon,
   Description as DescriptionIcon
 } from '@mui/icons-material';
 import useContratos from '../../hooks/useContratos';
@@ -223,7 +224,15 @@ const VisualizarContrato = () => {
         </Alert>
       )}
 
-      {loaded && currentContrato && (
+      {loaded && currentContrato && currentContrato.estado === 'oficializado' && (
+        <Alert 
+        severity="info" 
+        sx={{ mb: 3 }}
+        icon={<LockIcon />}
+      >
+        Este contrato foi oficializado em {formatDate(currentContrato.dataOficializacao)} e está blindado contra alterações diretas. Quaisquer modificações necessárias devem ser realizadas através de Aditivos Contratuais.
+      </Alert>
+    )}
         <>
           <Card sx={{ mb: 3, borderRadius: 2, overflow: 'hidden', boxShadow: 2 }}>
             <CardContent>
@@ -476,7 +485,7 @@ const VisualizarContrato = () => {
             </Box>
           </Dialog>
         </>
-      )}
+    
     </Box>
   );
 };

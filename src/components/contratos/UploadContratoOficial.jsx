@@ -12,11 +12,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  TextField
 } from '@mui/material';
 import { CloudUpload as UploadIcon } from '@mui/icons-material';
 import useContratos from '../../hooks/useContratos';
 import { styled } from '@mui/material/styles';
+import api from '../../services/api';
 
 const UploadInput = styled('input')({
   display: 'none',
@@ -27,6 +29,7 @@ const UploadContratoOficial = ({ contratoId, onSuccess }) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [open, setOpen] = useState(false);
+  const [observacao, setObservacao] = useState('');
   const [notification, setNotification] = useState({
     open: false,
     message: '',
@@ -54,35 +57,39 @@ const UploadContratoOficial = ({ contratoId, onSuccess }) => {
     
     setUploading(true);
     try {
-      // Aqui você implementaria a lógica para fazer upload do arquivo para seu servidor/storage
-      // Este é um exemplo simplificado
+      // Criar FormData para upload
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('contratoId', contratoId);
       
-      // Exemplo de chamada para API de upload
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
+      // Upload do arquivo para o servidor
+      const uploadResponse = await api.post('/uploads/contratos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
       
-      if (!response.ok) {
+      if (!uploadResponse.data || !uploadResponse.data.fileUrl) {
         throw new Error('Falha ao fazer upload do arquivo');
       }
       
-      const data = await response.json();
-      const fileUrl = data.fileUrl;
+      // Simular processamento OCR (em um sistema real, isso seria feito pelo backend)
+      const simulateOcr = await api.post('/contratos/processar-documento', {
+        fileUrl: uploadResponse.data.fileUrl,
+        contratoId
+      });
       
       // Oficializar o contrato com a URL do documento
-      await oficializarContrato(contratoId, fileUrl);
+      await oficializarContrato(contratoId, uploadResponse.data.fileUrl, observacao);
       
       setNotification({
         open: true,
-        message: 'Contrato oficializado com sucesso!',
+        message: 'Contrato oficializado com sucesso! Dados extraídos automaticamente.',
         severity: 'success'
       });
       
       if (onSuccess) {
-        onSuccess(fileUrl);
+        onSuccess(uploadResponse.data.fileUrl);
       }
       
       setOpen(false);
@@ -106,6 +113,7 @@ const UploadContratoOficial = ({ contratoId, onSuccess }) => {
     setOpen(false);
     setFile(null);
     setPreview(null);
+    setObservacao('');
   };
   
   return (
@@ -124,6 +132,7 @@ const UploadContratoOficial = ({ contratoId, onSuccess }) => {
         <DialogContent>
           <Typography gutterBottom>
             Faça upload do contrato assinado em formato PDF. Uma vez oficializado, o contrato não poderá mais ser alterado diretamente.
+            O sistema extrairá automaticamente os dados usando OCR.
           </Typography>
           
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 3 }}>
@@ -172,6 +181,16 @@ const UploadContratoOficial = ({ contratoId, onSuccess }) => {
                 />
               </Paper>
             )}
+            
+            <TextField
+              label="Observações"
+              multiline
+              rows={3}
+              value={observacao}
+              onChange={(e) => setObservacao(e.target.value)}
+              sx={{ mt: 3, width: '100%' }}
+              placeholder="Adicione observações sobre este documento (opcional)"
+            />
           </Box>
         </DialogContent>
         <DialogActions>

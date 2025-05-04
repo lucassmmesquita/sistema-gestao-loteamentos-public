@@ -88,9 +88,17 @@ const Footer = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary
 }));
 
+const TestCredentialsBox = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  padding: theme.spacing(2),
+  backgroundColor: alpha(theme.palette.info.light, 0.1),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${alpha(theme.palette.info.main, 0.3)}`,
+}));
+
 const Login = () => {
   const theme = useTheme();
-  const { login, isLoading, error, resetError, isAuthenticated } = useAuth();
+  const { login, loading: isLoading, error, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
   const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +107,7 @@ const Login = () => {
     password: '',
     rememberMe: false
   });
+  const [localError, setLocalError] = useState('');
   
   // Verificar se o usuário está autenticado e redirecionar para a página principal
   useEffect(() => {
@@ -114,22 +123,77 @@ const Login = () => {
       [name]: name === 'rememberMe' ? checked : value
     }));
     
-    // Resetar erro quando o usuário começa a digitar
-    if (error && resetError) resetError();
+    // Limpar mensagens de erro quando o usuário começa a digitar
+    if (localError) setLocalError('');
   };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = formData;
+    const { email, password, rememberMe } = formData;
     
-    // Fazer login
-    const result = await login(email, password);
+    if (!email || !password) {
+      setLocalError('Por favor, preencha todos os campos');
+      return;
+    }
     
-    // O redirecionamento será feito pelo useEffect acima quando isAuthenticated mudar
-    if (result) {
-      console.log('Login bem-sucedido, redirecionando...');
+    try {
+      // Fazer login
+      await login(email, password);
+      
+      // Se rememberMe estiver marcado, salvar isso no localStorage
+      if (rememberMe) {
+        localStorage.setItem('remember_user', email);
+      } else {
+        localStorage.removeItem('remember_user');
+      }
+    } catch (err) {
+      setLocalError(err.message || 'Erro ao fazer login. Verifique suas credenciais.');
     }
   };
+  
+  // Carregar email salvo no localStorage
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('remember_user');
+    if (savedEmail) {
+      setFormData(prev => ({
+        ...prev,
+        email: savedEmail,
+        rememberMe: true
+      }));
+    }
+  }, []);
+
+  // Função para preencher automaticamente as credenciais
+  const preencherCredenciais = (tipo) => {
+    switch (tipo) {
+      case 'admin':
+        setFormData({
+          ...formData,
+          email: 'admin@example.com',
+          password: 'admin123'
+        });
+        break;
+      case 'vendedor':
+        setFormData({
+          ...formData,
+          email: 'vendedor@example.com',
+          password: 'vendedor123'
+        });
+        break;
+      case 'proprietario':
+        setFormData({
+          ...formData,
+          email: 'proprietario@example.com',
+          password: 'proprietario123'
+        });
+        break;
+      default:
+        break;
+    }
+  };
+  
+  // Mostrar erro combinado (do contexto ou local)
+  const displayError = error || localError;
   
   return (
     <LoginContainer>
@@ -141,9 +205,9 @@ const Login = () => {
           </Typography>
         </LogoContainer>
         
-        {error && (
+        {displayError && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
+            {displayError}
           </Alert>
         )}
         
@@ -227,6 +291,8 @@ const Login = () => {
             {isLoading ? <CircularProgress size={24} /> : 'Entrar'}
           </LoginButton>
         </form>
+        
+        
         
         <DividerText>
           <DividerContent>ou</DividerContent>

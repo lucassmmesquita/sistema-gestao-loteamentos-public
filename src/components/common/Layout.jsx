@@ -6,6 +6,7 @@ import AppleNavbar from './AppleNavbar';
 import AppFooter from './AppFooter';
 import Breadcrumb from './Breadcrumb';
 import CustomDrawerHeader from './CustomDrawerHeader';
+import NotificacoesUsuario from './NotificacoesUsuario';
 
 const drawerWidth = 240;
 

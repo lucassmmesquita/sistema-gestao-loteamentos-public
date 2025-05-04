@@ -13,9 +13,13 @@ import {
   Grid,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon
 } from '@mui/material';
-import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
+import { ArrowBack as ArrowBackIcon, Description as DescriptionIcon } from '@mui/icons-material';
 import useClientes from '../../hooks/useClientes';
 import useContratos from '../../hooks/useContratos';
 import { formatCPFouCNPJ, formatDate, formatTelefone } from '../../utils/formatters';
@@ -129,6 +133,7 @@ const VisualizarCliente = () => {
               <Tabs value={tabValue} onChange={handleTabChange}>
                 <Tab label="Informações Pessoais" />
                 <Tab label={`Contratos (${contratos.length})`} />
+                <Tab label={`Documentos (${currentCliente.documentos?.length || 0})`} />
               </Tabs>
 
               <TabPanel value={tabValue} index={0}>
@@ -313,6 +318,34 @@ const VisualizarCliente = () => {
                 ) : (
                   <Typography variant="body1" color="text.secondary">
                     Este cliente não possui contratos.
+                  </Typography>
+                )}
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={2}>
+                {currentCliente.documentos && currentCliente.documentos.length > 0 ? (
+                  <Paper sx={{ p: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                      Documentos do Cliente
+                    </Typography>
+                    <Divider sx={{ mb: 2 }} />
+                    <List dense>
+                      {currentCliente.documentos.map((doc) => (
+                        <ListItem key={doc.id} button component="a" href={doc.url} target="_blank" rel="noopener noreferrer">
+                          <ListItemIcon>
+                            <DescriptionIcon />
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={doc.nomeArquivo}
+                            secondary={`Tipo: ${doc.tipoDocumento} - Data de Upload: ${formatDate(doc.dataUpload)}`}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Paper>
+                ) : (
+                  <Typography variant="body1" color="text.secondary">
+                    Nenhum documento cadastrado para este cliente.
                   </Typography>
                 )}
               </TabPanel>

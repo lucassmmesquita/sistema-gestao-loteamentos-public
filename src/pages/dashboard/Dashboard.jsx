@@ -20,8 +20,7 @@ import {
   TrendingDown as TrendingDownIcon
 } from '@mui/icons-material';
 
-import useClientes from '../../hooks/useClientes';
-import useContratos from '../../hooks/useContratos';
+import dashboardService from '../../services/dashboardService';
 import Loading from '../../components/common/Loading';
 import { formatCurrency } from '../../utils/formatters';
 import { AppleDashboardCard, ApplePaper, AppleTitle, AppleSubtitle } from '../../components/common/AppleComponents';
@@ -79,13 +78,10 @@ const DashboardSectionTitle = styled(Typography)(({ theme }) => ({
 
 const Dashboard = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   
-  const { clientes, loading: clientesLoading } = useClientes();
-  const { contratos, lotes, loading: contratosLoading } = useContratos();
-  
-  // States for statistics
+  // States for statistics and loading
   const [stats, setStats] = useState({
     totalClientes: 0,
     totalContratos: 0,
@@ -96,48 +92,50 @@ const Dashboard = () => {
     valorTotalContratos: 0,
     valorMedioContratos: 0
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   // Animation state
   const [animate, setAnimate] = useState(false);
   
-  // Calculate statistics when data is loaded
+  // Fetch dashboard data from API
   useEffect(() => {
-    if (clientes && contratos && lotes) {
-      // Lot statistics
-      const disponiveis = lotes.filter(l => l.status === 'disponivel').length;
-      const reservados = lotes.filter(l => l.status === 'reservado').length;
-      const vendidos = lotes.filter(l => l.status === 'vendido').length;
-      
-      // Financial statistics - Corrigido para evitar valores inválidos
-      const valorTotal = contratos.reduce((sum, contrato) => {
-        // Certifique-se de que o valor é um número válido e razoável
-        const valor = parseFloat(contrato.valorTotal || 0);
-        if (isNaN(valor) || !isFinite(valor)) return sum;
-        return sum + valor;
-      }, 0);
-      
-      const valorMedio = contratos.length > 0 ? valorTotal / contratos.length : 0;
-      
-      setStats({
-        totalClientes: clientes.length,
-        totalContratos: contratos.length,
-        totalLotes: lotes.length,
-        lotesDisponiveis: disponiveis,
-        lotesReservados: reservados,
-        lotesVendidos: vendidos,
-        valorTotalContratos: valorTotal,
-        valorMedioContratos: valorMedio
-      });
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        const data = await dashboardService.getDashboardData();
+        setStats(data);
+        setError(null);
+      } catch (err) {
+        setError(err.message || "Erro ao carregar dados do dashboard");
+        // Mantenha os stats zerados ou com valores padrão em caso de erro
+        setStats({
+          totalClientes: 0,
+          totalContratos: 0,
+          totalLotes: 0,
+          lotesDisponiveis: 0,
+          lotesReservados: 0,
+          lotesVendidos: 0,
+          valorTotalContratos: 0,
+          valorMedioContratos: 0
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []); // Executa apenas na montagem do componente
+
+  // Animate on mount after data is loaded
+  useEffect(() => {
+    if (!loading) {
+      // Allow a short delay for rendering before animating
+      setTimeout(() => {
+        setAnimate(true);
+      }, 100); 
     }
-  }, [clientes, contratos, lotes]);
-  
-  // Animate on mount
-  useEffect(() => {
-    // Allow time for stats to be calculated
-    setTimeout(() => {
-      setAnimate(true);
-    }, 300);
-  }, []);
+  }, [loading]);
   
   return (
     <Box
@@ -147,7 +145,7 @@ const Dashboard = () => {
         transition: 'all 0.5s ease',
       }}
     >
-      <Loading open={clientesLoading || contratosLoading} />
+      <Loading open={loading} />
       
       <AppleTitle sx={{ mb: 4 }}>Tela Inicial</AppleTitle>
       

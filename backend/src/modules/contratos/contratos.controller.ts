@@ -18,7 +18,7 @@ export class ContratosController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard) // Temporariamente comentado para desenvolvimento
   create(@Body() createContratoDto: CreateContratoDto, @Request() req) {
     return this.contratosService.create(createContratoDto, req.user.id);
   }

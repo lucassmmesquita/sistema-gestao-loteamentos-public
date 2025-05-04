@@ -185,22 +185,28 @@ export class ClientesService {
       include: {
         endereco: true,
         contatos: true,
-        // Incluir os contratos para contagem
+        // Incluir os contratos e documentos para contagem
         contratos: {
           select: {
             id: true  // Apenas o ID é suficiente para contagem
+          }
+        },
+        documentos: {
+          select: {
+            id: true // Apenas o ID é suficiente para contagem
           }
         }
       }
     });
     
-    // Mapear para incluir contagem de contratos
+    // Mapear para incluir contagem de contratos e documentos
     return clientes.map(cliente => {
-      const { contratos, ...clienteData } = cliente;
+      const { contratos, documentos, ...clienteData } = cliente;
       return {
         ...clienteData,
-        contratosCount: contratos.length, // Adicionar contagem
-        // Não enviamos a lista completa de contratos para economizar largura de banda
+        contratosCount: contratos.length, // Adicionar contagem de contratos
+        documentosCount: documentos.length // Adicionar contagem de documentos
+        // Não enviamos as listas completas para economizar largura de banda
       };
     });
   }

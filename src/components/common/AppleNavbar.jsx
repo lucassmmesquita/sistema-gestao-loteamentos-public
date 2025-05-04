@@ -27,6 +27,8 @@ import { styled, useTheme, alpha } from '@mui/material/styles';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeMode } from '../../ThemeProvider';
 import useAuth from '../../hooks/useAuth'; // Importação do novo hook
+import { AuthContext } from '../../contexts/AuthContext';
+
 
 import {
   Menu as MenuIcon,
@@ -145,8 +147,7 @@ const AppleNavbar = ({
   const navigate = useNavigate();
   const { mode, toggleMode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { user, isLoteadora, isVendedor, isDonoTerreno } = useAuth(); // Usar o hook de autenticação
-
+  const { user, isLoteadora, isVendedor, isDonoTerreno, logout } = useAuth(); // Adicionar logout aqui
   
   const [scrolled, setScrolled] = useState(false);
   const [subMenus, setSubMenus] = useState({
@@ -261,9 +262,8 @@ const AppleNavbar = ({
   // Logout
   const handleLogout = () => {
     handleUserMenuClose();
-    // Implementar lógica de logout aqui
-    console.log('Usuário deslogado');
-    // navigate('/login');
+    logout(); // Usar a função logout que já foi extraída do useAuth acima
+    navigate('/login');
   };
   
   // Acessar perfil

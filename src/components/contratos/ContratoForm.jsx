@@ -17,9 +17,6 @@ import {
   Snackbar,
   Alert,
   Paper,
-  Stepper,
-  Step,
-  StepLabel,
   FormControl,
   InputLabel,
   Select,
@@ -27,7 +24,8 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  Autocomplete
 } from '@mui/material';
 import {
   Description as DescriptionIcon,
@@ -39,6 +37,7 @@ import ReactInputMask from 'react-input-mask';
 import { DatePicker } from '@mui/lab';
 import useClientes from '../../hooks/useClientes';
 import useContratos from '../../hooks/useContratos';
+import useLotes from '../../hooks/useLotes';
 import Loading from '../common/Loading';
 import ContratoPreview from './ContratoPreview';
 
@@ -103,10 +102,10 @@ const schema = yup.object().shape({
 const ContratoForm = ({ contrato = null }) => {
   const navigate = useNavigate();
   const { clientes, loading: clientesLoading } = useClientes();
-  const { lotes, loading: lotesLoading, saveContrato, gerarPreviaContrato, loadLotesDisponiveis } = useContratos();
+  const { createContrato, updateContrato, gerarPreviaContrato } = useContratos();
+  const { lotes, loading: lotesLoading, loadLotesDisponiveis } = useLotes();
   
   // Estados
-  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewContent, setPreviewContent] = useState('');
@@ -115,9 +114,6 @@ const ContratoForm = ({ contrato = null }) => {
     message: '',
     severity: 'success'
   });
-  
-  // Definição dos passos do formulário
-  const steps = ['Dados Básicos', 'Valores e Prazos', 'Cláusulas Contratuais'];
   
   // Inicializa o formulário com react-hook-form
   const { handleSubmit, control, formState: { errors }, setValue, getValues, reset, watch } = useForm({
@@ -168,15 +164,6 @@ const ContratoForm = ({ contrato = null }) => {
     }
   }, [contrato, reset]);
   
-  // Manipuladores para o stepper
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-  
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-  
   // Manipulador para mostrar prévia do contrato
   const handlePreview = async () => {
     setLoading(true);
@@ -222,6 +209,7 @@ const ContratoForm = ({ contrato = null }) => {
     setLoading(true);
     
     try {
+      let result; // Declarar result aqui
       // Garante que os dados são do tipo correto
       const contratoData = {
         ...data,
@@ -233,12 +221,17 @@ const ContratoForm = ({ contrato = null }) => {
         dataVencimento: Number(data.dataVencimento)
       };
       
-      // Se for edição, mantém o ID
+      // Se for edição, mantém o ID e chama updateContrato
       if (contrato && contrato.id) {
         contratoData.id = contrato.id;
+        result = await updateContrato(contrato.id, contratoData);
+      } else {
+        // Se for criação, define o status como pre_contrato e chama createContrato
+        contratoData.status = 'pre_contrato'; // Definindo status padrão
+        result = await createContrato(contratoData);
       }
       
-      const result = await saveContrato(contratoData);
+      // const result = await saveContrato(contratoData); // Linha antiga removida
       
       if (result) {
         setNotification({
@@ -278,26 +271,25 @@ const ContratoForm = ({ contrato = null }) => {
                   name="clienteId"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.clienteId}>
-                      <InputLabel id="cliente-select-label">Cliente</InputLabel>
-                      <Select
-                        {...field}
-                        labelId="cliente-select-label"
-                        label="Cliente"
-                        value={field.value || ''}
-                      >
-                        {clientes.map((cliente) => (
-                          <MenuItem key={cliente.id} value={cliente.id}>
-                            {cliente.nome} - {cliente.cpfCnpj}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.clienteId && (
-                        <Typography variant="caption" color="error">
-                          {errors.clienteId.message}
-                        </Typography>
+                    <Autocomplete
+                      options={clientes || []}
+                      getOptionLabel={(option) => `${option.nome} - ${option.cpfCnpj}`}
+                      value={clientes.find(c => c.id === field.value) || null}
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue ? newValue.id : null);
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Cliente"
+                          fullWidth
+                          error={!!errors.clienteId}
+                          helperText={errors.clienteId?.message}
+                        />
                       )}
-                    </FormControl>
+                      loading={clientesLoading}
+                    />
                   )}
                 />
               </Grid>
@@ -306,26 +298,25 @@ const ContratoForm = ({ contrato = null }) => {
                   name="loteId"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.loteId}>
-                      <InputLabel id="lote-select-label">Lote</InputLabel>
-                      <Select
-                        {...field}
-                        labelId="lote-select-label"
-                        label="Lote"
-                        value={field.value || ''}
-                      >
-                        {lotes.map((lote) => (
-                          <MenuItem key={lote.id} value={lote.id}>
-                            {`${lote.loteamento} - Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.loteId && (
-                        <Typography variant="caption" color="error">
-                          {errors.loteId.message}
-                        </Typography>
+                    <Autocomplete
+                      options={lotes || []}
+                      getOptionLabel={(option) => `${option.loteamento} - Q ${option.quadra}, L ${option.numero} (${option.area}m²)`}
+                      value={lotes.find(l => l.id === field.value) || null}
+                      onChange={(event, newValue) => {
+                        field.onChange(newValue ? newValue.id : null);
+                      }}
+                      isOptionEqualToValue={(option, value) => option.id === value?.id}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Lote"
+                          fullWidth
+                          error={!!errors.loteId}
+                          helperText={errors.loteId?.message}
+                        />
                       )}
-                    </FormControl>
+                      loading={lotesLoading}
+                    />
                   )}
                 />
               </Grid>
@@ -577,59 +568,314 @@ const ContratoForm = ({ contrato = null }) => {
             {contrato ? 'Editar Contrato' : 'Novo Contrato'}
           </Typography>
           
-          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Paper sx={{ p: 3, mb: 4 }}>
-              {getStepContent(activeStep)}
-            </Paper>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" gutterBottom>Informações Básicas</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="clienteId"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={!!errors.clienteId}>
+                        <InputLabel id="cliente-select-label">Cliente</InputLabel>
+                        <Select
+                          {...field}
+                          labelId="cliente-select-label"
+                          label="Cliente"
+                          value={field.value || ''}
+                        >
+                          {clientes.map((cliente) => (
+                            <MenuItem key={cliente.id} value={cliente.id}>
+                              {cliente.nome} - {cliente.cpfCnpj}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.clienteId && (
+                          <Typography variant="caption" color="error">
+                            {errors.clienteId.message}
+                          </Typography>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="loteId"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth error={!!errors.loteId}>
+                        <InputLabel id="lote-select-label">Lote</InputLabel>
+                        <Select
+                          {...field}
+                          labelId="lote-select-label"
+                          label="Lote"
+                          value={field.value || ''}
+                        >
+                          {lotes.map((lote) => (
+                            <MenuItem key={lote.id} value={lote.id}>
+                              {`${lote.loteamento} - Quadra ${lote.quadra}, Lote ${lote.numero} (${lote.area}m²)`}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.loteId && (
+                          <Typography variant="caption" color="error">
+                            {errors.loteId.message}
+                          </Typography>
+                        )}
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="dataInicio"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Data de Início"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        error={!!errors.dataInicio}
+                        helperText={errors.dataInicio?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="dataFim"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Data de Fim"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        error={!!errors.dataFim}
+                        helperText={errors.dataFim?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+            <Divider sx={{ my: 4 }} />
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" gutterBottom>Valores e Prazos</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="valorTotal"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Valor Total (R$)"
+                        type="number"
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <MoneyIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                        error={!!errors.valorTotal}
+                        helperText={errors.valorTotal?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="valorEntrada"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Valor da Entrada (R$)"
+                        type="number"
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <MoneyIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                        error={!!errors.valorEntrada}
+                        helperText={errors.valorEntrada?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="numeroParcelas"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Número de Parcelas"
+                        type="number"
+                        fullWidth
+                        error={!!errors.numeroParcelas}
+                        helperText={errors.numeroParcelas?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Controller
+                    name="dataVencimento"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Dia de Vencimento (1-28)"
+                        type="number"
+                        fullWidth
+                        error={!!errors.dataVencimento}
+                        helperText={errors.dataVencimento?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper
+                    variant="outlined"
+                    sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 1 }}
+                  >
+                    <Typography variant="subtitle1" gutterBottom>
+                      Resumo do Financiamento
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6} md={4}>
+                        <Typography variant="body2" color="textSecondary">
+                          Valor Total:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          R$ {valorTotal ? valorTotal.toLocaleString('pt-BR') : '0,00'}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={4}>
+                        <Typography variant="body2" color="textSecondary">
+                          Valor da Entrada:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          R$ {valorEntrada ? valorEntrada.toLocaleString('pt-BR') : '0,00'}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={4}>
+                        <Typography variant="body2" color="textSecondary">
+                          Valor Financiado:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          R$ {(valorTotal && valorEntrada) ? (valorTotal - valorEntrada).toLocaleString('pt-BR') : '0,00'}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={4}>
+                        <Typography variant="body2" color="textSecondary">
+                          Número de Parcelas:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          {numeroParcelas || 0}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6} md={4}>
+                        <Typography variant="body2" color="textSecondary">
+                          Valor da Parcela:
+                        </Typography>
+                        <Typography variant="body1" fontWeight="bold">
+                          R$ {valorParcela ? valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '0,00'}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </Box>
+            <Divider sx={{ my: 4 }} />
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" gutterBottom>Cláusulas Contratuais</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Controller
+                    name="clausulas"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Cláusulas Contratuais"
+                        multiline
+                        rows={12}
+                        fullWidth
+                        placeholder="Digite as cláusulas contratuais aqui..."
+                        error={!!errors.clausulas}
+                        helperText={errors.clausulas?.message}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <DescriptionIcon />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
             
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
               <Button
                 variant="outlined"
-                onClick={activeStep === 0 ? () => navigate('/contratos') : handleBack}
-                sx={{ mt: 3, ml: 1 }}
+                onClick={() => navigate('/contratos')}
+                sx={{ ml: 1 }}
               >
-                {activeStep === 0 ? 'Cancelar' : 'Voltar'}
+                Cancelar
               </Button>
-              
+
               <Box>
-                {activeStep === steps.length - 1 ? (
-                  <>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={handlePreview}
-                      sx={{ mt: 3, ml: 1 }}
-                      startIcon={<PreviewIcon />}
-                    >
-                      Visualizar Contrato
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      sx={{ mt: 3, ml: 1 }}
-                    >
-                      Salvar
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNext}
-                    sx={{ mt: 3, ml: 1 }}
-                  >
-                    Próximo
-                  </Button>
-                )}
+                 <Button
+                   variant="outlined"
+                   color="primary"
+                   onClick={handlePreview}
+                   sx={{ mr: 1 }}
+                   startIcon={<PreviewIcon />}
+                 >
+                   Visualizar Contrato
+                 </Button>
+                 <Button
+                   variant="contained"
+                   color="primary"
+                   type="submit"
+                 >
+                   Salvar
+                 </Button>
               </Box>
             </Box>
           </form>

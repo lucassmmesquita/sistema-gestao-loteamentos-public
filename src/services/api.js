@@ -11,6 +11,24 @@ const api = axios.create({
   },
 });
 
+// Interceptor para adicionar o token de autenticação
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("auth_token");
+    console.log("API Interceptor: Token from localStorage:", token); // Log para depuração
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      console.log("API Interceptor: Authorization header set:", config.headers["Authorization"]); // Log para depuração
+    } else {
+      console.log("API Interceptor: No token found in localStorage."); // Log para depuração
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Interceptor para tratamento global de erros
 api.interceptors.response.use(
   (response) => response,

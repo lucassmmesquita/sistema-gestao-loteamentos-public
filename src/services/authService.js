@@ -1,5 +1,4 @@
 // src/services/authService.js
-
 import api from './api';
 
 const authService = {
@@ -10,17 +9,104 @@ const authService = {
    * @returns {Promise} Promise com dados do usuário e token
    */
   login: async (email, password) => {
-    // Simula um pequeno delay para parecer uma requisição real
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Simulação de login - na versão final, isso seria substituído por uma chamada real à API
+    await new Promise(resolve => setTimeout(resolve, 800)); // Simula o tempo de rede
     
-    // Simula validação de credenciais
-    if (email === 'admin@example.com' && password === 'admin123') {
-      return {
+    // Defina os usuários permitidos
+    const usuarios = {
+      'admin@example.com': {
+        password: 'admin123',
         user: {
           id: 1,
           name: 'Administrador',
           email: 'admin@example.com',
           role: 'admin',
+          perfil: 'loteadora',
+          permissions: [
+            'users:manage', 'users:view', 'users:create', 'users:edit', 'users:delete',
+            'clients:manage', 'clients:view', 'clients:create', 'clients:edit', 'clients:delete',
+            'contracts:manage', 'contracts:view', 'contracts:create', 'contracts:edit', 'contracts:delete',
+            'lots:manage', 'lots:view', 'lots:create', 'lots:edit', 'lots:delete',
+            'invoices:manage', 'invoices:view', 'invoices:create', 'invoices:edit', 'invoices:delete',
+            'reports:manage', 'reports:view', 'reports:create',
+            'settings:manage', 'settings:view'
+          ]
+        }
+      },
+      'vendedor@example.com': {
+        password: 'vendedor123',
+        user: {
+          id: 2,
+          name: 'Vendedor Exemplo',
+          email: 'vendedor@example.com',
+          role: 'operator',
+          perfil: 'vendedor',
+          permissions: [
+            'clients:view', 'clients:create', 'clients:edit',
+            'contracts:view', 'contracts:create', 'contracts:edit',
+            'lots:view'
+          ]
+        }
+      },
+      'proprietario@example.com': {
+        password: 'proprietario123',
+        user: {
+          id: 3,
+          name: 'Proprietário Exemplo',
+          email: 'proprietario@example.com',
+          role: 'operator',
+          perfil: 'dono_terreno',
+          permissions: [
+            'contracts:view',
+            'lots:view'
+          ]
+        }
+      }
+    };
+    
+    // Verifica se o usuário existe e se a senha está correta
+    if (usuarios[email] && usuarios[email].password === password) {
+      // Gera um token simulado com base no timestamp atual
+      const token = `mock-jwt-token-${Date.now()}-${email}`;
+      
+      // Armazenar o token no localStorage para persistência entre sessões
+      localStorage.setItem('auth_token', token);
+      
+      // Configurar o cabeçalho de autorização para requisições futuras
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      return {
+        user: usuarios[email].user,
+        token
+      };
+    }
+    
+    // Se não for encontrado, lança um erro
+    throw new Error('Credenciais inválidas');
+  },
+
+  /**
+   * Valida token de autenticação
+   * @param {string} token Token JWT
+   * @returns {Promise} Promise com dados do usuário
+   */
+  validateToken: async (token) => {
+    // Simulação de validação de token
+    await new Promise(resolve => setTimeout(resolve, 300)); // Simula o tempo de rede
+    
+    // Extrai o email do token simulado
+    const parts = token.split('-');
+    if (parts.length >= 4) {
+      const email = parts.slice(3).join('-');
+      
+      // Usuários simulados
+      const usuarios = {
+        'admin@example.com': {
+          id: 1,
+          name: 'Administrador',
+          email: 'admin@example.com',
+          role: 'admin',
+          perfil: 'loteadora',
           permissions: [
             'users:manage', 'users:view', 'users:create', 'users:edit', 'users:delete',
             'clients:manage', 'clients:view', 'clients:create', 'clients:edit', 'clients:delete',
@@ -31,204 +117,65 @@ const authService = {
             'settings:manage', 'settings:view'
           ]
         },
-        token: 'mock-jwt-token-' + Date.now()
+        'vendedor@example.com': {
+          id: 2,
+          name: 'Vendedor Exemplo',
+          email: 'vendedor@example.com',
+          role: 'operator',
+          perfil: 'vendedor',
+          permissions: [
+            'clients:view', 'clients:create', 'clients:edit',
+            'contracts:view', 'contracts:create', 'contracts:edit',
+            'lots:view'
+          ]
+        },
+        'proprietario@example.com': {
+          id: 3,
+          name: 'Proprietário Exemplo',
+          email: 'proprietario@example.com',
+          role: 'operator',
+          perfil: 'dono_terreno',
+          permissions: [
+            'contracts:view',
+            'lots:view'
+          ]
+        }
       };
-    }
-    
-    // Simula erro de autenticação
-    throw new Error('Credenciais inválidas');
-    
-    // Versão original que se comunicava com a API
-    // const response = await api.post('/auth/login', { email, password });
-    // return response.data;
-  },
-
-  /**
-   * Valida token de autenticação
-   * @param {string} token Token JWT
-   * @returns {Promise} Promise com dados do usuário
-   */
-  validateToken: async (token) => {
-    // Simula validação de token
-    return {
-      id: 1,
-      name: 'Administrador',
-      email: 'admin@example.com',
-      role: 'admin',
-      permissions: [
-        'users:manage', 'users:view', 'users:create', 'users:edit', 'users:delete',
-        'clients:manage', 'clients:view', 'clients:create', 'clients:edit', 'clients:delete',
-        'contracts:manage', 'contracts:view', 'contracts:create', 'contracts:edit', 'contracts:delete',
-        'lots:manage', 'lots:view', 'lots:create', 'lots:edit', 'lots:delete',
-        'invoices:manage', 'invoices:view', 'invoices:create', 'invoices:edit', 'invoices:delete',
-        'reports:manage', 'reports:view', 'reports:create',
-        'settings:manage', 'settings:view'
-      ]
-    };
-    
-    // Versão original com API
-    // try {
-    //   const response = await api.get('/auth/profile', {
-    //     headers: {
-    //       'Authorization': `Bearer ${token}`
-    //     }
-    //   });
-    //   return response.data;
-    // } catch (error) {
-    //   throw new Error('Token inválido ou expirado');
-    // }
-  },
-
-  /**
-   * Registra um novo usuário (para administradores)
-   * @param {Object} userData Dados do usuário
-   * @returns {Promise} Promise com os dados do usuário criado
-   */
-  register: async (userData) => {
-    // Mock para registro de usuário
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return { 
-      ...userData, 
-      id: Date.now(),
-      createdAt: new Date().toISOString()
-    };
-    
-    // Versão original com API
-    // const response = await api.post('/auth/register', userData);
-    // return response.data;
-  },
-
-  /**
-   * Solicita recuperação de senha
-   * @param {string} email Email do usuário
-   * @returns {Promise} Promise com resultado da solicitação
-   */
-  forgotPassword: async (email) => {
-    // Mock para recuperação de senha
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return { message: 'E-mail de recuperação enviado com sucesso' };
-    
-    // Versão original com API
-    // const response = await api.post('/auth/forgot-password', { email });
-    // return response.data;
-  },
-
-  /**
-   * Redefine a senha do usuário
-   * @param {string} token Token de recuperação
-   * @param {string} password Nova senha
-   * @returns {Promise} Promise com resultado da operação
-   */
-  resetPassword: async (token, password) => {
-    // Mock para redefinição de senha
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return { message: 'Senha alterada com sucesso' };
-    
-    // Versão original com API
-    // const response = await api.post('/auth/reset-password', { token, password });
-    // return response.data;
-  },
-
-  /**
-   * Atualiza dados de um usuário
-   * @param {number} userId ID do usuário
-   * @param {Object} userData Dados atualizados
-   * @returns {Promise} Promise com os dados atualizados
-   */
-  updateUser: async (userId, userData) => {
-    // Mock para atualização de usuário
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return { 
-      ...userData, 
-      id: userId,
-      updatedAt: new Date().toISOString()
-    };
-    
-    // Versão original com API
-    // const response = await api.put(`/auth/users/${userId}`, userData);
-    // return response.data;
-  },
-
-  /**
-   * Obtém a lista de usuários (para administradores)
-   * @returns {Promise} Promise com a lista de usuários
-   */
-  getAllUsers: async () => {
-    // Mock para lista de usuários
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return [
-      {
-        id: 1,
-        name: 'Administrador',
-        email: 'admin@example.com',
-        role: 'admin',
-        status: true,
-        createdAt: '2024-04-24T10:00:00.000Z'
-      },
-      {
-        id: 2,
-        name: 'Operador',
-        email: 'operador@example.com',
-        role: 'operator',
-        status: true,
-        createdAt: '2024-04-24T11:00:00.000Z'
+      
+      if (usuarios[email]) {
+        return usuarios[email];
       }
-    ];
-    
-    // Versão original com API
-    // const response = await api.get('/auth/users');
-    // return response.data;
-  },
-
-  /**
-   * Obtém dados de um usuário específico
-   * @param {number} userId ID do usuário
-   * @returns {Promise} Promise com os dados do usuário
-   */
-  getUserById: async (userId) => {
-    // Mock para obter usuário pelo ID
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    if (userId === 1) {
-      return {
-        id: 1,
-        name: 'Administrador',
-        email: 'admin@example.com',
-        role: 'admin',
-        permissions: [
-          'users:manage', 'users:view', 'users:create', 'users:edit', 'users:delete',
-          'clients:manage', 'clients:view', 'clients:create', 'clients:edit', 'clients:delete',
-          'contracts:manage', 'contracts:view', 'contracts:create', 'contracts:edit', 'contracts:delete',
-          'lots:manage', 'lots:view', 'lots:create', 'lots:edit', 'lots:delete',
-          'invoices:manage', 'invoices:view', 'invoices:create', 'invoices:edit', 'invoices:delete',
-          'reports:manage', 'reports:view', 'reports:create',
-          'settings:manage', 'settings:view'
-        ],
-        status: true,
-        createdAt: '2024-04-24T10:00:00.000Z'
-      };
     }
     
-    throw new Error('Usuário não encontrado');
-    
-    // Versão original com API
-    // const response = await api.get(`/auth/users/${userId}`);
-    // return response.data;
+    throw new Error('Token inválido ou expirado');
   },
 
   /**
-   * Remove um usuário
-   * @param {number} userId ID do usuário a ser removido
-   * @returns {Promise} Promise com o resultado da operação
+   * Realiza logout do usuário
+   * @returns {void}
    */
-  deleteUser: async (userId) => {
-    // Mock para exclusão de usuário
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return { message: 'Usuário removido com sucesso' };
+  logout: () => {
+    // Remover o token do localStorage
+    localStorage.removeItem('auth_token');
     
-    // Versão original com API
-    // const response = await api.delete(`/auth/users/${userId}`);
-    // return response.data;
+    // Remover Authorization header das requisições futuras
+    delete api.defaults.headers.common['Authorization'];
+    
+    return Promise.resolve();
+  },
+
+  /**
+   * Configura o token para as requisições
+   * @param {string} token Token JWT
+   */
+  setAuthToken: (token) => {
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      localStorage.setItem('auth_token', token);
+    } else {
+      delete api.defaults.headers.common['Authorization'];
+      localStorage.removeItem('auth_token');
+    }
   }
 };
 

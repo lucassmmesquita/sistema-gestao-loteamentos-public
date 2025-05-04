@@ -15,11 +15,17 @@ export const ClienteProvider = ({ children }) => {
     setError(null);
     
     try {
+      console.log('clienteService.getAll: Iniciando requisição');
       const data = await clienteService.getAll();
+      console.log('clienteService.getAll: Requisição bem-sucedida', data);
       setClientes(data);
-    } catch (err) {
-      setError('Erro ao carregar clientes: ' + (err.message || 'Erro desconhecido'));
-      console.error('Erro ao carregar clientes:', err);
+      return data;
+    } catch (error) {
+      console.error('clienteService.getAll: Erro na requisição', error);
+      console.error('clienteService.getAll: Status do erro', error.response?.status);
+      console.error('clienteService.getAll: Detalhes do erro', error.response?.data);
+      setError('Erro ao carregar clientes: ' + (error.message || 'Erro desconhecido'));
+      throw error;
     } finally {
       setLoading(false);
     }
