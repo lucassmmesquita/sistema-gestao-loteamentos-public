@@ -41,7 +41,6 @@ import useLotes from '../../hooks/useLotes';
 import Loading from '../common/Loading';
 import ContratoPreview from './ContratoPreview';
 
-// Schema de validação usando Yup
 const schema = yup.object().shape({
   clienteId: yup.number()
     .required('Cliente é obrigatório')
@@ -85,14 +84,13 @@ const schema = yup.object().shape({
     .min(1, 'Deve ter pelo menos 1 parcela')
     .max(240, 'Número máximo de parcelas é 240')
     .typeError('Número de parcelas é obrigatório'),
-  
+
   dataVencimento: yup.number()
     .required('Dia de vencimento é obrigatório')
     .integer('Deve ser um número inteiro')
-    .min(1, 'Dia entre 1 e 28')
-    .max(28, 'Dia entre 1 e 28')
+    .min(31, 'Dia deve ser no mínimo 31') // Ajustado conforme DTO backend
     .typeError('Dia de vencimento é obrigatório'),
-  
+
   clausulas: yup.string()
     .required('Cláusulas contratuais são obrigatórias')
     .min(10, 'Cláusulas contratuais devem ter pelo menos 10 caracteres')
@@ -126,7 +124,7 @@ const ContratoForm = ({ contrato = null }) => {
       valorTotal: '',
       valorEntrada: '',
       numeroParcelas: 12,
-      dataVencimento: 10,
+      dataVencimento: 31, // Ajustado para atender ao mínimo do backend
       clausulas: ''
     }
   });
@@ -210,15 +208,16 @@ const ContratoForm = ({ contrato = null }) => {
     
     try {
       let result; // Declarar result aqui
-      // Garante que os dados são do tipo correto
       const contratoData = {
-        ...data,
         clienteId: Number(data.clienteId),
         loteId: Number(data.loteId),
+        dataInicio: data.dataInicio,
+        dataFim: data.dataFim,
         valorTotal: Number(data.valorTotal),
         valorEntrada: Number(data.valorEntrada),
         numeroParcelas: Number(data.numeroParcelas),
-        dataVencimento: Number(data.dataVencimento)
+        dataVencimento: Number(data.dataVencimento),
+        clausulas: data.clausulas
       };
       
       // Se for edição, mantém o ID e chama updateContrato

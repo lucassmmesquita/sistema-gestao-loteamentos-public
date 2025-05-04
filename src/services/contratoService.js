@@ -48,8 +48,6 @@ const contratoService = {
    * @returns {Promise} Promise com o contrato criado
    */
   create: async (contrato) => {
-    // Adiciona a data de criação
-    contrato.dataCriacao = new Date().toISOString();
     // Define o status como ativo por padrão
     contrato.status = contrato.status || 'ativo';
     

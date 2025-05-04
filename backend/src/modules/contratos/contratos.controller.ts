@@ -20,7 +20,9 @@ export class ContratosController {
   @Post()
   // @UseGuards(JwtAuthGuard) // Temporariamente comentado para desenvolvimento
   create(@Body() createContratoDto: CreateContratoDto, @Request() req) {
-    return this.contratosService.create(createContratoDto, req.user.id);
+    // Use um ID de usuário padrão (ex: 1) se req.user não estiver definido (apenas para desenvolvimento)
+    const userId = req.user?.id || 6; 
+    return this.contratosService.create(createContratoDto, userId);
   }
 
   @Get('lote/:loteId')

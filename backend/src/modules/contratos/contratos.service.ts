@@ -313,12 +313,14 @@ export class ContratosService {
     const contrato = await this.prisma.contrato.create({
       data: {
         ...createContratoDto,
+        dataInicio: new Date(createContratoDto.dataInicio), // Convertendo para Date
+        dataFim: new Date(createContratoDto.dataFim),       // Convertendo para Date
         dataCriacao: new Date(),
         estado: 'pre_contrato',
         aprovadoVendedor: false,
         aprovadoDiretor: false,
         aprovadoProprietario: false,
-        vendedorId: userId, // Associa o vendedor atual
+        vendedorId: 6, // Associa o vendedor atual - userId
         proprietarioId: loteamento?.proprietarioId || null // Associa o proprietário do loteamento
       }
     });
